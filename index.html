@@ -7,6 +7,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* ===== DESIGN TOKENS (VARIABLES GLOBALES CSS) ===== */
+        :root {
+            /* Paleta de Colores (Brand Colors) */
+            --pb-color-primary: #06232e;      /* Azul profundo / Overlay */
+            --pb-color-magenta: #e32c6c;      /* Color de acento / CTA / Activo */
+            --pb-color-yellow: #f7c32f;       /* Alertas / Medallas / Destacados */
+            --pb-color-white: #FFFFFF;        /* Texto base y contrastes */
+            --pb-color-turquoise: #40E0D0;    /* PodiumScore */
+
+            /* Capas de Fondo y Opacidad */
+            --pb-overlay-opacity: 0.56;       /* Opacidad para el overlay */
+            --pb-bg-inactive: rgba(0, 0, 0, 0.20); /* Estado inactivo de botones */
+
+            /* Bordes y Efectos Glassmorphism */
+            --pb-border-radius-card: 15px;    /* Para contenedores principales */
+            --pb-border-radius-pill: 50px;    /* Para botones e inputs interactivos */
+
+            /* Micro-interacciones y Transiciones */
+            --pb-transition-default: all 0.3s ease-in-out;
+            --pb-hover-scale: scale(1.05);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,12 +37,13 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #06232e;
-            color: #fff;
+            background: var(--pb-color-primary);
+            color: var(--pb-color-white);
             position: relative;
+            min-height: 100vh;
         }
 
-        /* Overlay exacto 56% */
+        /* Fondo con imagen + overlay exacto 56% */
         body::before {
             content: "";
             position: fixed;
@@ -28,11 +51,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(6, 35, 46, 0.56), rgba(6, 35, 46, 0.56)), url('assets/bg_cerveceria.jpg');
+            background-image: url('assets/bg_cerveceria.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--pb-color-primary);
+            opacity: var(--pb-overlay-opacity);
+            z-index: -1;
         }
 
         .container {
@@ -41,6 +76,18 @@
             padding: 1rem;
             position: relative;
             z-index: 1;
+        }
+
+        /* ===== GLASS CARD (exacta del manual) ===== */
+        .pb-glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--pb-border-radius-card);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            margin-bottom: 1.5rem;
         }
 
         .header {
@@ -54,49 +101,21 @@
             height: auto;
         }
 
-        /* Glassmorphism en todas las tarjetas */
-        .card {
-            background: rgba(10, 25, 35, 0.75);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 1.2rem;
-            border: 1px solid rgba(30, 171, 155, 0.3);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        /* ===== HERO SECTION ===== */
+        .hero-title {
+            font-size: 2rem;
+            color: var(--pb-color-yellow);
+            margin-bottom: 0.5rem;
+        }
+        .hero-sub {
+            font-size: 1.2rem;
             margin-bottom: 1.5rem;
         }
-
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #f7c32f;
-            border-left: 5px solid #e32c6c;
-            padding-left: 1rem;
+        .hero-sub strong {
+            color: var(--pb-color-yellow);
         }
 
-        .chart-container {
-            width: 100%;
-            min-height: 300px;
-            position: relative;
-        }
-
-        canvas {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .grid-2cols {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .grid-2cols > .card {
-            flex: 1 1 calc(50% - 1.5rem);
-            min-width: 280px;
-        }
-
-        /* Tabla comparativa */
+        /* ===== TABLA COMPARATIVA ===== */
         .comparativa-table {
             width: 100%;
             border-collapse: collapse;
@@ -109,126 +128,110 @@
         }
         .comparativa-table th {
             background: rgba(227, 44, 108, 0.3);
-            color: #f7c32f;
+            color: var(--pb-color-yellow);
         }
-        .check-yes { color: #1eab9b; font-weight: bold; }
-        .check-no { color: #e32c6c; }
-        .check-partial { color: #f7c32f; }
+        .check-yes { color: var(--pb-color-turquoise); font-weight: bold; }
+        .check-no { color: var(--pb-color-magenta); }
+        .check-partial { color: var(--pb-color-yellow); }
 
-        /* Rangos de producción (botones estilo pill) */
-        .rangos-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
+        /* ===== SLIDER DE PRODUCCIÓN ===== */
+        .pb-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
             margin: 1rem 0;
-            justify-content: space-between;
         }
-        .rango-item {
-            flex: 1;
-            text-align: center;
-            padding: 0.6rem 0.2rem;
-            border-radius: 40px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            font-weight: 500;
-            font-size: 0.75rem;
+        .pb-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--pb-color-white);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
             cursor: pointer;
-            transition: all 0.2s;
         }
-        .rango-item.active {
-            background: #e32c6c;
-            border-color: #e32c6c;
-            color: white;
-        }
-        .rango-item:hover {
-            background: rgba(227,44,108,0.5);
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.7);
         }
 
-        /* Planes (EXPLORER, PODIUM, CHAMPION) como pestañas */
+        /* ===== BOTONES DE PLAN (PILLS) ===== */
         .plan-buttons {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
             margin: 1rem 0;
         }
-        .plan-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            color: white;
-            font-weight: bold;
+        .pb-pill-inactive {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--pb-border-radius-pill);
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: var(--pb-transition-default);
         }
-        .plan-btn.active {
-            background: #e32c6c;
-            border-color: #e32c6c;
-            color: white;
+        .pb-pill-active {
+            background: var(--pb-color-magenta);
+            border: none;
+            border-radius: var(--pb-border-radius-pill);
+            color: var(--pb-color-white);
+            box-shadow: 0px 0px 15px rgba(227, 44, 108, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
         }
-        .plan-btn:hover {
-            background: rgba(227,44,108,0.5);
+        .pill-icon {
+            font-size: 1.2rem;
         }
 
-        /* Resultados en una fila horizontal */
+        /* ===== PANEL DE RESULTADOS (FILA HORIZONTAL) ===== */
         .result-row {
             display: flex;
+            justify-content: space-around;
             flex-wrap: wrap;
-            justify-content: space-between;
             gap: 1rem;
-            margin: 1rem 0;
-            text-align: center;
+            margin: 1.5rem 0;
         }
         .result-item {
+            text-align: center;
             flex: 1;
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            padding: 0.8rem;
+            min-width: 150px;
+        }
+        .result-icon {
+            font-size: 2rem;
+            color: var(--pb-color-yellow);
+            margin-bottom: 0.5rem;
         }
         .result-label {
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
         }
         .result-number {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
-            color: #f7c32f;
+            color: var(--pb-color-yellow);
             line-height: 1.2;
         }
-        .disclaimer {
-            font-size: 0.8rem;
-            margin: 1rem 0;
-            text-align: center;
-            font-style: italic;
-        }
 
-        /* Botón CTA estilo definido */
-        .cta-button {
-            display: inline-block;
-            background-color: #e32c6c;
-            color: #FFFFFF;
-            border-radius: 50px;
-            padding: 15px 30px;
-            font-weight: bold;
-            font-family: 'Inter', sans-serif;
-            text-transform: none;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            transition: transform 0.2s ease-in-out;
-            margin: 0.5rem 0;
-        }
-        .cta-button:hover {
-            transform: scale(1.05);
-            background-color: #c41e54;
-        }
-
-        /* Ranking en una sola línea por ítem */
+        /* ===== RANKING EN GRID (3 columnas) ===== */
         .ranking-header {
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
             align-items: baseline;
             margin-bottom: 1rem;
@@ -236,58 +239,144 @@
         .ranking-title {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #f7c32f;
+            color: var(--pb-color-yellow);
         }
         .ranking-sub {
             font-size: 0.9rem;
-            color: #1eab9b;
+            color: var(--pb-color-turquoise);
+        }
+        .ranking-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
         .ranking-item {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
             padding: 0.8rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
         }
-        .ranking-left {
+        .ranking-pos {
+            font-weight: bold;
+            width: 50px;
+            color: var(--pb-color-white);
+        }
+        .ranking-name {
+            color: var(--pb-color-white);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        .ranking-metrics {
             display: flex;
             gap: 1rem;
             align-items: baseline;
         }
-        .ranking-pos {
-            font-weight: bold;
-            width: 40px;
-        }
-        .ranking-name {
-            font-weight: 500;
-            color: #fff;
-        }
         .ranking-medals {
-            color: #f7c32f;
+            color: var(--pb-color-yellow);
             font-weight: bold;
-            width: 100px;
-            text-align: right;
         }
-        .ranking-score {
-            color: #1eab9b;
+        .ranking-score-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+        }
+        .ranking-score-value {
+            color: var(--pb-color-turquoise);
             font-weight: bold;
-            width: 120px;
-            text-align: right;
+        }
+
+        /* ===== BOTÓN CTA CON BRILLO MAGENTA ===== */
+        .pb-btn-cta {
+            background-color: var(--pb-color-magenta);
+            color: var(--pb-color-white);
+            border-radius: var(--pb-border-radius-pill);
+            border: none;
+            padding: 15px 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+            box-shadow: 0px 0px 20px 5px rgba(227, 44, 108, 0.4);
+            text-decoration: none;
+            margin: 1rem auto;
+            width: fit-content;
+        }
+        .pb-btn-cta:hover {
+            transform: var(--pb-hover-scale);
+            box-shadow: 0px 0px 25px 8px rgba(227, 44, 108, 0.6);
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            font-size: 0.8rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-style: italic;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Footer */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        .social-icon {
+            width: 48px;
+            height: 48px;
+            transition: transform 0.2s;
+        }
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Gráficos */
+        .chart-container {
+            width: 100%;
+            min-height: 300px;
+            position: relative;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+        .grid-2cols {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .grid-2cols > .pb-glass-card {
+            flex: 1 1 calc(50% - 1.5rem);
+            min-width: 280px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .container { padding: 0.8rem; }
             .logo { max-width: 200px; }
-            .card-title { font-size: 1.1rem; }
-            .chart-container { min-height: 250px; }
-            .grid-2cols > .card { flex: 1 1 100%; }
-            .rangos-container { flex-direction: column; gap: 0.5rem; }
-            .result-row { flex-direction: column; }
-            .ranking-header { flex-direction: column; gap: 0.3rem; }
-            .ranking-item { flex-wrap: wrap; gap: 0.5rem; }
-            .ranking-left { width: 100%; justify-content: space-between; }
-            .ranking-medals, .ranking-score { width: auto; }
+            .hero-title { font-size: 1.5rem; }
+            .hero-sub { font-size: 1rem; }
+            .plan-buttons { justify-content: center; }
+            .result-row { flex-direction: column; align-items: center; }
+            .ranking-item { grid-template-columns: auto 1fr; gap: 0.5rem; flex-wrap: wrap; white-space: normal; }
+            .ranking-metrics { grid-column: 2 / 3; justify-content: flex-start; }
+            .ranking-score-label { display: none; }
         }
     </style>
 </head>
@@ -297,30 +386,30 @@
         <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
     </header>
 
-    <!-- Hero Section -->
-    <div class="card" style="text-align: center;">
-        <h1 style="font-size: 2rem; color: #f7c32f; margin-bottom: 0.5rem;">PodiumBeer Intel: Tu Brújula en un Mercado que se Transforma</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">Porque para proteger tu <strong>Identidad</strong>, primero debemos asegurar tu <strong>Rentabilidad</strong>. Traducimos 3.700 victorias en ahorro real y poder de negociación.</p>
-        <a href="https://wa.me/56952184980?text=Quiero%20agendar%20mi%20diagnóstico%20gratuito%20con%20PodiumBeer" class="cta-button">📋 Agenda tu Diagnóstico Gratuito</a>
+    <!-- Hero Section (Opción B del manual) -->
+    <div class="pb-glass-card" style="text-align: center;">
+        <h1 class="hero-title">PodiumBeer Intel: Tu Brújula en un Mercado que se Transforma</h1>
+        <p class="hero-sub">Porque para proteger tu <strong>Identidad</strong>, primero debemos asegurar tu <strong>Rentabilidad</strong>. Traducimos 3.700 victorias en ahorro real y poder de negociación.</p>
+        <a href="https://wa.me/56952184980?text=Quiero%20agendar%20mi%20diagnóstico%20gratuito%20con%20PodiumBeer" class="pb-btn-cta" style="margin:0 auto;">📋 Agenda tu diagnóstico gratuito</a>
     </div>
 
     <!-- Gráficos de contexto -->
     <div class="grid-2cols">
-        <div class="card">
-            <div class="card-title">📉 El mercado está cambiando: el consumo baja, pero la exigencia de bienestar sube</div>
+        <div class="pb-glass-card">
+            <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">📉 El mercado está cambiando: el consumo baja, pero la exigencia de bienestar sube</div>
             <div class="chart-container"><canvas id="caidaConsumoChart"></canvas></div>
             <p style="font-size:0.7rem; text-align:center; margin-top:0.5rem;">Fuente: IWSR 2025, Euromonitor 2025</p>
         </div>
-        <div class="card">
-            <div class="card-title">📈 Crecimiento del mercado NoLo en Chile (USD M)</div>
+        <div class="pb-glass-card">
+            <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">📈 Crecimiento del mercado NoLo en Chile (USD M)</div>
             <div class="chart-container"><canvas id="crecimientoNoLoChart"></canvas></div>
             <p style="font-size:0.7rem; text-align:center; margin-top:0.5rem;">CAGR 2025–2030: +27%</p>
         </div>
     </div>
 
     <!-- Comparativa PodiumBeer vs otros -->
-    <div class="card">
-        <div class="card-title">⚖️ Comparativa: PodiumBeer vs Otras Plataformas</div>
+    <div class="pb-glass-card">
+        <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">⚖️ Comparativa: PodiumBeer vs Otras Plataformas</div>
         <div style="overflow-x: auto;">
             <table class="comparativa-table">
                 <thead><tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></tr></thead>
@@ -336,53 +425,51 @@
             </table>
         </div>
         <div style="text-align: center; margin-top: 1rem;">
-            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="cta-button" style="padding:10px 20px;">📲 Conversemos sobre tu próxima temporada</a>
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="pb-btn-cta" style="padding:10px 20px; font-size:0.9rem;">📲 Conversemos sobre tu próxima temporada</a>
         </div>
     </div>
 
     <!-- Mercado Craft (gráfico estilo Bloomberg) -->
-    <div class="card">
-        <div class="card-title">🌎 Mercado Craft en Latinoamérica (USD M, 2024)</div>
-        <div class="chart-container">
-            <canvas id="mercadoLatamChart" style="height: 400px; width: 100%;"></canvas>
-        </div>
+    <div class="pb-glass-card">
+        <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">🌎 Mercado Craft en Latinoamérica (USD M, 2024)</div>
+        <div class="chart-container"><canvas id="mercadoLatamChart" style="height: 400px; width: 100%;"></canvas></div>
     </div>
 
-    <!-- Calculadora de Alianza (Simulador) -->
-    <div class="card">
-        <div class="card-title">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
+    <!-- Simulador de Rentabilidad (Calculadora de Alianza) -->
+    <div class="pb-glass-card">
+        <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
         <p style="margin-bottom: 1rem; font-size: 0.95rem;">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</p>
 
-        <!-- Selectores de plan (pestañas) -->
-        <div class="plan-buttons">
-            <button class="plan-btn" data-plan="explorer">EXPLORER</button>
-            <button class="plan-btn active" data-plan="podium">PODIUM</button>
-            <button class="plan-btn" data-plan="champion">CHAMPION</button>
+        <!-- Slider de producción -->
+        <label style="font-weight: bold;">¿Cuál es tu producción anual?</label>
+        <input type="range" id="produccionSlider" class="pb-slider" min="0" max="4" step="1" value="2">
+        <div class="slider-labels">
+            <span>≤1000 hl</span><span>1001–5000 hl</span><span>5001–20000 hl</span><span>20001–50000 hl</span><span>>50000 hl</span>
         </div>
 
-        <!-- Rangos de producción -->
-        <label style="font-weight: bold;">¿Cuál es tu producción anual?</label>
-        <div class="rangos-container" id="rangosContainer">
-            <div class="rango-item" data-rango="0">≤1000 hl</div>
-            <div class="rango-item" data-rango="1">1001–5000 hl</div>
-            <div class="rango-item" data-rango="2">5001–20000 hl</div>
-            <div class="rango-item" data-rango="3">20001–50000 hl</div>
-            <div class="rango-item" data-rango="4">>50000 hl</div>
+        <!-- Selectores de plan (Pills) -->
+        <div class="plan-buttons">
+            <div id="planExplorer" class="pb-pill-inactive" data-plan="explorer"><span class="pill-icon">🌿</span> EXPLORER</div>
+            <div id="planPodium" class="pb-pill-active" data-plan="podium"><span class="pill-icon">🥇</span> PODIUM</div>
+            <div id="planChampion" class="pb-pill-inactive" data-plan="champion"><span class="pill-icon">🏆</span> CHAMPION</div>
         </div>
 
         <!-- Resultados dinámicos en fila horizontal -->
         <div class="result-row">
             <div class="result-item">
+                <div class="result-icon">💰</div>
                 <div class="result-label">Inversión mensual</div>
                 <div class="result-number" id="precioMensual">--</div>
                 <div>USD</div>
             </div>
             <div class="result-item">
+                <div class="result-icon">📈</div>
                 <div class="result-label">Optimización anual estimada</div>
                 <div class="result-number" id="ahorroAnual">--</div>
                 <div>USD</div>
             </div>
             <div class="result-item">
+                <div class="result-icon">🔄</div>
                 <div class="result-label">Retorno colaborativo (ROI)</div>
                 <div class="result-number" id="roi">--</div>
                 <div>%</div>
@@ -392,52 +479,32 @@
         <!-- Disclaimer -->
         <div class="disclaimer">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
 
-        <!-- Botón CTA final -->
+        <!-- Botón CTA final (exactamente como en el manual) -->
         <div style="text-align: center;">
-            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="cta-button">📲 Agenda tu diagnóstico Doemens gratuito</a>
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="pb-btn-cta">📲 Agenda tu diagnóstico gratuito</a>
         </div>
     </div>
 
     <!-- Ranking "Tu Próxima Medalla de Oro está aquí" -->
-    <div class="card">
+    <div class="pb-glass-card">
         <div class="ranking-header">
             <span class="ranking-title">🏆 Tu Próxima Medalla de Oro está aquí</span>
             <span class="ranking-sub">Top 5 cervecerías chilenas simuladas</span>
         </div>
         <p style="font-size:0.8rem; margin-bottom:1rem;">Los datos reales se muestran al suscribirse. La data busca los estilos donde hay poca competencia en Chile pero alta demanda internacional.</p>
-        <div id="rankingContainer">
-            <div class="ranking-item">
-                <div class="ranking-left"><span class="ranking-pos">1</span><span class="ranking-name">Cervecería Patagonia</span></div>
-                <div class="ranking-medals">28 medallas</div>
-                <div class="ranking-score">PodiumScore 94</div>
-            </div>
-            <div class="ranking-item">
-                <div class="ranking-left"><span class="ranking-pos">2</span><span class="ranking-name">Cervecería Kross</span></div>
-                <div class="ranking-medals">24 medallas</div>
-                <div class="ranking-score">PodiumScore 89</div>
-            </div>
-            <div class="ranking-item">
-                <div class="ranking-left"><span class="ranking-pos">3</span><span class="ranking-name">Cervecería Austral</span></div>
-                <div class="ranking-medals">19 medallas</div>
-                <div class="ranking-score">PodiumScore 82</div>
-            </div>
-            <div class="ranking-item">
-                <div class="ranking-left"><span class="ranking-pos">4</span><span class="ranking-name">Cervecería Loba</span></div>
-                <div class="ranking-medals">15 medallas</div>
-                <div class="ranking-score">PodiumScore 76</div>
-            </div>
-            <div class="ranking-item">
-                <div class="ranking-left"><span class="ranking-pos">5</span><span class="ranking-name">Cervecería Bundor</span></div>
-                <div class="ranking-medals">12 medallas</div>
-                <div class="ranking-score">PodiumScore 71</div>
-            </div>
+        <div class="ranking-grid" id="rankingContainer">
+            <div class="ranking-item"><div class="ranking-pos">1</div><div class="ranking-name">Cervecería Patagonia</div><div class="ranking-metrics"><span class="ranking-medals">28 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">94</span></div></div>
+            <div class="ranking-item"><div class="ranking-pos">2</div><div class="ranking-name">Cervecería Kross</div><div class="ranking-metrics"><span class="ranking-medals">24 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">89</span></div></div>
+            <div class="ranking-item"><div class="ranking-pos">3</div><div class="ranking-name">Cervecería Austral</div><div class="ranking-metrics"><span class="ranking-medals">19 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">82</span></div></div>
+            <div class="ranking-item"><div class="ranking-pos">4</div><div class="ranking-name">Cervecería Loba</div><div class="ranking-metrics"><span class="ranking-medals">15 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">76</span></div></div>
+            <div class="ranking-item"><div class="ranking-pos">5</div><div class="ranking-name">Cervecería Bundor</div><div class="ranking-metrics"><span class="ranking-medals">12 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">71</span></div></div>
         </div>
         <p style="font-size:0.7rem; text-align:center; margin-top:1rem;">*PodiumScore combina cantidad de medallas, prestigio del concurso y rareza por estilo.</p>
     </div>
 
     <!-- Testimonio -->
-    <div class="card" style="text-align: center; background: rgba(227,44,108,0.2);">
-        <p style="font-size: 1rem; font-style: italic; color: #f7c32f;">"Después de 10 años catando y colaborando, sé que el dato solo sirve si protege el corazón de tu cervecería. PodiumBeer es esa armadura."</p>
+    <div class="pb-glass-card" style="text-align: center; background: rgba(227,44,108,0.2);">
+        <p style="font-size: 1rem; font-style: italic; color: var(--pb-color-yellow);">"Después de 10 años catando y colaborando, sé que el dato solo sirve si protege el corazón de tu cervecería. PodiumBeer es esa armadura."</p>
         <p style="margin-top: 0.5rem;">— Paula Silva, Beersommelier</p>
     </div>
 
@@ -451,33 +518,8 @@
     </footer>
 </div>
 
-<style>
-    .social-icons {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-bottom: 1rem;
-    }
-    .social-icon {
-        width: 48px;
-        height: 48px;
-        transition: transform 0.2s;
-    }
-    .social-icon:hover {
-        transform: scale(1.1);
-    }
-    .footer-text {
-        text-align: center;
-        font-size: 0.75rem;
-        opacity: 0.7;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        padding-top: 1rem;
-        margin-top: 0.5rem;
-    }
-</style>
-
 <script>
-    // Datos estáticos para los gráficos
+    // Datos estáticos
     const caidaConsumo = [
         { year: 2021, consumo: 100 }, { year: 2022, consumo: 97 }, { year: 2023, consumo: 94 },
         { year: 2024, consumo: 91 }, { year: 2025, consumo: 88 }, { year: 2026, consumo: 85 }
@@ -501,7 +543,7 @@
     };
     const rangosList = ["≤1000 hl", "1001–5000 hl", "5001–20000 hl", "20001–50000 hl", ">50000 hl"];
     let currentPlan = "podium";
-    let currentRangoIndex = 1;  // 1001–5000 hl por defecto
+    let currentRangoIndex = 2; // 5001–20000 hl por defecto
 
     // Inicializar gráficos
     function initCharts() {
@@ -535,29 +577,34 @@
         document.getElementById('roi').innerText = roi > 0 ? roi : '--';
     }
 
-    // Eventos de rangos
-    const rangoItems = document.querySelectorAll('.rango-item');
-    rangoItems.forEach((item, idx) => {
-        item.addEventListener('click', () => {
-            rangoItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            currentRangoIndex = idx;
-            actualizarCalculadora();
-        });
-    });
-    rangoItems[1].classList.add('active');  // pre-seleccionar el segundo rango
-
-    // Eventos de planes
-    const planBtns = document.querySelectorAll('.plan-btn');
-    planBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            planBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentPlan = btn.dataset.plan;
-            actualizarCalculadora();
-        });
+    // Slider
+    const slider = document.getElementById('produccionSlider');
+    slider.addEventListener('input', (e) => {
+        currentRangoIndex = parseInt(e.target.value);
+        actualizarCalculadora();
     });
 
+    // Planes (pills)
+    const planExplorer = document.getElementById('planExplorer');
+    const planPodium = document.getElementById('planPodium');
+    const planChampion = document.getElementById('planChampion');
+
+    function setActivePlan(activeElement, plan) {
+        [planExplorer, planPodium, planChampion].forEach(el => {
+            el.classList.remove('pb-pill-active');
+            el.classList.add('pb-pill-inactive');
+        });
+        activeElement.classList.remove('pb-pill-inactive');
+        activeElement.classList.add('pb-pill-active');
+        currentPlan = plan;
+        actualizarCalculadora();
+    }
+
+    planExplorer.addEventListener('click', () => setActivePlan(planExplorer, 'explorer'));
+    planPodium.addEventListener('click', () => setActivePlan(planPodium, 'podium'));
+    planChampion.addEventListener('click', () => setActivePlan(planChampion, 'champion'));
+
+    // Inicializar todo
     initCharts();
     actualizarCalculadora();
 </script>
