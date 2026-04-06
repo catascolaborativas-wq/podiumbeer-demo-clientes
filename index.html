@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>PodiumBeer Demo – Para Cervecerías</title>
+    <title>PodiumBeer – Demo para Cervecerías</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ========== MISMO ESTILO QUE PODIUMBEER ORIGINAL ========== */
         * {
             margin: 0;
             padding: 0;
@@ -240,15 +239,17 @@
         <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
     </header>
 
+    <!-- Hero renovado -->
     <div class="card" style="text-align: center;">
-        <h1 style="font-size: 2rem; color: #f7c32f; margin-bottom: 0.5rem;">PodiumBeer – El Primer Medallero Mundial Consolidado</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">Descubre los datos que transformarán tu cervecería</p>
+        <h1 style="font-size: 2rem; color: #f7c32f; margin-bottom: 0.5rem;">PodiumBeer: Protegiendo el Prestigio de la Cerveza Independiente</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">Usa el poder de 3.700 medallas y la visión Doemens para que tu Identidad, Originalidad y Calidad conquisten el mercado.</p>
         <button onclick="document.getElementById('calculadora').scrollIntoView({behavior:'smooth'})" class="btn-premium" style="background:#f7c32f; color:#06232e;">📊 Ver mi potencial de medallas</button>
     </div>
 
+    <!-- Gráficos de contexto (caída consumo y NoLo) -->
     <div class="grid-2cols">
         <div class="card">
-            <div class="card-title">📉 Caída del consumo de alcohol en Chile (2021–2026)</div>
+            <div class="card-title">📉 El mercado está cambiando: el consumo baja, pero la exigencia de bienestar sube</div>
             <div class="chart-container"><canvas id="caidaConsumoChart"></canvas></div>
             <p style="font-size:0.7rem; text-align:center; margin-top:0.5rem;">Fuente: IWSR 2025, Euromonitor 2025</p>
         </div>
@@ -259,11 +260,12 @@
         </div>
     </div>
 
+    <!-- Comparativa PodiumBeer vs Otros -->
     <div class="card">
         <div class="card-title">⚖️ Comparativa: PodiumBeer vs Otras Plataformas</div>
         <div style="overflow-x: auto;">
             <table class="comparativa-table">
-                <thead><tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></thead>
+                <thead><tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></tr></thead>
                 <tbody>
                     <tr><td>Medallas consolidadas</td><td class="check-yes">✅</td><td class="check-no">❌</td><td class="check-no">❌</td><td class="check-no">❌</td></tr>
                     <tr><td>Análisis por estilo</td><td class="check-yes">✅</td><td class="check-no">❌</td><td class="check-no">❌</td><td class="check-partial">⚠️ parcial</td></tr>
@@ -275,41 +277,54 @@
                 </tbody>
             </table>
         </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="btn-premium" target="_blank">📲 Conversemos sobre tu próxima temporada</a>
+        </div>
     </div>
 
+    <!-- Mercado Craft en Latinoamérica (nuevo gráfico estilo Bloomberg) -->
     <div class="card">
         <div class="card-title">🌎 Mercado Craft en Latinoamérica (USD M, 2024)</div>
-        <div class="chart-container"><canvas id="mercadoLatamChart" style="height: 400px;"></canvas></div>
+        <div class="chart-container">
+            <canvas id="mercadoLatamChart" style="height: 400px; width: 100%;"></canvas>
+        </div>
     </div>
 
+    <!-- Sección "Tu pasión es producir..." (nuevo enfoque colaborativo) -->
     <div id="calculadora" class="card">
-        <div class="card-title">💰 ¿Cuánto puedes ahorrar con PodiumBeer?</div>
+        <div class="card-title">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
+        <p style="margin-bottom: 1rem; font-size: 0.95rem;">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</p>
+
         <div class="slider-container">
-            <label style="font-weight: bold;">Rango de producción anual:</label>
+            <label style="font-weight: bold;">¿Cuál es tu producción anual?</label>
             <input type="range" id="rangoSlider" min="0" max="4" step="1" value="1">
-            <div style="display: flex; justify-content: space-between;">
-                <span>Micro (≤1000 hl)</span><span>Pequeña (1001–5000)</span><span>Mediana (5001–20000)</span><span>Grande (20001–50000)</span><span>Macro (>50000)</span>
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
+                <span>≤1000 hl</span><span>1001–5000</span><span>5001–20000</span><span>20001–50000</span><span>>50000</span>
             </div>
         </div>
+
         <div class="plan-buttons">
             <button class="plan-btn" data-plan="explorer">🥉 EXPLORER</button>
             <button class="plan-btn active" data-plan="podium">🥇 PODIUM</button>
             <button class="plan-btn" data-plan="champion">🏆 CHAMPION</button>
         </div>
+
         <div class="result-box" id="resultadoAhorro">
-            <div>Precio mensual: <span class="result-number" id="precioMensual">--</span> USD</div>
-            <div>Ahorro anual estimado: <span class="result-number" id="ahorroAnual">--</span> USD</div>
-            <div>ROI estimado: <span class="result-number" id="roi">--</span>%</div>
-            <div style="font-size:0.8rem; margin-top:0.5rem;">💡 El cálculo se basa en optimización de concursos: ahorras entre 1 y 2 participaciones innecesarias por año.</div>
+            <div>Inversión mensual: <span class="result-number" id="precioMensual">--</span> USD</div>
+            <div>Optimización anual estimada: <span class="result-number" id="ahorroAnual">--</span> USD</div>
+            <div>Retorno colaborativo (ROI): <span class="result-number" id="roi">--</span>%</div>
+            <div style="font-size:0.8rem; margin-top:0.5rem;">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
         </div>
+
         <div style="text-align: center; margin-top: 1rem;">
-            <a href="https://wa.me/56952184980?text=Quiero%20activar%20mi%20suscripción%20a%20PodiumBeer" class="btn-premium" target="_blank">📲 Suscribirme ahora</a>
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="btn-premium" target="_blank">📲 Agenda tu diagnóstico Doemens gratuito</a>
         </div>
     </div>
 
+    <!-- Ranking de prestigio demo -->
     <div class="card">
-        <div class="card-title">🏆 Ranking de Prestigio (Demo)</div>
-        <p style="font-size:0.8rem; margin-bottom:1rem;">Top 5 cervecerías chilenas simuladas – Los datos reales se muestran al suscribirse</p>
+        <div class="card-title">🏆 Tu Próxima Medalla de Oro está aquí</div>
+        <p style="font-size:0.8rem; margin-bottom:1rem;">Top 5 cervecerías chilenas simuladas – Los datos reales se muestran al suscribirse. La data busca los estilos donde hay poca competencia en Chile pero alta demanda internacional.</p>
         <div id="rankingDemoContainer">
             <div class="ranking-demo-item"><span class="ranking-position">1</span><span class="ranking-name">Cervecería Patagonia</span><span class="ranking-medals">28 medallas</span><span class="ranking-score">PodiumScore 94</span></div>
             <div class="ranking-demo-item"><span class="ranking-position">2</span><span class="ranking-name">Cervecería Kross</span><span class="ranking-medals">24 medallas</span><span class="ranking-score">PodiumScore 89</span></div>
@@ -318,6 +333,12 @@
             <div class="ranking-demo-item"><span class="ranking-position">5</span><span class="ranking-name">Cervecería Bundor</span><span class="ranking-medals">12 medallas</span><span class="ranking-score">PodiumScore 71</span></div>
         </div>
         <p style="font-size:0.7rem; text-align:center; margin-top:1rem;">*PodiumScore combina cantidad de medallas, prestigio del concurso y rareza por estilo.</p>
+    </div>
+
+    <!-- Testimonio con tu firma -->
+    <div class="card" style="text-align: center; background: rgba(227,44,108,0.2);">
+        <p style="font-size: 1rem; font-style: italic; color: #f7c32f;">"Después de 10 años catando y colaborando, sé que el dato solo sirve si protege el corazón de tu cervecería. PodiumBeer es esa armadura."</p>
+        <p style="margin-top: 0.5rem;">— Paula Silva, Beersommelier Doemens</p>
     </div>
 
     <footer>
@@ -331,6 +352,7 @@
 </div>
 
 <script>
+    // ================= DATOS ESTÁTICOS =================
     const caidaConsumo = [
         { year: 2021, consumo: 100 }, { year: 2022, consumo: 97 }, { year: 2023, consumo: 94 },
         { year: 2024, consumo: 91 }, { year: 2025, consumo: 88 }, { year: 2026, consumo: 85 }
@@ -344,6 +366,7 @@
         { pais: "Chile", valor: 142 }, { pais: "Colombia", valor: 92 }, { pais: "Perú", valor: 56 }, { pais: "Uruguay", valor: 33 }
     ];
 
+    // Precios por rango y plan (USD/mes)
     const precios = {
         "Micro (≤1000 hl)": { explorer: 49, podium: 149, champion: 399 },
         "Pequeña (1001–5000 hl)": { explorer: 99, podium: 249, champion: 599 },
@@ -355,36 +378,91 @@
     let currentPlan = "podium";
     let currentRangoIndex = 1;
 
+    // Inicializar gráficos
     function initCharts() {
+        // Gráfico de caída consumo (línea)
         new Chart(document.getElementById('caidaConsumoChart'), {
             type: 'line',
-            data: { labels: caidaConsumo.map(d => d.year), datasets: [{ label: 'Índice (2021=100)', data: caidaConsumo.map(d => d.consumo), borderColor: '#e32c6c', backgroundColor: 'rgba(227,44,108,0.1)', fill: true, tension: 0.3 }] },
+            data: {
+                labels: caidaConsumo.map(d => d.year),
+                datasets: [{
+                    label: 'Índice (2021=100)',
+                    data: caidaConsumo.map(d => d.consumo),
+                    borderColor: '#e32c6c',
+                    backgroundColor: 'rgba(227,44,108,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4
+                }]
+            },
             options: { responsive: true, maintainAspectRatio: true }
         });
+
+        // Gráfico de crecimiento NoLo (barras)
         new Chart(document.getElementById('crecimientoNoLoChart'), {
             type: 'bar',
-            data: { labels: crecimientoNoLo.map(d => d.year), datasets: [{ label: 'Millones USD', data: crecimientoNoLo.map(d => d.valor), backgroundColor: '#1eab9b' }] },
+            data: {
+                labels: crecimientoNoLo.map(d => d.year),
+                datasets: [{
+                    label: 'Millones USD',
+                    data: crecimientoNoLo.map(d => d.valor),
+                    backgroundColor: '#1eab9b',
+                    borderRadius: 8
+                }]
+            },
             options: { responsive: true, maintainAspectRatio: true }
         });
+
+        // Gráfico de Mercado Craft (estilo Bloomberg: línea con relleno)
         new Chart(document.getElementById('mercadoLatamChart'), {
-            type: 'bar',
-            data: { labels: mercadoLatam.map(d => d.pais), datasets: [{ label: 'Millones USD', data: mercadoLatam.map(d => d.valor), backgroundColor: '#e32c6c' }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: true }
+            type: 'line',
+            data: {
+                labels: mercadoLatam.map(d => d.pais),
+                datasets: [{
+                    label: 'Millones USD',
+                    data: mercadoLatam.map(d => d.valor),
+                    borderColor: '#e32c6c',
+                    backgroundColor: 'rgba(227,44,108,0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#f7c32f',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw} millones USD` } },
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#fff', callback: (val) => val + 'M' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#fff' }, grid: { display: false } }
+                }
+            }
         });
     }
 
+    // Actualizar calculadora de inversión
     function actualizarCalculadora() {
         const rango = rangos[currentRangoIndex];
         const precio = precios[rango][currentPlan];
         const precioNum = typeof precio === 'number' ? precio : 0;
         const precioAnual = precioNum * 12;
-        const ahorro = Math.round(precioAnual * 1.8);
-        const roi = precioNum > 0 ? Math.round((ahorro / precioAnual) * 100) : 0;
+        const optimizacion = Math.round(precioAnual * 1.8);
+        const roi = precioNum > 0 ? Math.round((optimizacion / precioAnual) * 100) : 0;
+
         document.getElementById('precioMensual').innerText = precioNum > 0 ? precioNum : 'Custom';
-        document.getElementById('ahorroAnual').innerText = ahorro > 0 ? ahorro : '--';
+        document.getElementById('ahorroAnual').innerText = optimizacion > 0 ? optimizacion : '--';
         document.getElementById('roi').innerText = roi > 0 ? roi : '--';
     }
 
+    // Eventos de la calculadora
     document.getElementById('rangoSlider').addEventListener('input', (e) => { currentRangoIndex = parseInt(e.target.value); actualizarCalculadora(); });
     document.querySelectorAll('.plan-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -395,6 +473,7 @@
         });
     });
 
+    // Ejecutar
     initCharts();
     actualizarCalculadora();
 </script>
