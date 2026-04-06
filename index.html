@@ -10,23 +10,23 @@
         /* ===== DESIGN TOKENS (VARIABLES GLOBALES CSS) ===== */
         :root {
             /* Paleta de Colores (Brand Colors) */
-            --pb-color-primary: #06232e;      /* Azul profundo / Overlay */
-            --pb-color-magenta: #e32c6c;      /* Color de acento / CTA / Activo */
-            --pb-color-yellow: #f7c32f;       /* Alertas / Medallas / Destacados */
-            --pb-color-white: #FFFFFF;        /* Texto base y contrastes */
-            --pb-color-turquoise: #40E0D0;    /* PodiumScore */
+            --pb-color-primary: #06232e;     /* Azul profundo / Overlay */
+            --pb-color-magenta: #e32c6c;     /* Color de acento / CTA / Activo */
+            --pb-color-yellow: #f7c32f;      /* Alertas / Medallas / Destacados */
+            --pb-color-white: #FFFFFF;       /* Texto base y contrastes */
+            --pb-color-turquoise: #40E0D0;   /* PodiumScore */
 
             /* Capas de Fondo y Opacidad */
-            --pb-overlay-opacity: 0.56;       /* Opacidad para el overlay */
-            --pb-bg-inactive: rgba(0, 0, 0, 0.20); /* Estado inactivo de botones */
+            --pb-overlay-opacity: 0.56;      /* Opacidad para el overlay */
+            --pb-bg-inactive: rgba(255, 255, 255, 0.03); /* Fondo sutil para botones inactivos */
 
             /* Bordes y Efectos Glassmorphism */
-            --pb-border-radius-card: 15px;    /* Para contenedores principales */
-            --pb-border-radius-pill: 50px;    /* Para botones e inputs interactivos */
+            --pb-border-radius-card: 15px;   /* Para contenedores principales */
+            --pb-border-radius-pill: 50px;   /* Para botones e inputs interactivos */
 
             /* Micro-interacciones y Transiciones */
             --pb-transition-default: all 0.3s ease-in-out;
-            --pb-hover-scale: scale(1.05);
+            --pb-hover-scale: scale(1.03);   /* Escala sutil interactiva */
         }
 
         * {
@@ -35,30 +35,20 @@
             box-sizing: border-box;
         }
 
+        /* Fondo del Body con imagen y overlay exacto */
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--pb-color-primary);
+            background-image: url('assets/bg_cerveceria.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: var(--pb-color-white);
             position: relative;
             min-height: 100vh;
         }
 
-        /* Fondo con imagen + overlay exacto 56% */
+        /* Capa de contraste (Overlay) - color #06232e al 56% */
         body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('assets/bg_cerveceria.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            z-index: -2;
-        }
-
-        body::after {
             content: "";
             position: fixed;
             top: 0;
@@ -78,7 +68,7 @@
             z-index: 1;
         }
 
-        /* ===== GLASS CARD (exacta del manual) ===== */
+        /* ===== GLASS CARD (EFECTO VIDRIO) ===== */
         .pb-glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
@@ -86,7 +76,7 @@
             border-radius: var(--pb-border-radius-card);
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 1.5rem;
         }
 
@@ -110,6 +100,7 @@
         .hero-sub {
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
+            color: var(--pb-color-white);
         }
         .hero-sub strong {
             color: var(--pb-color-yellow);
@@ -121,7 +112,8 @@
             border-collapse: collapse;
             font-size: 0.85rem;
         }
-        .comparativa-table th, .comparativa-table td {
+        .comparativa-table th,
+        .comparativa-table td {
             padding: 0.8rem 0.5rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -140,7 +132,7 @@
             width: 100%;
             height: 8px;
             border-radius: 50px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             outline: none;
             margin: 1rem 0;
         }
@@ -159,18 +151,18 @@
             justify-content: space-between;
             margin-top: 0.5rem;
             font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        /* ===== BOTONES DE PLAN (PILLS) ===== */
+        /* ===== PILLS DE PLANES ===== */
         .plan-buttons {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
         }
         .pb-pill-inactive {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--pb-bg-inactive);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--pb-border-radius-pill);
             color: rgba(255, 255, 255, 0.6);
@@ -186,7 +178,7 @@
             border: none;
             border-radius: var(--pb-border-radius-pill);
             color: var(--pb-color-white);
-            box-shadow: 0px 0px 15px rgba(227, 44, 108, 0.3);
+            box-shadow: 0px 4px 15px rgba(227, 44, 108, 0.3);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -205,11 +197,14 @@
             flex-wrap: wrap;
             gap: 1rem;
             margin: 1.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
         }
         .result-item {
             text-align: center;
             flex: 1;
-            min-width: 150px;
+            min-width: 140px;
         }
         .result-icon {
             font-size: 2rem;
@@ -217,24 +212,25 @@
             margin-bottom: 0.5rem;
         }
         .result-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
         .result-number {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--pb-color-yellow);
+            color: var(--pb-color-white);
             line-height: 1.2;
         }
 
-        /* ===== RANKING EN GRID (3 columnas) ===== */
+        /* ===== GRÁFICO DE RANKING (GRID 3 COLUMNAS) ===== */
         .ranking-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
         .ranking-title {
             font-size: 1.3rem;
@@ -273,13 +269,14 @@
             display: flex;
             gap: 1rem;
             align-items: baseline;
+            white-space: nowrap;
         }
         .ranking-medals {
             color: var(--pb-color-yellow);
             font-weight: bold;
         }
         .ranking-score-label {
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.8rem;
         }
         .ranking-score-value {
@@ -287,65 +284,39 @@
             font-weight: bold;
         }
 
-        /* ===== BOTÓN CTA CON BRILLO MAGENTA ===== */
+        /* ===== BOTÓN CTA CON GLOW MAGENTA ===== */
         .pb-btn-cta {
             background-color: var(--pb-color-magenta);
             color: var(--pb-color-white);
             border-radius: var(--pb-border-radius-pill);
             border: none;
-            padding: 15px 30px;
+            padding: 16px 32px;
             font-weight: bold;
             font-size: 1.1rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             cursor: pointer;
             transition: var(--pb-transition-default);
-            box-shadow: 0px 0px 20px 5px rgba(227, 44, 108, 0.4);
             text-decoration: none;
-            margin: 1rem auto;
-            width: fit-content;
+            box-shadow: 0px 4px 20px 5px rgba(227, 44, 108, 0.4);
+            margin: 0.5rem auto;
         }
         .pb-btn-cta:hover {
             transform: var(--pb-hover-scale);
-            box-shadow: 0px 0px 25px 8px rgba(227, 44, 108, 0.6);
+            box-shadow: 0px 4px 25px 8px rgba(227, 44, 108, 0.6);
         }
 
-        /* Disclaimer */
         .disclaimer {
             font-size: 0.8rem;
             margin: 1rem 0;
             text-align: center;
             font-style: italic;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Footer */
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1rem;
-        }
-        .social-icon {
-            width: 48px;
-            height: 48px;
-            transition: transform 0.2s;
-        }
-        .social-icon:hover {
-            transform: scale(1.1);
-        }
-        .footer-text {
-            text-align: center;
-            font-size: 0.75rem;
-            opacity: 0.7;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Gráficos */
+        /* ===== GRÁFICOS CON CHART.JS ===== */
         .chart-container {
             width: 100%;
             min-height: 300px;
@@ -366,7 +337,31 @@
             min-width: 280px;
         }
 
-        /* Responsive */
+        /* ===== FOOTER ===== */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        .social-icon {
+            width: 48px;
+            height: 48px;
+            transition: transform 0.2s;
+        }
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .container { padding: 0.8rem; }
             .logo { max-width: 200px; }
@@ -374,8 +369,16 @@
             .hero-sub { font-size: 1rem; }
             .plan-buttons { justify-content: center; }
             .result-row { flex-direction: column; align-items: center; }
-            .ranking-item { grid-template-columns: auto 1fr; gap: 0.5rem; flex-wrap: wrap; white-space: normal; }
-            .ranking-metrics { grid-column: 2 / 3; justify-content: flex-start; }
+            .ranking-item {
+                grid-template-columns: auto 1fr;
+                gap: 0.5rem;
+                white-space: normal;
+            }
+            .ranking-metrics {
+                grid-column: 2 / 3;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
             .ranking-score-label { display: none; }
         }
     </style>
@@ -386,7 +389,7 @@
         <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
     </header>
 
-    <!-- Hero Section (Opción B del manual) -->
+    <!-- Hero Section (Opción B) -->
     <div class="pb-glass-card" style="text-align: center;">
         <h1 class="hero-title">PodiumBeer Intel: Tu Brújula en un Mercado que se Transforma</h1>
         <p class="hero-sub">Porque para proteger tu <strong>Identidad</strong>, primero debemos asegurar tu <strong>Rentabilidad</strong>. Traducimos 3.700 victorias en ahorro real y poder de negociación.</p>
@@ -412,7 +415,9 @@
         <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">⚖️ Comparativa: PodiumBeer vs Otras Plataformas</div>
         <div style="overflow-x: auto;">
             <table class="comparativa-table">
-                <thead><tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></tr></thead>
+                <thead>
+                    <tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></tr>
+                </thead>
                 <tbody>
                     <tr><td>Medallas consolidadas</td><td class="check-yes">✅</td><td class="check-no">❌</td><td class="check-no">❌</td><td class="check-no">❌</td></tr>
                     <tr><td>Análisis por estilo</td><td class="check-yes">✅</td><td class="check-no">❌</td><td class="check-no">❌</td><td class="check-partial">⚠️ parcial</td></tr>
@@ -440,21 +445,21 @@
         <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
         <p style="margin-bottom: 1rem; font-size: 0.95rem;">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</p>
 
-        <!-- Slider de producción -->
+        <!-- Slider de producción anual -->
         <label style="font-weight: bold;">¿Cuál es tu producción anual?</label>
         <input type="range" id="produccionSlider" class="pb-slider" min="0" max="4" step="1" value="2">
         <div class="slider-labels">
             <span>≤1000 hl</span><span>1001–5000 hl</span><span>5001–20000 hl</span><span>20001–50000 hl</span><span>>50000 hl</span>
         </div>
 
-        <!-- Selectores de plan (Pills) -->
+        <!-- Pills de planes -->
         <div class="plan-buttons">
             <div id="planExplorer" class="pb-pill-inactive" data-plan="explorer"><span class="pill-icon">🌿</span> EXPLORER</div>
             <div id="planPodium" class="pb-pill-active" data-plan="podium"><span class="pill-icon">🥇</span> PODIUM</div>
             <div id="planChampion" class="pb-pill-inactive" data-plan="champion"><span class="pill-icon">🏆</span> CHAMPION</div>
         </div>
 
-        <!-- Resultados dinámicos en fila horizontal -->
+        <!-- Resultados dinámicos -->
         <div class="result-row">
             <div class="result-item">
                 <div class="result-icon">💰</div>
@@ -476,10 +481,8 @@
             </div>
         </div>
 
-        <!-- Disclaimer -->
         <div class="disclaimer">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
 
-        <!-- Botón CTA final (exactamente como en el manual) -->
         <div style="text-align: center;">
             <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="pb-btn-cta">📲 Agenda tu diagnóstico gratuito</a>
         </div>
@@ -519,7 +522,7 @@
 </div>
 
 <script>
-    // Datos estáticos
+    // Datos estáticos para los gráficos
     const caidaConsumo = [
         { year: 2021, consumo: 100 }, { year: 2022, consumo: 97 }, { year: 2023, consumo: 94 },
         { year: 2024, consumo: 91 }, { year: 2025, consumo: 88 }, { year: 2026, consumo: 85 }
@@ -533,7 +536,7 @@
         { pais: "Chile", valor: 142 }, { pais: "Colombia", valor: 92 }, { pais: "Perú", valor: 56 }, { pais: "Uruguay", valor: 33 }
     ];
 
-    // Precios y rangos
+    // Precios y rangos (simulación)
     const precios = {
         "≤1000 hl": { explorer: 49, podium: 149, champion: 399 },
         "1001–5000 hl": { explorer: 99, podium: 249, champion: 599 },
@@ -545,26 +548,72 @@
     let currentPlan = "podium";
     let currentRangoIndex = 2; // 5001–20000 hl por defecto
 
-    // Inicializar gráficos
+    // Inicializar gráficos con Chart.js
     function initCharts() {
         new Chart(document.getElementById('caidaConsumoChart'), {
             type: 'line',
-            data: { labels: caidaConsumo.map(d => d.year), datasets: [{ label: 'Índice (2021=100)', data: caidaConsumo.map(d => d.consumo), borderColor: '#e32c6c', backgroundColor: 'rgba(227,44,108,0.1)', fill: true, tension: 0.3, pointRadius: 4 }] },
+            data: {
+                labels: caidaConsumo.map(d => d.year),
+                datasets: [{
+                    label: 'Índice (2021=100)',
+                    data: caidaConsumo.map(d => d.consumo),
+                    borderColor: '#e32c6c',
+                    backgroundColor: 'rgba(227,44,108,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4
+                }]
+            },
             options: { responsive: true, maintainAspectRatio: true }
         });
         new Chart(document.getElementById('crecimientoNoLoChart'), {
             type: 'bar',
-            data: { labels: crecimientoNoLo.map(d => d.year), datasets: [{ label: 'Millones USD', data: crecimientoNoLo.map(d => d.valor), backgroundColor: '#1eab9b', borderRadius: 8 }] },
+            data: {
+                labels: crecimientoNoLo.map(d => d.year),
+                datasets: [{
+                    label: 'Millones USD',
+                    data: crecimientoNoLo.map(d => d.valor),
+                    backgroundColor: '#1eab9b',
+                    borderRadius: 8
+                }]
+            },
             options: { responsive: true, maintainAspectRatio: true }
         });
         new Chart(document.getElementById('mercadoLatamChart'), {
             type: 'line',
-            data: { labels: mercadoLatam.map(d => d.pais), datasets: [{ label: 'Millones USD', data: mercadoLatam.map(d => d.valor), borderColor: '#e32c6c', backgroundColor: 'rgba(227,44,108,0.2)', borderWidth: 3, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7, pointBackgroundColor: '#f7c32f', pointBorderColor: '#fff', pointBorderWidth: 2 }] },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} millones USD` } }, legend: { labels: { color: '#fff' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#fff', callback: (val) => val + 'M' }, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { ticks: { color: '#fff' }, grid: { display: false } } } }
+            data: {
+                labels: mercadoLatam.map(d => d.pais),
+                datasets: [{
+                    label: 'Millones USD',
+                    data: mercadoLatam.map(d => d.valor),
+                    borderColor: '#e32c6c',
+                    backgroundColor: 'rgba(227,44,108,0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#f7c32f',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw} millones USD` } },
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#fff', callback: (val) => val + 'M' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#fff' }, grid: { display: false } }
+                }
+            }
         });
     }
 
-    // Actualizar calculadora
+    // Actualizar calculadora de rentabilidad
     function actualizarCalculadora() {
         const rango = rangosList[currentRangoIndex];
         const precio = precios[rango][currentPlan];
@@ -577,7 +626,7 @@
         document.getElementById('roi').innerText = roi > 0 ? roi : '--';
     }
 
-    // Slider
+    // Slider de producción
     const slider = document.getElementById('produccionSlider');
     slider.addEventListener('input', (e) => {
         currentRangoIndex = parseInt(e.target.value);
