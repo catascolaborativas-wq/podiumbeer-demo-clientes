@@ -20,6 +20,7 @@
             position: relative;
         }
 
+        /* Overlay exacto 56% */
         body::before {
             content: "";
             position: fixed;
@@ -53,6 +54,7 @@
             height: auto;
         }
 
+        /* Glassmorphism en todas las tarjetas */
         .card {
             background: rgba(10, 25, 35, 0.75);
             backdrop-filter: blur(10px);
@@ -94,6 +96,7 @@
             min-width: 280px;
         }
 
+        /* Tabla comparativa */
         .comparativa-table {
             width: 100%;
             border-collapse: collapse;
@@ -112,6 +115,7 @@
         .check-no { color: #e32c6c; }
         .check-partial { color: #f7c32f; }
 
+        /* Rangos de producción (botones estilo pill) */
         .rangos-container {
             display: flex;
             flex-wrap: wrap;
@@ -125,7 +129,7 @@
             padding: 0.6rem 0.2rem;
             border-radius: 40px;
             background: rgba(255,255,255,0.05);
-            border: 2px solid #e32c6c;
+            border: 1px solid rgba(255,255,255,0.2);
             color: white;
             font-weight: 500;
             font-size: 0.75rem;
@@ -134,13 +138,14 @@
         }
         .rango-item.active {
             background: #e32c6c;
-            border-color: #f7c32f;
+            border-color: #e32c6c;
             color: white;
         }
         .rango-item:hover {
             background: rgba(227,44,108,0.5);
         }
 
+        /* Planes (EXPLORER, PODIUM, CHAMPION) como pestañas */
         .plan-buttons {
             display: flex;
             gap: 1rem;
@@ -148,8 +153,8 @@
             margin: 1rem 0;
         }
         .plan-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
             padding: 0.5rem 1.2rem;
             border-radius: 40px;
             color: white;
@@ -159,26 +164,68 @@
         }
         .plan-btn.active {
             background: #e32c6c;
+            border-color: #e32c6c;
             color: white;
         }
         .plan-btn:hover {
-            background: #f7c32f;
-            color: #06232e;
+            background: rgba(227,44,108,0.5);
         }
 
-        .result-box {
-            background: rgba(0,0,0,0.5);
-            border-radius: 20px;
-            padding: 1rem;
+        /* Resultados en una fila horizontal */
+        .result-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1rem 0;
             text-align: center;
-            margin-top: 1rem;
+        }
+        .result-item {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 0.8rem;
+        }
+        .result-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .result-number {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             color: #f7c32f;
+            line-height: 1.2;
+        }
+        .disclaimer {
+            font-size: 0.8rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-style: italic;
         }
 
+        /* Botón CTA estilo definido */
+        .cta-button {
+            display: inline-block;
+            background-color: #e32c6c;
+            color: #FFFFFF;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-weight: bold;
+            font-family: 'Inter', sans-serif;
+            text-transform: none;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s ease-in-out;
+            margin: 0.5rem 0;
+        }
+        .cta-button:hover {
+            transform: scale(1.05);
+            background-color: #c41e54;
+        }
+
+        /* Ranking en una sola línea por ítem */
         .ranking-header {
             display: flex;
             flex-wrap: wrap;
@@ -195,72 +242,40 @@
             font-size: 0.9rem;
             color: #1eab9b;
         }
-        .ranking-demo-item {
+        .ranking-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .ranking-position {
+        .ranking-left {
+            display: flex;
+            gap: 1rem;
+            align-items: baseline;
+        }
+        .ranking-pos {
             font-weight: bold;
-            width: 50px;
+            width: 40px;
         }
         .ranking-name {
-            flex: 2;
+            font-weight: 500;
+            color: #fff;
         }
         .ranking-medals {
-            width: 80px;
-            text-align: center;
             color: #f7c32f;
-        }
-        .ranking-score {
+            font-weight: bold;
             width: 100px;
             text-align: right;
+        }
+        .ranking-score {
             color: #1eab9b;
-        }
-
-        .btn-premium {
-            display: inline-block;
-            background: #e32c6c;
-            color: white;
-            padding: 0.7rem 1.8rem;
-            border-radius: 40px;
-            text-decoration: none;
             font-weight: bold;
-            transition: 0.2s;
-            margin-top: 0.5rem;
-        }
-        .btn-premium:hover {
-            background: #f7c32f;
-            color: #06232e;
+            width: 120px;
+            text-align: right;
         }
 
-        footer {
-            text-align: center;
-            padding: 1.5rem 0 0.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 1.5rem;
-        }
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1rem;
-        }
-        .social-icon {
-            width: 48px;
-            height: 48px;
-            transition: transform 0.2s;
-        }
-        .social-icon:hover {
-            transform: scale(1.1);
-        }
-        .footer-text {
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
             .container { padding: 0.8rem; }
             .logo { max-width: 200px; }
@@ -268,9 +283,11 @@
             .chart-container { min-height: 250px; }
             .grid-2cols > .card { flex: 1 1 100%; }
             .rangos-container { flex-direction: column; gap: 0.5rem; }
+            .result-row { flex-direction: column; }
             .ranking-header { flex-direction: column; gap: 0.3rem; }
-            .ranking-title { font-size: 1.1rem; }
-            .ranking-sub { font-size: 0.75rem; }
+            .ranking-item { flex-wrap: wrap; gap: 0.5rem; }
+            .ranking-left { width: 100%; justify-content: space-between; }
+            .ranking-medals, .ranking-score { width: auto; }
         }
     </style>
 </head>
@@ -284,7 +301,7 @@
     <div class="card" style="text-align: center;">
         <h1 style="font-size: 2rem; color: #f7c32f; margin-bottom: 0.5rem;">PodiumBeer Intel: Tu Brújula en un Mercado que se Transforma</h1>
         <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">Porque para proteger tu <strong>Identidad</strong>, primero debemos asegurar tu <strong>Rentabilidad</strong>. Traducimos 3.700 victorias en ahorro real y poder de negociación.</p>
-        <a href="https://wa.me/56952184980?text=Quiero%20agendar%20mi%20diagnóstico%20gratuito%20con%20PodiumBeer" class="btn-premium" style="background:#f7c32f; color:#06232e;">📋 Agenda tu Diagnóstico Gratuito</a>
+        <a href="https://wa.me/56952184980?text=Quiero%20agendar%20mi%20diagnóstico%20gratuito%20con%20PodiumBeer" class="cta-button">📋 Agenda tu Diagnóstico Gratuito</a>
     </div>
 
     <!-- Gráficos de contexto -->
@@ -319,7 +336,7 @@
             </table>
         </div>
         <div style="text-align: center; margin-top: 1rem;">
-            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="btn-premium" target="_blank">📲 Conversemos sobre tu próxima temporada</a>
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="cta-button" style="padding:10px 20px;">📲 Conversemos sobre tu próxima temporada</a>
         </div>
     </div>
 
@@ -331,11 +348,19 @@
         </div>
     </div>
 
-    <!-- Calculadora de Alianza -->
-    <div id="calculadora" class="card">
+    <!-- Calculadora de Alianza (Simulador) -->
+    <div class="card">
         <div class="card-title">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
         <p style="margin-bottom: 1rem; font-size: 0.95rem;">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</p>
 
+        <!-- Selectores de plan (pestañas) -->
+        <div class="plan-buttons">
+            <button class="plan-btn" data-plan="explorer">EXPLORER</button>
+            <button class="plan-btn active" data-plan="podium">PODIUM</button>
+            <button class="plan-btn" data-plan="champion">CHAMPION</button>
+        </div>
+
+        <!-- Rangos de producción -->
         <label style="font-weight: bold;">¿Cuál es tu producción anual?</label>
         <div class="rangos-container" id="rangosContainer">
             <div class="rango-item" data-rango="0">≤1000 hl</div>
@@ -345,37 +370,67 @@
             <div class="rango-item" data-rango="4">>50000 hl</div>
         </div>
 
-        <div class="plan-buttons">
-            <button class="plan-btn" data-plan="explorer">🥉 EXPLORER</button>
-            <button class="plan-btn active" data-plan="podium">🥇 PODIUM</button>
-            <button class="plan-btn" data-plan="champion">🏆 CHAMPION</button>
+        <!-- Resultados dinámicos en fila horizontal -->
+        <div class="result-row">
+            <div class="result-item">
+                <div class="result-label">Inversión mensual</div>
+                <div class="result-number" id="precioMensual">--</div>
+                <div>USD</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Optimización anual estimada</div>
+                <div class="result-number" id="ahorroAnual">--</div>
+                <div>USD</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Retorno colaborativo (ROI)</div>
+                <div class="result-number" id="roi">--</div>
+                <div>%</div>
+            </div>
         </div>
 
-        <div class="result-box" id="resultadoAhorro">
-            <div>Inversión mensual: <span class="result-number" id="precioMensual">--</span> USD</div>
-            <div>Optimización anual estimada: <span class="result-number" id="ahorroAnual">--</span> USD</div>
-            <div>Retorno colaborativo (ROI): <span class="result-number" id="roi">--</span>%</div>
-            <div style="font-size:0.8rem; margin-top:0.5rem;">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
-        </div>
+        <!-- Disclaimer -->
+        <div class="disclaimer">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
 
-        <div style="text-align: center; margin-top: 1rem;">
-            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="btn-premium" target="_blank">📲 Agenda tu diagnóstico gratuito</a>
+        <!-- Botón CTA final -->
+        <div style="text-align: center;">
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="cta-button">📲 Agenda tu diagnóstico Doemens gratuito</a>
         </div>
     </div>
 
-    <!-- Ranking de prestigio en una sola línea -->
+    <!-- Ranking "Tu Próxima Medalla de Oro está aquí" -->
     <div class="card">
         <div class="ranking-header">
             <span class="ranking-title">🏆 Tu Próxima Medalla de Oro está aquí</span>
             <span class="ranking-sub">Top 5 cervecerías chilenas simuladas</span>
         </div>
         <p style="font-size:0.8rem; margin-bottom:1rem;">Los datos reales se muestran al suscribirse. La data busca los estilos donde hay poca competencia en Chile pero alta demanda internacional.</p>
-        <div id="rankingDemoContainer">
-            <div class="ranking-demo-item"><span class="ranking-position">1</span><span class="ranking-name">Cervecería Patagonia</span><span class="ranking-medals">28 medallas</span><span class="ranking-score">PodiumScore 94</span></div>
-            <div class="ranking-demo-item"><span class="ranking-position">2</span><span class="ranking-name">Cervecería Kross</span><span class="ranking-medals">24 medallas</span><span class="ranking-score">PodiumScore 89</span></div>
-            <div class="ranking-demo-item"><span class="ranking-position">3</span><span class="ranking-name">Cervecería Austral</span><span class="ranking-medals">19 medallas</span><span class="ranking-score">PodiumScore 82</span></div>
-            <div class="ranking-demo-item"><span class="ranking-position">4</span><span class="ranking-name">Cervecería Loba</span><span class="ranking-medals">15 medallas</span><span class="ranking-score">PodiumScore 76</span></div>
-            <div class="ranking-demo-item"><span class="ranking-position">5</span><span class="ranking-name">Cervecería Bundor</span><span class="ranking-medals">12 medallas</span><span class="ranking-score">PodiumScore 71</span></div>
+        <div id="rankingContainer">
+            <div class="ranking-item">
+                <div class="ranking-left"><span class="ranking-pos">1</span><span class="ranking-name">Cervecería Patagonia</span></div>
+                <div class="ranking-medals">28 medallas</div>
+                <div class="ranking-score">PodiumScore 94</div>
+            </div>
+            <div class="ranking-item">
+                <div class="ranking-left"><span class="ranking-pos">2</span><span class="ranking-name">Cervecería Kross</span></div>
+                <div class="ranking-medals">24 medallas</div>
+                <div class="ranking-score">PodiumScore 89</div>
+            </div>
+            <div class="ranking-item">
+                <div class="ranking-left"><span class="ranking-pos">3</span><span class="ranking-name">Cervecería Austral</span></div>
+                <div class="ranking-medals">19 medallas</div>
+                <div class="ranking-score">PodiumScore 82</div>
+            </div>
+            <div class="ranking-item">
+                <div class="ranking-left"><span class="ranking-pos">4</span><span class="ranking-name">Cervecería Loba</span></div>
+                <div class="ranking-medals">15 medallas</div>
+                <div class="ranking-score">PodiumScore 76</div>
+            </div>
+            <div class="ranking-item">
+                <div class="ranking-left"><span class="ranking-pos">5</span><span class="ranking-name">Cervecería Bundor</span></div>
+                <div class="ranking-medals">12 medallas</div>
+                <div class="ranking-score">PodiumScore 71</div>
+            </div>
         </div>
         <p style="font-size:0.7rem; text-align:center; margin-top:1rem;">*PodiumScore combina cantidad de medallas, prestigio del concurso y rareza por estilo.</p>
     </div>
@@ -396,8 +451,33 @@
     </footer>
 </div>
 
+<style>
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+    .social-icon {
+        width: 48px;
+        height: 48px;
+        transition: transform 0.2s;
+    }
+    .social-icon:hover {
+        transform: scale(1.1);
+    }
+    .footer-text {
+        text-align: center;
+        font-size: 0.75rem;
+        opacity: 0.7;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+</style>
+
 <script>
-    // Datos estáticos
+    // Datos estáticos para los gráficos
     const caidaConsumo = [
         { year: 2021, consumo: 100 }, { year: 2022, consumo: 97 }, { year: 2023, consumo: 94 },
         { year: 2024, consumo: 91 }, { year: 2025, consumo: 88 }, { year: 2026, consumo: 85 }
@@ -411,6 +491,7 @@
         { pais: "Chile", valor: 142 }, { pais: "Colombia", valor: 92 }, { pais: "Perú", valor: 56 }, { pais: "Uruguay", valor: 33 }
     ];
 
+    // Precios y rangos
     const precios = {
         "≤1000 hl": { explorer: 49, podium: 149, champion: 399 },
         "1001–5000 hl": { explorer: 99, podium: 249, champion: 599 },
@@ -420,8 +501,9 @@
     };
     const rangosList = ["≤1000 hl", "1001–5000 hl", "5001–20000 hl", "20001–50000 hl", ">50000 hl"];
     let currentPlan = "podium";
-    let currentRangoIndex = 1;
+    let currentRangoIndex = 1;  // 1001–5000 hl por defecto
 
+    // Inicializar gráficos
     function initCharts() {
         new Chart(document.getElementById('caidaConsumoChart'), {
             type: 'line',
@@ -440,6 +522,7 @@
         });
     }
 
+    // Actualizar calculadora
     function actualizarCalculadora() {
         const rango = rangosList[currentRangoIndex];
         const precio = precios[rango][currentPlan];
@@ -452,6 +535,7 @@
         document.getElementById('roi').innerText = roi > 0 ? roi : '--';
     }
 
+    // Eventos de rangos
     const rangoItems = document.querySelectorAll('.rango-item');
     rangoItems.forEach((item, idx) => {
         item.addEventListener('click', () => {
@@ -461,11 +545,13 @@
             actualizarCalculadora();
         });
     });
-    rangoItems[1].classList.add('active');
+    rangoItems[1].classList.add('active');  // pre-seleccionar el segundo rango
 
-    document.querySelectorAll('.plan-btn').forEach(btn => {
+    // Eventos de planes
+    const planBtns = document.querySelectorAll('.plan-btn');
+    planBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+            planBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentPlan = btn.dataset.plan;
             actualizarCalculadora();
