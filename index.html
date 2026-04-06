@@ -7,26 +7,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ===== DESIGN TOKENS (VARIABLES GLOBALES CSS) ===== */
+        /* ===== DESIGN TOKENS ===== */
         :root {
-            /* Paleta de Colores (Brand Colors) */
-            --pb-color-primary: #06232e;     /* Azul profundo / Overlay */
-            --pb-color-magenta: #e32c6c;     /* Color de acento / CTA / Activo */
-            --pb-color-yellow: #f7c32f;      /* Alertas / Medallas / Destacados */
-            --pb-color-white: #FFFFFF;       /* Texto base y contrastes */
-            --pb-color-turquoise: #40E0D0;   /* PodiumScore */
-
-            /* Capas de Fondo y Opacidad */
-            --pb-overlay-opacity: 0.56;      /* Opacidad para el overlay */
-            --pb-bg-inactive: rgba(255, 255, 255, 0.03); /* Fondo sutil para botones inactivos */
-
-            /* Bordes y Efectos Glassmorphism */
-            --pb-border-radius-card: 15px;   /* Para contenedores principales */
-            --pb-border-radius-pill: 50px;   /* Para botones e inputs interactivos */
-
-            /* Micro-interacciones y Transiciones */
+            --pb-color-primary: #06232e;
+            --pb-color-magenta: #e32c6c;
+            --pb-color-yellow: #f7c32f;
+            --pb-color-white: #FFFFFF;
+            --pb-color-turquoise: #40E0D0;
+            --pb-overlay-opacity: 0.56;
+            --pb-bg-inactive: rgba(255, 255, 255, 0.03);
+            --pb-border-radius-card: 15px;
+            --pb-border-radius-pill: 50px;
             --pb-transition-default: all 0.3s ease-in-out;
-            --pb-hover-scale: scale(1.03);   /* Escala sutil interactiva */
+            --pb-hover-scale: scale(1.03);
         }
 
         * {
@@ -35,7 +28,7 @@
             box-sizing: border-box;
         }
 
-        /* Fondo del Body con imagen y overlay exacto */
+        /* Fondo con imagen y overlay exacto según manual */
         body {
             font-family: 'Inter', sans-serif;
             background-image: url('assets/bg_cerveceria.jpg');
@@ -47,7 +40,7 @@
             min-height: 100vh;
         }
 
-        /* Capa de contraste (Overlay) - color #06232e al 56% */
+        /* Capa de contraste #06232e con opacidad 56% */
         body::before {
             content: "";
             position: fixed;
@@ -68,7 +61,7 @@
             z-index: 1;
         }
 
-        /* ===== GLASS CARD (EFECTO VIDRIO) ===== */
+        /* ===== GLASS CARD ===== */
         .pb-glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
@@ -112,8 +105,7 @@
             border-collapse: collapse;
             font-size: 0.85rem;
         }
-        .comparativa-table th,
-        .comparativa-table td {
+        .comparativa-table th, .comparativa-table td {
             padding: 0.8rem 0.5rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -126,7 +118,7 @@
         .check-no { color: var(--pb-color-magenta); }
         .check-partial { color: var(--pb-color-yellow); }
 
-        /* ===== SLIDER DE PRODUCCIÓN ===== */
+        /* ===== SLIDER ===== */
         .pb-slider {
             -webkit-appearance: none;
             width: 100%;
@@ -190,7 +182,7 @@
             font-size: 1.2rem;
         }
 
-        /* ===== PANEL DE RESULTADOS (FILA HORIZONTAL) ===== */
+        /* ===== RESULTADOS EN FILA HORIZONTAL ===== */
         .result-row {
             display: flex;
             justify-content: space-around;
@@ -224,7 +216,7 @@
             line-height: 1.2;
         }
 
-        /* ===== GRÁFICO DE RANKING (GRID 3 COLUMNAS) ===== */
+        /* ===== RANKING EN GRID (3 COLUMNAS) ===== */
         .ranking-header {
             display: flex;
             justify-content: space-between;
@@ -262,14 +254,11 @@
         .ranking-name {
             color: var(--pb-color-white);
             font-weight: 500;
-            white-space: nowrap;
-            overflow-x: auto;
         }
         .ranking-metrics {
             display: flex;
             gap: 1rem;
             align-items: baseline;
-            white-space: nowrap;
         }
         .ranking-medals {
             color: var(--pb-color-yellow);
@@ -284,7 +273,7 @@
             font-weight: bold;
         }
 
-        /* ===== BOTÓN CTA CON GLOW MAGENTA ===== */
+        /* ===== BOTÓN CTA ===== */
         .pb-btn-cta {
             background-color: var(--pb-color-magenta);
             color: var(--pb-color-white);
@@ -316,7 +305,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* ===== GRÁFICOS CON CHART.JS ===== */
+        /* ===== GRÁFICOS ===== */
         .chart-container {
             width: 100%;
             min-height: 300px;
@@ -361,7 +350,6 @@
             margin-top: 0.5rem;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .container { padding: 0.8rem; }
             .logo { max-width: 200px; }
@@ -369,16 +357,8 @@
             .hero-sub { font-size: 1rem; }
             .plan-buttons { justify-content: center; }
             .result-row { flex-direction: column; align-items: center; }
-            .ranking-item {
-                grid-template-columns: auto 1fr;
-                gap: 0.5rem;
-                white-space: normal;
-            }
-            .ranking-metrics {
-                grid-column: 2 / 3;
-                justify-content: flex-start;
-                flex-wrap: wrap;
-            }
+            .ranking-item { grid-template-columns: auto 1fr; gap: 0.5rem; white-space: normal; }
+            .ranking-metrics { grid-column: 2 / 3; justify-content: flex-start; }
             .ranking-score-label { display: none; }
         }
     </style>
@@ -389,7 +369,7 @@
         <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
     </header>
 
-    <!-- Hero Section (Opción B) -->
+    <!-- Hero Section -->
     <div class="pb-glass-card" style="text-align: center;">
         <h1 class="hero-title">PodiumBeer Intel: Tu Brújula en un Mercado que se Transforma</h1>
         <p class="hero-sub">Porque para proteger tu <strong>Identidad</strong>, primero debemos asegurar tu <strong>Rentabilidad</strong>. Traducimos 3.700 victorias en ahorro real y poder de negociación.</p>
@@ -410,14 +390,12 @@
         </div>
     </div>
 
-    <!-- Comparativa PodiumBeer vs otros -->
+    <!-- Comparativa -->
     <div class="pb-glass-card">
         <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">⚖️ Comparativa: PodiumBeer vs Otras Plataformas</div>
         <div style="overflow-x: auto;">
             <table class="comparativa-table">
-                <thead>
-                    <tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></tr>
-                </thead>
+                <thead><tr><th>Atributo</th><th>PodiumBeer</th><th>Untappd</th><th>RateBeer</th><th>Seguimiento propio</th></tr></thead>
                 <tbody>
                     <tr><td>Medallas consolidadas</td><td class="check-yes">✅</td><td class="check-no">❌</td><td class="check-no">❌</td><td class="check-no">❌</td></tr>
                     <tr><td>Análisis por estilo</td><td class="check-yes">✅</td><td class="check-no">❌</td><td class="check-no">❌</td><td class="check-partial">⚠️ parcial</td></tr>
@@ -434,32 +412,29 @@
         </div>
     </div>
 
-    <!-- Mercado Craft (gráfico estilo Bloomberg) -->
+    <!-- Mercado Craft -->
     <div class="pb-glass-card">
         <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">🌎 Mercado Craft en Latinoamérica (USD M, 2024)</div>
         <div class="chart-container"><canvas id="mercadoLatamChart" style="height: 400px; width: 100%;"></canvas></div>
     </div>
 
-    <!-- Simulador de Rentabilidad (Calculadora de Alianza) -->
+    <!-- Calculadora de Alianza -->
     <div class="pb-glass-card">
         <div class="hero-sub" style="font-size:1rem; margin-bottom:1rem;">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
         <p style="margin-bottom: 1rem; font-size: 0.95rem;">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</p>
 
-        <!-- Slider de producción anual -->
         <label style="font-weight: bold;">¿Cuál es tu producción anual?</label>
         <input type="range" id="produccionSlider" class="pb-slider" min="0" max="4" step="1" value="2">
         <div class="slider-labels">
             <span>≤1000 hl</span><span>1001–5000 hl</span><span>5001–20000 hl</span><span>20001–50000 hl</span><span>>50000 hl</span>
         </div>
 
-        <!-- Pills de planes -->
         <div class="plan-buttons">
             <div id="planExplorer" class="pb-pill-inactive" data-plan="explorer"><span class="pill-icon">🌿</span> EXPLORER</div>
             <div id="planPodium" class="pb-pill-active" data-plan="podium"><span class="pill-icon">🥇</span> PODIUM</div>
             <div id="planChampion" class="pb-pill-inactive" data-plan="champion"><span class="pill-icon">🏆</span> CHAMPION</div>
         </div>
 
-        <!-- Resultados dinámicos -->
         <div class="result-row">
             <div class="result-item">
                 <div class="result-icon">💰</div>
@@ -488,14 +463,14 @@
         </div>
     </div>
 
-    <!-- Ranking "Tu Próxima Medalla de Oro está aquí" -->
+    <!-- Ranking -->
     <div class="pb-glass-card">
         <div class="ranking-header">
             <span class="ranking-title">🏆 Tu Próxima Medalla de Oro está aquí</span>
             <span class="ranking-sub">Top 5 cervecerías chilenas simuladas</span>
         </div>
         <p style="font-size:0.8rem; margin-bottom:1rem;">Los datos reales se muestran al suscribirse. La data busca los estilos donde hay poca competencia en Chile pero alta demanda internacional.</p>
-        <div class="ranking-grid" id="rankingContainer">
+        <div class="ranking-grid">
             <div class="ranking-item"><div class="ranking-pos">1</div><div class="ranking-name">Cervecería Patagonia</div><div class="ranking-metrics"><span class="ranking-medals">28 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">94</span></div></div>
             <div class="ranking-item"><div class="ranking-pos">2</div><div class="ranking-name">Cervecería Kross</div><div class="ranking-metrics"><span class="ranking-medals">24 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">89</span></div></div>
             <div class="ranking-item"><div class="ranking-pos">3</div><div class="ranking-name">Cervecería Austral</div><div class="ranking-metrics"><span class="ranking-medals">19 medallas</span> <span class="ranking-score-label">PodiumScore</span> <span class="ranking-score-value">82</span></div></div>
@@ -522,7 +497,7 @@
 </div>
 
 <script>
-    // Datos estáticos para los gráficos
+    // Datos
     const caidaConsumo = [
         { year: 2021, consumo: 100 }, { year: 2022, consumo: 97 }, { year: 2023, consumo: 94 },
         { year: 2024, consumo: 91 }, { year: 2025, consumo: 88 }, { year: 2026, consumo: 85 }
@@ -536,7 +511,6 @@
         { pais: "Chile", valor: 142 }, { pais: "Colombia", valor: 92 }, { pais: "Perú", valor: 56 }, { pais: "Uruguay", valor: 33 }
     ];
 
-    // Precios y rangos (simulación)
     const precios = {
         "≤1000 hl": { explorer: 49, podium: 149, champion: 399 },
         "1001–5000 hl": { explorer: 99, podium: 249, champion: 599 },
@@ -546,74 +520,26 @@
     };
     const rangosList = ["≤1000 hl", "1001–5000 hl", "5001–20000 hl", "20001–50000 hl", ">50000 hl"];
     let currentPlan = "podium";
-    let currentRangoIndex = 2; // 5001–20000 hl por defecto
+    let currentRangoIndex = 2;
 
-    // Inicializar gráficos con Chart.js
     function initCharts() {
         new Chart(document.getElementById('caidaConsumoChart'), {
             type: 'line',
-            data: {
-                labels: caidaConsumo.map(d => d.year),
-                datasets: [{
-                    label: 'Índice (2021=100)',
-                    data: caidaConsumo.map(d => d.consumo),
-                    borderColor: '#e32c6c',
-                    backgroundColor: 'rgba(227,44,108,0.1)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 4
-                }]
-            },
+            data: { labels: caidaConsumo.map(d => d.year), datasets: [{ label: 'Índice (2021=100)', data: caidaConsumo.map(d => d.consumo), borderColor: '#e32c6c', backgroundColor: 'rgba(227,44,108,0.1)', fill: true, tension: 0.3, pointRadius: 4 }] },
             options: { responsive: true, maintainAspectRatio: true }
         });
         new Chart(document.getElementById('crecimientoNoLoChart'), {
             type: 'bar',
-            data: {
-                labels: crecimientoNoLo.map(d => d.year),
-                datasets: [{
-                    label: 'Millones USD',
-                    data: crecimientoNoLo.map(d => d.valor),
-                    backgroundColor: '#1eab9b',
-                    borderRadius: 8
-                }]
-            },
+            data: { labels: crecimientoNoLo.map(d => d.year), datasets: [{ label: 'Millones USD', data: crecimientoNoLo.map(d => d.valor), backgroundColor: '#1eab9b', borderRadius: 8 }] },
             options: { responsive: true, maintainAspectRatio: true }
         });
         new Chart(document.getElementById('mercadoLatamChart'), {
             type: 'line',
-            data: {
-                labels: mercadoLatam.map(d => d.pais),
-                datasets: [{
-                    label: 'Millones USD',
-                    data: mercadoLatam.map(d => d.valor),
-                    borderColor: '#e32c6c',
-                    backgroundColor: 'rgba(227,44,108,0.2)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: '#f7c32f',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw} millones USD` } },
-                    legend: { labels: { color: '#fff' } }
-                },
-                scales: {
-                    y: { beginAtZero: true, ticks: { color: '#fff', callback: (val) => val + 'M' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-                    x: { ticks: { color: '#fff' }, grid: { display: false } }
-                }
-            }
+            data: { labels: mercadoLatam.map(d => d.pais), datasets: [{ label: 'Millones USD', data: mercadoLatam.map(d => d.valor), borderColor: '#e32c6c', backgroundColor: 'rgba(227,44,108,0.2)', borderWidth: 3, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7, pointBackgroundColor: '#f7c32f', pointBorderColor: '#fff', pointBorderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} millones USD` } }, legend: { labels: { color: '#fff' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#fff', callback: (val) => val + 'M' }, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { ticks: { color: '#fff' }, grid: { display: false } } } }
         });
     }
 
-    // Actualizar calculadora de rentabilidad
     function actualizarCalculadora() {
         const rango = rangosList[currentRangoIndex];
         const precio = precios[rango][currentPlan];
@@ -626,14 +552,9 @@
         document.getElementById('roi').innerText = roi > 0 ? roi : '--';
     }
 
-    // Slider de producción
     const slider = document.getElementById('produccionSlider');
-    slider.addEventListener('input', (e) => {
-        currentRangoIndex = parseInt(e.target.value);
-        actualizarCalculadora();
-    });
+    slider.addEventListener('input', (e) => { currentRangoIndex = parseInt(e.target.value); actualizarCalculadora(); });
 
-    // Planes (pills)
     const planExplorer = document.getElementById('planExplorer');
     const planPodium = document.getElementById('planPodium');
     const planChampion = document.getElementById('planChampion');
@@ -653,7 +574,6 @@
     planPodium.addEventListener('click', () => setActivePlan(planPodium, 'podium'));
     planChampion.addEventListener('click', () => setActivePlan(planChampion, 'champion'));
 
-    // Inicializar todo
     initCharts();
     actualizarCalculadora();
 </script>
