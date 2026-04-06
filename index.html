@@ -1,260 +1,803 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Simulador PodiumBeer</title>
-  <style>
-    /* 1. RESET Y VARIABLES GLOBALES */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PodiumBeer - Auditoría de Desempeño Cervecero</title>
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js y plugin para degradado facetado -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient-fill"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- D3 y Sankey -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <style>
+        /* ===== DESIGN TOKENS (VARIABLES GLOBALES CSS) ===== */
+        :root {
+            --pb-color-primary: #06232e;
+            --pb-color-magenta: #e32c6c;
+            --pb-color-yellow: #f7c32f;
+            --pb-color-white: #FFFFFF;
+            --pb-color-turquoise: #40E0D0;
+            --pb-overlay-opacity: 0.56;
+            --pb-bg-inactive: rgba(255, 255, 255, 0.03);
+            --pb-border-radius-card: 15px;
+            --pb-border-radius-pill: 50px;
+            --pb-transition-default: all 0.3s ease-in-out;
+            --pb-hover-scale: scale(1.03);
+        }
 
-    body {
-      background: #06232e; /* Color de respaldo */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #ffffff;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* 2. CONTENEDOR PRINCIPAL (EL LIENZO) */
-    .pb-body-wrapper {
-      /* Reemplazar con la ruta real de la imagen bg_cerveceria.jpg */
-      background-image: linear-gradient(rgba(6, 35, 46, 0.56), rgba(6, 35, 46, 0.56)), url('bg_cerveceria.jpg');
-      background-size: cover;
-      background-position: center;
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #06232e;
+            color: #fff;
+            position: relative;
+        }
 
-    /* 3. CARD GLASSMORPHISM (IGUAL A LA IMAGEN) */
-    .pb-glass-card {
-      width: 100%;
-      max-width: 550px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      padding: 35px;
-      text-align: center;
-    }
+        /* === FONDO CORRECTO (extraído del index original) === */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(6, 35, 46, 0.56), rgba(6, 35, 46, 0.56)), url('assets/bg_cerveceria.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -2;
+        }
 
-    h2 {
-      font-size: 1.5rem;
-      margin-bottom: 25px;
-      font-weight: 600;
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
 
-    /* 4. SLIDER TRANSLÚCIDO */
-    .slider-container {
-      margin-bottom: 30px;
-    }
+        /* Header con métricas estilo Bloomberg */
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .logo {
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+        }
+        .title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f7c32f;
+            letter-spacing: -0.02em;
+        }
+        .subhead {
+            color: #1eab9b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .stats {
+            display: flex;
+            gap: 2rem;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f7c32f;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ccc;
+        }
 
-    .pb-slider {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 6px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.2);
-      outline: none;
-      margin-bottom: 12px;
-    }
+        /* Tarjetas de gráficos (estilo original) */
+        .card {
+            background: rgba(10, 25, 35, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(30, 171, 155, 0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #f7c32f;
+            border-left: 5px solid #e32c6c;
+            padding-left: 1rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: auto;
+            min-height: 400px;
+        }
+        canvas, svg {
+            max-width: 100%;
+            height: auto;
+        }
 
-    .pb-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+        /* === SIMULADOR DE RENTABILIDAD (GLASSMORPHISM PREMIUM SEGÚN MANUAL) === */
+        .pb-glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--pb-border-radius-card);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            margin-bottom: 2rem;
+        }
+        .simulator-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--pb-color-yellow);
+            margin-bottom: 1rem;
+        }
+        .simulator-desc {
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.9);
+        }
+        .slider-label {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: block;
+            font-size: 1rem;
+        }
+        .pb-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            margin: 1rem 0;
+        }
+        .pb-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--pb-color-white);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        .slider-ranges {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.3rem;
+            margin-bottom: 1.8rem;
+        }
+        .plan-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .pb-pill-inactive {
+            background: var(--pb-bg-inactive);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--pb-border-radius-pill);
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+        }
+        .pb-pill-active {
+            background: var(--pb-color-magenta);
+            border: none;
+            border-radius: var(--pb-border-radius-pill);
+            color: var(--pb-color-white);
+            box-shadow: 0px 4px 15px rgba(227, 44, 108, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+        .result-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        .result-icon {
+            font-size: 2rem;
+            color: var(--pb-color-yellow);
+            margin-bottom: 0.5rem;
+        }
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--pb-color-white);
+            line-height: 1.2;
+        }
+        .result-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
+        }
+        .disclaimer {
+            font-style: italic;
+            font-size: 0.8rem;
+            text-align: center;
+            margin: 1rem 0;
+            color: rgba(255,255,255,0.8);
+        }
+        .pb-btn-cta {
+            background-color: var(--pb-color-magenta);
+            color: var(--pb-color-white);
+            border-radius: var(--pb-border-radius-pill);
+            border: none;
+            padding: 16px 32px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+            text-decoration: none;
+            box-shadow: 0px 4px 20px 5px rgba(227, 44, 108, 0.4);
+            margin: 0.5rem auto;
+        }
+        .pb-btn-cta:hover {
+            transform: var(--pb-hover-scale);
+            box-shadow: 0px 4px 25px 8px rgba(227, 44, 108, 0.6);
+        }
 
-    .pb-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-
-    .slider-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    /* 5. SELECTORES DE PLAN (PILLS) */
-    .pills-container {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-bottom: 35px;
-    }
-
-    .pill {
-      flex: 1;
-      padding: 12px 10px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .pill-inactive {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .pill-active {
-      background: #e32c6c;
-      border: 1px solid transparent;
-      color: #ffffff;
-      box-shadow: 0px 5px 15px rgba(227, 44, 108, 0.4);
-    }
-
-    /* 6. PANEL DE MÉTRICAS HORIZONTAL */
-    .metrics-container {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 35px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 20px 0;
-    }
-
-    .metric-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-    }
-
-    .metric-icon {
-      font-size: 1.4rem;
-      color: #f7c32f;
-      margin-bottom: 6px;
-    }
-
-    .metric-value {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #ffffff;
-    }
-
-    .metric-label {
-      font-size: 0.65rem;
-      color: rgba(255, 255, 255, 0.5);
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    /* 7. BOTÓN CTA CON BRILLO NEÓN */
-    .pb-btn-cta {
-      background-color: #e32c6c;
-      color: #ffffff;
-      border-radius: 50px;
-      border: none;
-      padding: 16px 32px;
-      font-weight: bold;
-      font-size: 1rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
-      box-shadow: 0px 4px 20px 5px rgba(227, 44, 108, 0.4);
-      text-decoration: none;
-    }
-
-    .pb-btn-cta:hover {
-      transform: scale(1.03);
-      box-shadow: 0px 4px 25px 8px rgba(227, 44, 108, 0.6);
-    }
-
-    .cta-text-hint {
-      display: block;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 15px;
-      font-style: italic;
-    }
-  </style>
+        /* Tabla y resto de estilos (originales) */
+        .auditoria-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        .search-box {
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 0.9rem;
+            width: 250px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .medals-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .medals-table th, .medals-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .medals-table th {
+            background: rgba(227,44,108,0.3);
+            color: #f7c32f;
+            font-weight: 600;
+        }
+        .blur-column {
+            filter: blur(5px);
+            transition: filter 0.2s;
+        }
+        .medals-table tr:hover .blur-column {
+            filter: blur(0);
+        }
+        .medal-gold { color: #f7c32f; font-weight: bold; }
+        .medal-silver { color: #c0c0c0; font-weight: bold; }
+        .medal-bronze { color: #cd7f32; font-weight: bold; }
+        .btn-premium {
+            display: inline-block;
+            background: #e32c6c;
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-premium:hover {
+            background: #f7c32f;
+            color: #06232e;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 2rem;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            transition: transform 0.2s;
+        }
+        .social-icon:hover { transform: scale(1.1); }
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; }
+            .stats { width: 100%; justify-content: center; }
+            .stat-number { font-size: 1.5rem; }
+            .card-title { font-size: 1.2rem; }
+            .container { padding: 1rem; }
+            .pb-glass-card { padding: 1.5rem; }
+            .result-row { flex-direction: column; align-items: center; }
+        }
+    </style>
 </head>
 <body>
-
-  <div class="pb-body-wrapper">
-    
-    <div class="pb-glass-card">
-      
-      <h2>Simulador de Alianza</h2>
-
-      <div class="slider-container">
-        <input type="range" class="pb-slider" min="1" max="5" value="3">
-        <div class="slider-labels">
-          <span>≤1000 hl</span>
-          <span>1001-5000</span>
-          <span>5001-20000</span>
-          <span>20001-50000</span>
-          <span>>50000 hl</span>
+<div class="container">
+    <!-- Header con métricas -->
+    <div class="hero">
+        <div class="logo-area">
+            <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
+            <div>
+                <div class="title">PODIUMBEER</div>
+                <div class="subhead">AUDITORÍA DE DESEMPEÑO CERVECERO</div>
+            </div>
         </div>
-      </div>
-
-      <div class="pills-container">
-        <div class="pill pill-inactive">
-          <span>🌱</span> EXPLORER
+        <div class="stats" id="stats-placeholder">
+            <div class="stat"><div class="stat-number">--</div><div class="stat-label">Total Medallas</div></div>
+            <div class="stat"><div class="stat-number">--</div><div class="stat-label">Medallas Oro</div></div>
+            <div class="stat"><div class="stat-number">--</div><div class="stat-label">Certámenes</div></div>
         </div>
-        <div class="pill pill-active">
-          <span>🏅</span> PODIUM
-        </div>
-        <div class="pill pill-inactive">
-          <span>🏆</span> CHAMPION
-        </div>
-      </div>
-
-      <div class="metrics-container">
-        <div class="metric-item">
-          <div class="metric-icon">💵</div>
-          <div class="metric-value">$450 USD</div>
-          <div class="metric-label">Inversión Mensual</div>
-        </div>
-        <div class="metric-item">
-          <div class="metric-icon">📈</div>
-          <div class="metric-value">$5,400 USD</div>
-          <div class="metric-label">Optimización Anual</div>
-        </div>
-        <div class="metric-item">
-          <div class="metric-icon">🎯</div>
-          <div class="metric-value">320%</div>
-          <div class="metric-label">Retorno (ROI)</div>
-        </div>
-      </div>
-
-      <span class="cta-text-hint">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad.</span>
-      
-      <a href="#" class="pb-btn-cta">
-        <span>📲</span> Agenda tu diagnóstico gratuito
-      </a>
-
     </div>
 
-  </div>
+    <!-- Gráfico Bloomberg: Evolución Estratégica -->
+    <div class="card">
+        <div class="card-title">📈 Evolución Estratégica</div>
+        <div class="chart-container">
+            <canvas id="bloombergChart" width="800" height="400" style="width:100%; height:auto; max-height:450px"></canvas>
+        </div>
+    </div>
 
+    <!-- Gráfico Ranking: Barras horizontales apiladas -->
+    <div class="card">
+        <div class="card-title">🏆 Ranking de Cervecerías (Top 15)</div>
+        <div class="chart-container">
+            <canvas id="rankingChart" width="800" height="500" style="width:100%; height:auto; max-height:550px"></canvas>
+        </div>
+    </div>
+
+    <!-- Diagrama Sankey -->
+    <div class="card">
+        <div class="card-title">🔗 Trazabilidad de Prestigio (Sankey)</div>
+        <div class="chart-container" id="sankey-container">
+            <svg id="sankey-svg" width="100%" height="500" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+    </div>
+
+    <!-- === SIMULADOR DE RENTABILIDAD (DISEÑO GLASSMORPHISM PREMIUM) === -->
+    <div class="pb-glass-card">
+        <div class="simulator-title">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
+        <div class="simulator-desc">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</div>
+
+        <label class="slider-label">¿Cuál es tu producción anual?</label>
+        <input type="range" id="produccionSlider" class="pb-slider" min="0" max="4" step="1" value="2">
+        <div class="slider-ranges">
+            <span>≤1000 hl</span><span>1001–5000 hl</span><span>5001–20000 hl</span><span>20001–50000 hl</span><span>>50000 hl</span>
+        </div>
+
+        <div class="plan-buttons">
+            <div class="pb-pill-inactive" data-plan="explorer">🌿 EXPLORER</div>
+            <div class="pb-pill-active" data-plan="podium">🥇 PODIUM</div>
+            <div class="pb-pill-inactive" data-plan="champion">🏆 CHAMPION</div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-item">
+                <div class="result-icon">💰</div>
+                <div class="result-value" id="precioMensual">--</div>
+                <div class="result-label">Inversión mensual</div>
+            </div>
+            <div class="result-item">
+                <div class="result-icon">📈</div>
+                <div class="result-value" id="optimizacionAnual">--</div>
+                <div class="result-label">Optimización anual</div>
+            </div>
+            <div class="result-item">
+                <div class="result-icon">🔄</div>
+                <div class="result-value" id="roi">--</div>
+                <div class="result-label">Retorno colaborativo</div>
+            </div>
+        </div>
+
+        <div class="disclaimer">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
+
+        <div style="text-align: center;">
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="pb-btn-cta">📲 Agenda tu diagnóstico gratuito</a>
+        </div>
+    </div>
+
+    <!-- Tabla de auditoría con blur -->
+    <div class="card">
+        <div class="card-title">📋 Auditoría Detallada</div>
+        <div class="auditoria-header">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar por cervecería, estilo...">
+        </div>
+        <div class="table-wrapper">
+            <table class="medals-table" id="auditTable">
+                <thead>
+                    <tr><th>Certamen</th><th>Fecha</th><th>Cervecería</th><th>Cerveza</th><th>Estilo</th><th>Medalla</th><th>País</th></tr>
+                </thead>
+                <tbody id="tableBody"><tr><td colspan="7">Cargando datos...</td></tr></tbody>
+            </table>
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="https://wa.me/56912345678?text=Quiero%20acceso%20completo%20a%20PodiumBeer" class="btn-premium" target="_blank">🔓 DESBLOQUEAR ACCESO COMPLETO</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="social-icons">
+            <a href="#"><img src="assets/icon_instagram.png" class="social-icon" alt="IG"></a>
+            <a href="#"><img src="assets/icon_web.png" class="social-icon" alt="Web"></a>
+            <a href="#"><img src="assets/icon_wpp.png" class="social-icon" alt="WhatsApp"></a>
+        </div>
+        <p style="font-size:0.75rem; opacity:0.6;">PodiumBeer - Desarrollo de Catas Colaborativas</p>
+    </footer>
+</div>
+
+<script>
+    // ==================== CONFIGURACIÓN SUPABASE (original) ====================
+    const SUPABASE_URL = "https://jqinutwfunthyzhklqeig.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxaW51dHdmdW10eWh6a2xxZWpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMTg5MTAsImV4cCI6MjA5MDU5NDkxMH0.GJY8bnuYi556G4mZW1Tx-c7eFeTXSN8TM22bXtiUVMs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allData = [];
+
+    async function loadData() {
+        const { data, error } = await supabase.from('medallas').select('*');
+        if (error) { console.error(error); return []; }
+        allData = data || [];
+        return allData;
+    }
+
+    function updateStats(data) {
+        const total = data.length;
+        const oro = data.filter(d => d.medalla_base === 'Oro').length;
+        const certamenes = new Set(data.map(d => d.certamen)).size;
+        const statsDiv = document.querySelector('#stats-placeholder');
+        if (statsDiv) {
+            statsDiv.children[0].children[0].innerText = total;
+            statsDiv.children[1].children[0].innerText = oro;
+            statsDiv.children[2].children[0].innerText = certamenes;
+        }
+    }
+
+    // Gráfico Bloomberg (Evolución)
+    let bloombergChart;
+    function renderBloomberg(data) {
+        const yearMap = new Map();
+        data.forEach(item => {
+            let year = item.anio || (item.fecha ? item.fecha.split('-')[0] : null);
+            if (!year) return;
+            year = year.toString();
+            yearMap.set(year, (yearMap.get(year) || 0) + 1);
+        });
+        const sorted = Array.from(yearMap.entries()).sort((a,b) => a[0] - b[0]);
+        const labels = sorted.map(y => y[0]);
+        const values = sorted.map(v => v[1]);
+        const ctx = document.getElementById('bloombergChart').getContext('2d');
+        if (bloombergChart) bloombergChart.destroy();
+        const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+        gradient.addColorStop(0, '#1eab9b');
+        gradient.addColorStop(0.5, '#e32c6c');
+        gradient.addColorStop(1, '#f7c32f');
+        bloombergChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Medallas por año',
+                    data: values,
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: '#f7c32f',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#f7c32f',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 2500, ticks: { stepSize: 500, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#fff' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Ranking (barras horizontales apiladas)
+    let rankingChart;
+    function renderRanking(data) {
+        const cervecerias = {};
+        data.forEach(item => {
+            const nombre = item.cerveceria;
+            const medalla = item.medalla_base;
+            if (!nombre) return;
+            if (!cervecerias[nombre]) cervecerias[nombre] = { oro:0, plata:0, bronce:0 };
+            if (medalla === 'Oro') cervecerias[nombre].oro++;
+            else if (medalla === 'Plata') cervecerias[nombre].plata++;
+            else if (medalla === 'Bronce') cervecerias[nombre].bronce++;
+        });
+        const orden = Object.entries(cervecerias).map(([nom, vals]) => ({ nom, total: vals.oro+vals.plata+vals.bronce, ...vals }))
+            .sort((a,b) => b.total - a.total).slice(0,15);
+        const labels = orden.map(c => c.nom);
+        const oro = orden.map(c => c.oro);
+        const plata = orden.map(c => c.plata);
+        const bronce = orden.map(c => c.bronce);
+        const ctx = document.getElementById('rankingChart').getContext('2d');
+        if (rankingChart) rankingChart.destroy();
+        rankingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: '🥇 Oro', data: oro, backgroundColor: '#e32c6c', stack: 'stack' },
+                    { label: '🥈 Plata', data: plata, backgroundColor: '#1eab9b', stack: 'stack' },
+                    { label: '🥉 Bronce', data: bronce, backgroundColor: '#f7c32f', stack: 'stack' }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} medallas` } },
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    x: { stacked: true, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    y: { stacked: true, ticks: { color: '#fff' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Sankey
+    function renderSankey(data) {
+        const flows = new Map();
+        data.forEach(item => {
+            const cert = item.certamen || 'Otro';
+            const cev = item.cerveceria || 'Desconocida';
+            const est = item.estilo || 'Genérico';
+            const med = item.medalla_base || 'Medalla';
+            const key = `${cert}|${cev}|${est}|${med}`;
+            flows.set(key, (flows.get(key) || 0) + 1);
+        });
+        const nodesSet = new Set();
+        const links = [];
+        for (let [path, val] of flows.entries()) {
+            const parts = path.split('|');
+            for (let p of parts) nodesSet.add(p);
+            links.push({ source: parts[0], target: parts[1], value: val });
+            links.push({ source: parts[1], target: parts[2], value: val });
+            links.push({ source: parts[2], target: parts[3], value: val });
+        }
+        const nodes = Array.from(nodesSet).map(name => ({ name }));
+        const nodeMap = new Map(nodes.map((n,i) => [n.name, i]));
+        const graphLinks = links.map(l => ({ source: nodeMap.get(l.source), target: nodeMap.get(l.target), value: l.value }));
+        const width = document.getElementById('sankey-svg').clientWidth || 1000;
+        const height = 500;
+        const svg = d3.select("#sankey-svg");
+        svg.selectAll("*").remove();
+        const sankeyGenerator = d3.sankey()
+            .nodeWidth(20)
+            .nodePadding(15)
+            .extent([[50, 30], [width-50, height-40]]);
+        const { nodes: sankeyNodes, links: sankeyLinks } = sankeyGenerator({
+            nodes: nodes.map(d => ({...d})),
+            links: graphLinks
+        });
+        svg.append("g")
+            .selectAll("rect")
+            .data(sankeyNodes)
+            .enter()
+            .append("rect")
+            .attr("x", d => d.x0)
+            .attr("y", d => d.y0)
+            .attr("height", d => d.y1 - d.y0)
+            .attr("width", d => d.x1 - d.x0)
+            .attr("fill", "#1eab9b")
+            .attr("stroke", "#f7c32f")
+            .append("title")
+            .text(d => d.name);
+        svg.append("g")
+            .selectAll("text")
+            .data(sankeyNodes)
+            .enter()
+            .append("text")
+            .attr("x", d => d.x0 - 6)
+            .attr("y", d => (d.y0 + d.y1) / 2)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "end")
+            .text(d => d.name.length > 20 ? d.name.slice(0,18)+"…" : d.name)
+            .attr("fill", "white")
+            .attr("font-size", "10px");
+        svg.append("g")
+            .selectAll("path")
+            .data(sankeyLinks)
+            .enter()
+            .append("path")
+            .attr("d", d3.sankeyLinkHorizontal())
+            .attr("stroke-width", d => Math.max(1, d.width))
+            .attr("stroke", "#e32c6c")
+            .attr("fill", "none")
+            .attr("opacity", 0.6)
+            .append("title")
+            .text(d => `${d.source.name} → ${d.target.name}: ${d.value}`);
+    }
+
+    // Tabla con blur
+    function renderTable(data, filter = "") {
+        const tbody = document.getElementById('tableBody');
+        const filtered = data.filter(row => {
+            if (!filter) return true;
+            const search = filter.toLowerCase();
+            return (row.cerveceria || '').toLowerCase().includes(search) ||
+                   (row.estilo || '').toLowerCase().includes(search) ||
+                   (row.cerveza_ganadora || '').toLowerCase().includes(search);
+        });
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7">No hay coincidencias</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.slice(0, 200).map(item => {
+            let medalClass = '';
+            const med = (item.medalla_base || '').toLowerCase();
+            if (med === 'oro') medalClass = 'medal-gold';
+            else if (med === 'plata') medalClass = 'medal-silver';
+            else if (med === 'bronce') medalClass = 'medal-bronze';
+            return `
+                <tr>
+                    <td>${item.certamen || '-'}</td>
+                    <td>${item.fecha || item.anio || '-'}</td>
+                    <td class="blur-column">${item.cerveceria || '-'}</td>
+                    <td class="blur-column">${item.cerveza_ganadora || '-'}</td>
+                    <td class="blur-column">${item.estilo || '-'}</td>
+                    <td class="${medalClass}">${item.medalla_base || '-'}</td>
+                    <td>${item.pais || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // ==================== SIMULADOR DE RENTABILIDAD ====================
+    const precios = {
+        "≤1000 hl": { explorer: 49, podium: 149, champion: 399 },
+        "1001–5000 hl": { explorer: 99, podium: 249, champion: 599 },
+        "5001–20000 hl": { explorer: 199, podium: 399, champion: 899 },
+        "20001–50000 hl": { explorer: 349, podium: 649, champion: 1299 },
+        ">50000 hl": { explorer: "Custom", podium: "Custom", champion: "Custom" }
+    };
+    const rangos = ["≤1000 hl", "1001–5000 hl", "5001–20000 hl", "20001–50000 hl", ">50000 hl"];
+    let planActual = "podium";
+    let rangoIndex = 2;
+
+    function actualizarSimulador() {
+        const precio = precios[rangos[rangoIndex]][planActual];
+        const precioNum = typeof precio === 'number' ? precio : 0;
+        const anual = precioNum * 12;
+        const optimizacion = Math.round(anual * 1.8);
+        const roi = precioNum ? Math.round((optimizacion / anual) * 100) : 0;
+        document.getElementById('precioMensual').innerText = precioNum || "Custom";
+        document.getElementById('optimizacionAnual').innerText = optimizacion || "--";
+        document.getElementById('roi').innerText = roi || "--";
+    }
+
+    // Eventos del simulador
+    const slider = document.getElementById('produccionSlider');
+    if (slider) {
+        slider.addEventListener('input', (e) => {
+            rangoIndex = parseInt(e.target.value);
+            actualizarSimulador();
+        });
+    }
+    const pills = document.querySelectorAll('.pb-pill-inactive, .pb-pill-active');
+    pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            pills.forEach(p => {
+                p.classList.remove('pb-pill-active');
+                p.classList.add('pb-pill-inactive');
+            });
+            pill.classList.remove('pb-pill-inactive');
+            pill.classList.add('pb-pill-active');
+            planActual = pill.dataset.plan;
+            actualizarSimulador();
+        });
+    });
+
+    // ==================== INICIALIZACIÓN PRINCIPAL ====================
+    async function init() {
+        const data = await loadData();
+        if (!data.length) return;
+        updateStats(data);
+        renderBloomberg(data);
+        renderRanking(data);
+        renderSankey(data);
+        renderTable(data);
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderTable(data, e.target.value.toLowerCase());
+        });
+        actualizarSimulador();  // para que se muestren valores por defecto
+    }
+    init();
+</script>
 </body>
 </html>
