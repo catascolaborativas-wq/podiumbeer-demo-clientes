@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Simulador de Alianza | Podium Beer</title>
+  <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <style>
+    /* ===== RESET Y BASE ===== */
     * {
       margin: 0;
       padding: 0;
@@ -22,7 +24,7 @@
       justify-content: center;
     }
 
-    /* --- FONDO --- */
+    /* === FONDO CON IMAGEN + OVERLAY + VIÑETA === */
     .hero-bg {
       position: fixed;
       top: 0;
@@ -57,18 +59,19 @@
       z-index: 0;
     }
 
-    /* --- CONTENEDOR PRINCIPAL (EXACTAMENTE 80% del ancho, sin max-width) --- */
+    /* === CONTENEDOR PRINCIPAL === */
     .app-container {
-      width: 80vw;      /* 80% del ancho de la pantalla (viewport width) */
+      width: 80vw;            /* 80% del ancho de la pantalla en móvil */
+      max-width: 500px;       /* Para que no se estire demasiado en móviles grandes */
       margin: 2rem auto;
       position: relative;
       z-index: 2;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 2rem;              /* separación entre bloques */
     }
 
-    /* --- TÍTULOS MÁS GRANDES --- */
+    /* ===== TIPOGRAFÍA GENERAL ===== */
     .header {
       text-align: center;
     }
@@ -84,23 +87,56 @@
       color: #CFDEE0;
       margin-top: 0.5rem;
     }
+    .bajada-header {
+      font-size: 14px;
+      font-weight: 400;
+      color: #CFDEE0;
+      margin-top: 0.75rem;
+      line-height: 1.4;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-    /* --- CONTENEDORES CON EFECTO ECO/ESPEJO (solo slider y métricas) --- */
+    /* === CONTENEDORES CON EFECTO GLASS + ECO/ESPEJO === */
     .glass-card, .metrics-card {
-      background: rgba(6, 35, 46, 0.3);  /* Más transparente */
+      background: rgba(6, 35, 46, 0.3);   /* más transparente (70% translúcido visual) */
       backdrop-filter: blur(20px);
       border-radius: 2rem;
       padding: 1.25rem 1rem;
-      /* EFECTO ECO: dirección -43deg, compensación 34, color #8E918F */
-      background-image: linear-gradient(-43deg, rgba(142,145,143,0.4) 0%, rgba(255,255,255,0.08) 34%, rgba(142,145,143,0.2) 100%);
+      /* EFECTO ECO: dirección -43deg, compensación 34, color #d9d9d9 translúcido */
+      background-image: linear-gradient(-43deg, rgba(217,217,217,0.35) 0%, rgba(255,255,255,0.08) 34%, rgba(217,217,217,0.25) 100%);
       box-shadow: 
-        inset 0 1px 0 rgba(255,255,255,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.1),
         inset 0 -1px 0 rgba(0,0,0,0.1),
         0 8px 32px rgba(0,0,0,0.2);
-      border: 1px solid rgba(142,145,143,0.3);
+      border: 1px solid rgba(217,217,217,0.3);
+      transition: transform 0.2s ease;
     }
 
-    /* --- SLIDER --- */
+    /* Títulos de sección */
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #f7c32f;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .section-subtitle {
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin-bottom: 0.5rem;
+    }
+    .section-desc {
+      font-size: 12px;
+      color: #CFDEE0;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    /* === SLIDER === */
     .slider-container {
       width: 100%;
     }
@@ -142,6 +178,7 @@
       cursor: grabbing;
       box-shadow: 0 0 0 6px rgba(255,255,255,0.25);
     }
+    /* Rangos: en móvil dos líneas, en desktop una línea */
     .slider-labels {
       display: flex;
       justify-content: space-between;
@@ -155,30 +192,45 @@
       font-size: 10px;
       font-weight: 600;
       color: #CFDEE0;
-      white-space: nowrap;
+      line-height: 1.3;
+    }
+    /* En móvil cada label ocupa dos líneas (con saltos de línea manuales) */
+    @media (max-width: 991px) {
+      .slider-labels span br {
+        display: block;
+      }
+    }
+    /* En desktop los rangos en una línea */
+    @media (min-width: 992px) {
+      .slider-labels span br {
+        display: none;
+      }
     }
 
-    /* --- BOTONES TIER (SIN EFECTO GLASS) --- */
+    /* === BOTONES TIER (SIN EFECTO GLASS) === */
+    .tier-section {
+      margin-top: 0.5rem;
+    }
     .tier-buttons {
       display: flex;
       justify-content: space-between;
       gap: 0.75rem;
       width: 100%;
-      margin-top: 0.5rem;
+      margin: 1rem 0 0.5rem;
     }
     .tier-btn {
       flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
       background: rgba(0, 0, 0, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.3);
       border-radius: 60px;
-      padding: 0.5rem 0.25rem;
+      padding: 0.75rem 0.25rem;
       cursor: pointer;
       transition: all 250ms ease;
-      /* Sin backdrop-filter, sin blur */
     }
     .tier-btn.active {
       background: linear-gradient(90deg, #E40F63, #C32263);
@@ -187,8 +239,8 @@
       transform: scale(1.02) translateY(-2px);
     }
     .tier-icon {
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -196,88 +248,104 @@
     .tier-icon svg {
       fill: #f7c32f;
       color: #f7c32f;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
     }
     .tier-label {
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 800;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       color: #FFFFFF;
-      white-space: nowrap;
+    }
+    .tier-bajada {
+      font-size: 9px;
+      font-weight: 500;
+      color: #CFDEE0;
+      text-align: center;
+      margin-top: 0.25rem;
+      padding: 0 0.25rem;
     }
 
-    /* --- TARJETA DE MÉTRICAS (mismo efecto eco) --- */
+    /* === TARJETA DE MÉTRICAS (con iconos desde assets) === */
     .metrics-card {
-      padding: 1.5rem 0.75rem;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .metrics-row {
       display: flex;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 1.5rem;
+      flex-direction: column;
     }
     .metric-col {
-      flex: 1;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
-      gap: 0.75rem;
+      gap: 1rem;
+      width: 100%;
     }
     .metric-icon {
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 60px;
+      text-align: center;
+      flex-shrink: 0;
     }
-    .metric-icon svg {
-      width: 36px;
-      height: 36px;
+    .metric-icon img {
+      width: 48px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .metric-content {
+      flex: 1;
     }
     .metric-label {
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 700;
-      color: #CFDEE0;
-      text-transform: uppercase;
-      line-height: 1.3;
+      color: #FFFFFF;
+      margin-bottom: 0.25rem;
     }
-    .metric-label span {
-      display: block;
+    .metric-bajada {
+      font-size: 10px;
+      color: #CFDEE0;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
     }
     .metric-value {
-      font-size: 16px;
+      font-size: 28px;
       font-weight: 800;
       color: #FFFFFF;
       white-space: nowrap;
     }
-    @media (max-width: 480px) {
-      .metric-value { font-size: 13px; }
-      .metric-label { font-size: 9px; }
+    @media (min-width: 992px) {
+      .metrics-row {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .metric-col {
+        justify-content: space-between;
+      }
+      .metric-value {
+        font-size: 32px;
+        text-align: right;
+      }
     }
 
-    /* --- TAGLINE --- */
-    .tagline-wrapper {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 0.25rem;
-      margin-top: -0.5rem;
-    }
-    .tagline-asterisk {
-      font-size: 12px;
+    /* === FRASE FINAL (sin icono, centrada, destacada) === */
+    .frase-final {
+      text-align: center;
+      font-size: 16px;
       font-weight: 600;
-      color: #f7c32f;
-    }
-    .tagline-text {
-      font-size: 10px;
-      font-weight: 500;
-      color: #CFDEE0;
-      font-style: italic;
-      text-align: right;
+      color: #FFFFFF;
+      background: rgba(0,0,0,0.3);
+      padding: 0.75rem;
+      border-radius: 60px;
+      margin: 0.5rem 0;
+      letter-spacing: -0.2px;
     }
 
-    /* --- BOTÓN CTA --- */
+    /* === BOTÓN CTA === */
     .cta-wrapper {
       display: flex;
       justify-content: center;
@@ -287,33 +355,33 @@
       background: linear-gradient(90deg, #E40F63, #C32263);
       border: none;
       border-radius: 60px;
-      padding: 10px 24px;
+      padding: 14px 28px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(228, 15, 99, 0.5);
+      box-shadow: 0 4px 16px rgba(228, 15, 99, 0.5);
       transition: transform 0.1s ease, filter 0.1s ease;
       width: auto;
-      min-width: 220px;
+      min-width: 260px;
     }
     .cta-button:active {
       transform: scale(0.97);
       filter: brightness(0.92);
     }
     .cta-text {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       color: #FFFFFF;
       white-space: nowrap;
     }
-    @media (max-width: 360px) {
-      .cta-text { font-size: 12px; }
-      .cta-button { padding: 8px 20px; min-width: 180px; }
+    @media (max-width: 480px) {
+      .cta-text { font-size: 13px; }
+      .cta-button { padding: 10px 20px; min-width: 220px; }
     }
 
-    /* ===== DESKTOP (≥992px) ===== */
+    /* === LAYOUT DESKTOP (≥992px) === */
     @media (min-width: 992px) {
       .app-container {
         width: 85%;
-        max-width: 1200px;
+        max-width: 1300px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
@@ -324,39 +392,47 @@
       }
       .glass-card {
         grid-column: 1 / 2;
+        margin: 0;
       }
-      .tier-buttons {
+      .tier-section {
         grid-column: 1 / 2;
-        display: flex;
       }
       .metrics-card {
         grid-column: 2 / 3;
         grid-row: 2 / 4;
         height: 100%;
-      }
-      .tagline-wrapper {
-        grid-column: span 2;
+        display: flex;
+        flex-direction: column;
         justify-content: center;
+      }
+      .frase-final {
+        grid-column: span 2;
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
       }
       .cta-wrapper {
         grid-column: span 2;
       }
-      .metrics-card .metrics-row {
-        flex-direction: column;
-        gap: 1.5rem;
+      /* Ajuste de altura para que métricas iguale a slider + botones */
+      .metrics-card {
+        min-height: 100%;
       }
-      .metric-col {
-        flex-direction: row;
-        justify-content: space-between;
-        text-align: left;
-        gap: 1rem;
+    }
+
+    /* Ajustes adicionales móvil: más altura y separación */
+    @media (max-width: 991px) {
+      .app-container {
+        gap: 2.2rem;
       }
-      .metric-icon {
-        width: 60px;
-        justify-content: flex-start;
+      .glass-card, .metrics-card {
+        padding: 1.5rem 1rem;
       }
       .metric-value {
-        text-align: right;
+        font-size: 24px;
+      }
+      .metric-icon img {
+        width: 42px;
       }
     }
   </style>
@@ -369,13 +445,20 @@
   <div class="vignette"></div>
 
   <div class="app-container">
+    <!-- HEADER con nueva bajada -->
     <div class="header animate-item">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
+      <div class="bajada-header">
+        Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.
+      </div>
     </div>
 
-    <!-- Slider card -->
+    <!-- CONTENEDOR DE TRAMOS (SLIDER) -->
     <div class="glass-card animate-item">
+      <div class="section-title">SLIDER</div>
+      <div class="section-subtitle">Escala de Producción</div>
+      <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
       <div class="slider-container">
         <div class="slider-track-wrapper" id="sliderWrapper">
           <div class="slider-rail" id="sliderRail">
@@ -383,69 +466,98 @@
           </div>
           <div class="slider-thumb" id="sliderThumb"></div>
         </div>
-        <div class="slider-labels">
-          <span>&lt;500 hl</span>
-          <span>1000 hl</span>
-          <span>5000 hl</span>
-          <span>10000 hl</span>
-          <span>≥20000 hl</span>
+        <div class="slider-labels" id="sliderLabels">
+          <!-- En móvil se renderizan con <br> para dos líneas, en desktop sin br (CSS controla) -->
+          <span>&lt;500<br>hl</span>
+          <span>501 - 1000<br>hl</span>
+          <span>1001 - 5000<br>hl</span>
+          <span>5001 - 10000<br>hl</span>
+          <span>≥20000<br>hl</span>
         </div>
       </div>
     </div>
 
-    <!-- Tier buttons (sin glass) -->
-    <div class="tier-buttons animate-item" id="tierButtonsContainer">
-      <div class="tier-btn" data-tier="explorer" id="tierExplorer">
-        <div class="tier-icon"><svg viewBox="0 0 24 24"><path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/><path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/></svg></div>
-        <span class="tier-label">Explorer</span>
-      </div>
-      <div class="tier-btn" data-tier="podium" id="tierPodium">
-        <div class="tier-icon"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="3" fill="currentColor" rx="0.8"/><circle cx="12" cy="11" r="7" fill="currentColor"/><circle cx="12" cy="11" r="3.8" fill="rgba(0,0,0,0.3)"/></svg></div>
-        <span class="tier-label">Podium</span>
-      </div>
-      <div class="tier-btn active" data-tier="champion" id="tierChampion">
-        <div class="tier-icon"><svg viewBox="0 0 24 24"><path d="M7 5H17V15C17 17.5 14.5 19 12 19C9.5 19 7 17.5 7 15V5Z" fill="currentColor"/><path d="M5 5H7V8H5V5Z" fill="currentColor"/><path d="M19 5H17V8H19V5Z" fill="currentColor"/><rect x="11" y="9" width="2" height="3" fill="#1A2A38"/><polygon points="12,9.5 13,11 11,11" fill="#f7c32f"/><path d="M10 19L14 19" stroke="currentColor" stroke-width="1.5"/></svg></div>
-        <span class="tier-label">Champion</span>
+    <!-- SELECTOR DE PLANES (TIER BUTTONS) -->
+    <div class="tier-section animate-item">
+      <div class="section-title">SELECTOR DE PLANES</div>
+      <div class="section-subtitle">Nivel de Alianza Estratégica</div>
+      <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
+      <div class="tier-buttons" id="tierButtonsContainer">
+        <div class="tier-btn" data-tier="explorer" id="tierExplorer">
+          <div class="tier-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/><path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/></svg>
+          </div>
+          <div class="tier-label">Explorer</div>
+          <div class="tier-bajada">1° Nivel de Visibilidad basada en datos reales</div>
+        </div>
+        <div class="tier-btn" data-tier="podium" id="tierPodium">
+          <div class="tier-icon">
+            <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="3" fill="currentColor" rx="0.8"/><circle cx="12" cy="11" r="7" fill="currentColor"/><circle cx="12" cy="11" r="3.8" fill="rgba(0,0,0,0.3)"/></svg>
+          </div>
+          <div class="tier-label">Podium</div>
+          <div class="tier-bajada">Optimización estratégica para competir con ventaja.</div>
+        </div>
+        <div class="tier-btn active" data-tier="champion" id="tierChampion">
+          <div class="tier-icon">
+            <svg viewBox="0 0 24 24"><path d="M7 5H17V15C17 17.5 14.5 19 12 19C9.5 19 7 17.5 7 15V5Z" fill="currentColor"/><path d="M5 5H7V8H5V5Z" fill="currentColor"/><path d="M19 5H17V8H19V5Z" fill="currentColor"/><rect x="11" y="9" width="2" height="3" fill="#1A2A38"/><polygon points="12,9.5 13,11 11,11" fill="#f7c32f"/><path d="M10 19L14 19" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="tier-label">Champion</div>
+          <div class="tier-bajada">Dominio de mercado con respaldo técnico y autoridad</div>
+        </div>
       </div>
     </div>
 
-    <!-- Metrics card -->
-    <div class="metrics-card animate-item">
+    <!-- CONTENEDOR DE MÉTRICAS (con imágenes desde assets) -->
+    <div class="metrics-card animate-item" id="metricsCard">
       <div class="metrics-row">
         <div class="metric-col">
-          <div class="metric-icon"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f7c32f" stroke="#d4a81a" stroke-width="12"/><text x="256" y="320" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#FFFFFF" text-anchor="middle">$</text></svg></div>
-          <div class="metric-label"><span>Inversión</span><span>Mensual</span></div>
-          <div class="metric-value" id="inversionValue">$1,200 USD</div>
+          <div class="metric-icon">
+            <img src="assets/icono_Inversion.png" alt="Inversión Inteligente">
+          </div>
+          <div class="metric-content">
+            <div class="metric-label">Inversión Inteligente</div>
+            <div class="metric-bajada">Una inversión diseñada para generar retorno, no gasto: alineada a tu escala y potencial comercial</div>
+            <div class="metric-value" id="inversionValue">$1,200 USD</div>
+          </div>
         </div>
         <div class="metric-col">
-          <div class="metric-icon"><svg viewBox="0 0 512 512"><path fill="#f7c32f" d="M492,118H372c-11,0-20,9-20,20s9,20,20,20h81.7L323.3,288.3l-104.6-104.6c-7.8-7.8-20.5-7.8-28.3,0L10.4,363.6c-7.8,7.8-7.8,20.5,0,28.3c7.8,7.8,20.5,7.8,28.3,0l151.7-151.7l104.6,104.6c7.8,7.8,20.5,7.8,28.3,0L472,196.3V278c0,11,9,20,20,20s20-9,20-20V138C512,127,503,118,492,118z"/></svg></div>
-          <div class="metric-label"><span>Optimización</span><span>Anual</span></div>
-          <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
+          <div class="metric-icon">
+            <img src="assets/icono_optimizacion.png" alt="Valor Recuperado">
+          </div>
+          <div class="metric-content">
+            <div class="metric-label">Valor Recuperado</div>
+            <div class="metric-bajada">Lo que hoy pierdes en decisiones sin data, lo recuperas con estrategia basada en información validada</div>
+            <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
+          </div>
         </div>
         <div class="metric-col">
-          <div class="metric-icon"><svg viewBox="0 0 512 512"><path fill="#f7c32f" d="M437.3,325.2c-10.1-13.9-29.4-17-43.3-6.9c-13.9,10.1-17,29.4-6.9,43.3c23.6,32.5,36.9,71.7,36.9,112.4c0,105.9-86.1,192-192,192S40,579.9,40,474S126.1,282,232,282c40.7,0,79.9,13.3,112.4,36.9c13.9,10.1,33.2,7,43.3-6.9c10.1-13.9,7-33.2-6.9-43.3C335,231.8,285.1,214,232,214C88.4,214-28,330.4-28,474s116.4,260,260,260s260-116.4,260-260C492,421,474.2,371,441.3,325.2z M240,422c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S251,422,240,422z M304,486c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S315,486,304,486z M252.8,423.2c-10.1-13.9-7-33.2,6.9-43.3c13.9-10.1,33.2-7,43.3,6.9l80,110c10.1,13.9,7,33.2-6.9,43.3c-13.9,10.1-33.2,7-43.3-6.9L252.8,423.2z"/></svg></div>
-          <div class="metric-label"><span>ROI</span><span>Colaborativo</span></div>
-          <div class="metric-value" id="roiValue">65%</div>
+          <div class="metric-icon">
+            <img src="assets/icono_roi.png" alt="Impacto en Rentabilidad">
+          </div>
+          <div class="metric-content">
+            <div class="metric-label">Impacto en Rentabilidad</div>
+            <div class="metric-bajada">El retorno proyectado al transformar tus medallas en una herramienta activa de ventas.</div>
+            <div class="metric-value" id="roiValue">65%</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tagline -->
-    <div class="tagline-wrapper animate-item">
-      <span class="tagline-asterisk">*</span>
-      <span class="tagline-text">Crecemos si tú creces: este presupuesto se ajusta a tu realidad…</span>
+    <!-- FRASE FINAL (sin icono, centrada, destacada) -->
+    <div class="frase-final animate-item">
+      Crecemos contigo: este modelo se adapta a tu realidad productiva y a tus objetivos comerciales.
     </div>
 
-    <!-- CTA -->
+    <!-- BOTÓN CTA -->
     <div class="cta-wrapper animate-item">
       <button class="cta-button" id="ctaBtn">
-        <span class="cta-text">Agenda tu diagnóstico gratuito</span>
+        <span class="cta-text">Agenda tu Diagnóstico Estratégico</span>
       </button>
     </div>
   </div>
 
   <script>
-    // (El mismo JavaScript de siempre, pero lo incluyo completo para funcionalidad)
+    // --- TABLA DE VALORES (rangos: 0:<500, 1:501-1000, 2:1001-5000, 3:5001-10000, 4:≥20000)
     const metricsTable = [
       { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
       { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
@@ -454,6 +566,7 @@
       { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion" }
     ];
 
+    // Elementos DOM
     const sliderRail = document.getElementById('sliderRail');
     const sliderThumb = document.getElementById('sliderThumb');
     const sliderFill = document.getElementById('sliderFill');
@@ -464,12 +577,11 @@
     const optimizacionEl = document.getElementById('optimizacionValue');
     const roiEl = document.getElementById('roiValue');
 
-    let currentRangeIndex = 3;
+    let currentRangeIndex = 3;   // default 5001-10000 hl
     let currentTier = "champion";
     let allowAutoTier = true;
     let isDragging = false;
     let wrapperWidth = 0;
-
     const stepPositions = [0, 0.25, 0.5, 0.75, 1];
 
     function updateSliderVisual(index) {
@@ -550,6 +662,7 @@
       updateMetrics();
     }
 
+    // Slider interactivo
     function getNearestStep(clientX) {
       const rect = sliderRail.getBoundingClientRect();
       let ratio = (clientX - rect.left) / rect.width;
@@ -640,7 +753,7 @@
     const ctaBtn = document.getElementById('ctaBtn');
     ctaBtn.addEventListener('click', () => {
       if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
-      alert("📞 Diagnóstico gratuito – Un asesor te contactará pronto.");
+      alert("📞 Diagnóstico estratégico – Un asesor te contactará para potenciar tu negocio.");
     });
 
     function init() {
