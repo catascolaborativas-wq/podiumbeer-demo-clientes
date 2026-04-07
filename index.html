@@ -22,7 +22,7 @@
       justify-content: center;
     }
 
-    /* --- FONDO CON IMAGEN + OVERLAY + VIÑETA --- */
+    /* --- FONDO --- */
     .hero-bg {
       position: fixed;
       top: 0;
@@ -57,10 +57,9 @@
       z-index: 0;
     }
 
-    /* --- CONTENEDOR PRINCIPAL (responsive móvil: 90% ancho) --- */
+    /* --- CONTENEDOR PRINCIPAL (EXACTAMENTE 80% del ancho, sin max-width) --- */
     .app-container {
-      width: 90%;
-      max-width: 500px;   /* Evita que se estire demasiado en móviles grandes */
+      width: 80vw;      /* 80% del ancho de la pantalla (viewport width) */
       margin: 2rem auto;
       position: relative;
       z-index: 2;
@@ -69,40 +68,39 @@
       gap: 1.5rem;
     }
 
-    /* --- HEADER --- */
+    /* --- TÍTULOS MÁS GRANDES --- */
     .header {
       text-align: center;
     }
     .h1-sim {
-      font-size: clamp(28px, 8vw, 36px);
+      font-size: clamp(40px, 12vw, 64px);
       font-weight: 800;
       color: #FFFFFF;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.5px;
     }
     .h2-sim {
-      font-size: clamp(16px, 5vw, 20px);
+      font-size: clamp(24px, 7vw, 36px);
       font-weight: 500;
       color: #CFDEE0;
       margin-top: 0.5rem;
     }
 
-    /* --- CONTENEDORES GLASS (efecto cristal/espejo mejorado) --- */
+    /* --- CONTENEDORES CON EFECTO ECO/ESPEJO (solo slider y métricas) --- */
     .glass-card, .metrics-card {
-      background: rgba(20, 30, 40, 0.65);
+      background: rgba(6, 35, 46, 0.3);  /* Más transparente */
       backdrop-filter: blur(20px);
       border-radius: 2rem;
       padding: 1.25rem 1rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .glass-card {
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .metrics-card {
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      /* EFECTO ECO: dirección -43deg, compensación 34, color #8E918F */
+      background-image: linear-gradient(-43deg, rgba(142,145,143,0.4) 0%, rgba(255,255,255,0.08) 34%, rgba(142,145,143,0.2) 100%);
+      box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.15),
+        inset 0 -1px 0 rgba(0,0,0,0.1),
+        0 8px 32px rgba(0,0,0,0.2);
+      border: 1px solid rgba(142,145,143,0.3);
     }
 
-    /* --- SLIDER (ocupa 100% del contenedor) --- */
+    /* --- SLIDER --- */
     .slider-container {
       width: 100%;
     }
@@ -160,7 +158,7 @@
       white-space: nowrap;
     }
 
-    /* --- TIER BUTTONS --- */
+    /* --- BOTONES TIER (SIN EFECTO GLASS) --- */
     .tier-buttons {
       display: flex;
       justify-content: space-between;
@@ -174,17 +172,17 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px);
-      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
       border-radius: 60px;
       padding: 0.5rem 0.25rem;
       cursor: pointer;
       transition: all 250ms ease;
+      /* Sin backdrop-filter, sin blur */
     }
     .tier-btn.active {
       background: linear-gradient(90deg, #E40F63, #C32263);
-      border-color: rgba(255,255,255,0.4);
+      border-color: rgba(255,255,255,0.5);
       box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3);
       transform: scale(1.02) translateY(-2px);
     }
@@ -210,7 +208,7 @@
       white-space: nowrap;
     }
 
-    /* --- TARJETA DE MÉTRICAS --- */
+    /* --- TARJETA DE MÉTRICAS (mismo efecto eco) --- */
     .metrics-card {
       padding: 1.5rem 0.75rem;
     }
@@ -253,12 +251,12 @@
       color: #FFFFFF;
       white-space: nowrap;
     }
-    @media (max-width: 420px) {
-      .metric-value { font-size: 14px; }
-      .metric-label { font-size: 10px; }
+    @media (max-width: 480px) {
+      .metric-value { font-size: 13px; }
+      .metric-label { font-size: 9px; }
     }
 
-    /* --- TAGLINE (asterisco + texto) --- */
+    /* --- TAGLINE --- */
     .tagline-wrapper {
       display: flex;
       justify-content: flex-end;
@@ -311,11 +309,11 @@
       .cta-button { padding: 8px 20px; min-width: 180px; }
     }
 
-    /* ===== LAYOUT PARA DESKTOP (pantallas ≥ 992px) ===== */
+    /* ===== DESKTOP (≥992px) ===== */
     @media (min-width: 992px) {
       .app-container {
-        max-width: 1100px;
         width: 85%;
+        max-width: 1200px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
@@ -323,35 +321,25 @@
       }
       .header {
         grid-column: span 2;
-        margin-bottom: 0;
       }
       .glass-card {
         grid-column: 1 / 2;
-        margin: 0;
       }
       .tier-buttons {
         grid-column: 1 / 2;
+        display: flex;
       }
       .metrics-card {
         grid-column: 2 / 3;
         grid-row: 2 / 4;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin: 0;
       }
       .tagline-wrapper {
         grid-column: span 2;
         justify-content: center;
-        margin-top: 0;
       }
       .cta-wrapper {
         grid-column: span 2;
-      }
-      /* Ajuste de márgenes para que quede equilibrado */
-      .tier-buttons {
-        margin-top: 0;
       }
       .metrics-card .metrics-row {
         flex-direction: column;
@@ -367,19 +355,8 @@
         width: 60px;
         justify-content: flex-start;
       }
-      .metric-label, .metric-value {
-        flex: 1;
-        white-space: normal;
-      }
       .metric-value {
         text-align: right;
-      }
-    }
-
-    /* Para pantallas muy grandes (>1400px) */
-    @media (min-width: 1400px) {
-      .app-container {
-        max-width: 1300px;
       }
     }
   </style>
@@ -392,14 +369,13 @@
   <div class="vignette"></div>
 
   <div class="app-container">
-    <!-- Header -->
-    <div class="header animate-item" style="animation-delay: 0ms;">
+    <div class="header animate-item">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
     </div>
 
     <!-- Slider card -->
-    <div class="glass-card animate-item" style="animation-delay: 80ms;">
+    <div class="glass-card animate-item">
       <div class="slider-container">
         <div class="slider-track-wrapper" id="sliderWrapper">
           <div class="slider-rail" id="sliderRail">
@@ -417,8 +393,8 @@
       </div>
     </div>
 
-    <!-- Tier buttons -->
-    <div class="tier-buttons animate-item" style="animation-delay: 160ms;" id="tierButtonsContainer">
+    <!-- Tier buttons (sin glass) -->
+    <div class="tier-buttons animate-item" id="tierButtonsContainer">
       <div class="tier-btn" data-tier="explorer" id="tierExplorer">
         <div class="tier-icon"><svg viewBox="0 0 24 24"><path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/><path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/></svg></div>
         <span class="tier-label">Explorer</span>
@@ -433,8 +409,8 @@
       </div>
     </div>
 
-    <!-- Tarjeta de métricas -->
-    <div class="metrics-card animate-item" style="animation-delay: 240ms;">
+    <!-- Metrics card -->
+    <div class="metrics-card animate-item">
       <div class="metrics-row">
         <div class="metric-col">
           <div class="metric-icon"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f7c32f" stroke="#d4a81a" stroke-width="12"/><text x="256" y="320" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#FFFFFF" text-anchor="middle">$</text></svg></div>
@@ -455,13 +431,13 @@
     </div>
 
     <!-- Tagline -->
-    <div class="tagline-wrapper animate-item" style="animation-delay: 320ms;" id="taglineWrapper">
+    <div class="tagline-wrapper animate-item">
       <span class="tagline-asterisk">*</span>
-      <span class="tagline-text" id="taglineText">Crecemos si tú creces: este presupuesto se ajusta a tu realidad…</span>
+      <span class="tagline-text">Crecemos si tú creces: este presupuesto se ajusta a tu realidad…</span>
     </div>
 
-    <!-- Botón CTA -->
-    <div class="cta-wrapper animate-item" style="animation-delay: 400ms;">
+    <!-- CTA -->
+    <div class="cta-wrapper animate-item">
       <button class="cta-button" id="ctaBtn">
         <span class="cta-text">Agenda tu diagnóstico gratuito</span>
       </button>
@@ -469,7 +445,7 @@
   </div>
 
   <script>
-    // Tabla de valores (rangos)
+    // (El mismo JavaScript de siempre, pero lo incluyo completo para funcionalidad)
     const metricsTable = [
       { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
       { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
@@ -478,7 +454,6 @@
       { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion" }
     ];
 
-    // Elementos DOM
     const sliderRail = document.getElementById('sliderRail');
     const sliderThumb = document.getElementById('sliderThumb');
     const sliderFill = document.getElementById('sliderFill');
@@ -575,7 +550,6 @@
       updateMetrics();
     }
 
-    // Slider interactivo
     function getNearestStep(clientX) {
       const rect = sliderRail.getBoundingClientRect();
       let ratio = (clientX - rect.left) / rect.width;
