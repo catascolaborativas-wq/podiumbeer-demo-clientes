@@ -161,7 +161,7 @@
       letter-spacing: 0.2px;
     }
 
-    /* --- TIER BUTTONS (mismo ancho, más pequeños, iconos dorados) --- */
+    /* --- TIER BUTTONS (mismo ancho, pequeños, iconos dorados) --- */
     .tier-buttons {
       display: flex;
       justify-content: space-between;
@@ -178,7 +178,7 @@
       backdrop-filter: blur(8px);
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       border-radius: 60px;
-      padding: 6px 8px;   /* más pequeño */
+      padding: 6px 8px;
       cursor: pointer;
       transition: all 250ms ease;
       min-width: 0;
@@ -197,7 +197,6 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    /* Todos los iconos en amarillo #f7c32f */
     .tier-icon svg {
       fill: #f7c32f;
       color: #f7c32f;
@@ -212,20 +211,15 @@
       color: #FFFFFF;
       white-space: nowrap;
     }
-    /* Aseguramos que en estado activo también se vean dorados */
-    .tier-btn.active .tier-icon svg {
-      fill: #f7c32f;
-      color: #f7c32f;
-    }
 
-    /* --- TARJETA DE MÉTRICAS (iconos más grandes, cifras reducidas) --- */
+    /* --- TARJETA DE MÉTRICAS (iconos alineados, espaciado entre columnas) --- */
     .metrics-card {
       padding: 20px 12px;
     }
     .metrics-row {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;  /* más separación entre columnas */
     }
     .metric-col {
       flex: 1;
@@ -237,7 +231,7 @@
       min-width: 0;
     }
     .metric-icon {
-      height: auto;
+      height: 40px;  /* altura fija para alinear */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -246,9 +240,10 @@
     .metric-icon svg {
       width: 32px;
       height: 32px;
+      display: block;
     }
     .metric-label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       color: #CFDEE0;
       letter-spacing: 0.3px;
@@ -256,25 +251,26 @@
       white-space: nowrap;
     }
     .metric-value {
-      font-size: 16px;   /* reducido para que quepa */
+      font-size: 16px;
       font-weight: 800;
       color: #FFFFFF;
       line-height: 1.2;
       white-space: nowrap;
     }
-    /* Ajuste para pantallas muy pequeñas */
+    /* Ajuste para pantallas muy pequeñas: reducir fuente de las etiquetas */
     @media (max-width: 360px) {
-      .metric-label { font-size: 10px; }
+      .metric-label { font-size: 9px; }
       .metric-value { font-size: 14px; }
+      .metrics-row { gap: 12px; }
     }
 
-    /* --- TAGLINE (asterisco + texto a la derecha, pequeño) --- */
+    /* --- TAGLINE (asterisco + texto original, pegado al contenedor de métricas) --- */
     .tagline-wrapper {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 4px;
-      margin-top: 4px;
+      margin-top: 0;      /* pegado al contenedor anterior */
       transition: opacity 0.3s ease;
     }
     .tagline-asterisk {
@@ -290,10 +286,11 @@
       text-align: right;
     }
 
-    /* --- BOTÓN CTA (más pequeño y centrado) --- */
+    /* --- BOTÓN CTA centrado y más pequeño --- */
     .cta-wrapper {
       display: flex;
       justify-content: center;
+      margin-top: 4px;
     }
     .cta-button {
       background: linear-gradient(90deg, #E40F63, #C32263);
@@ -356,7 +353,7 @@
       </div>
     </div>
 
-    <!-- Tier buttons (mismo ancho, más pequeños, iconos dorados) -->
+    <!-- Tier buttons -->
     <div class="tier-buttons animate-item" style="animation-delay: 160ms;" id="tierButtonsContainer">
       <div class="tier-btn" data-tier="explorer" id="tierExplorer">
         <div class="tier-icon">
@@ -394,15 +391,15 @@
       </div>
     </div>
 
-    <!-- Tarjeta de métricas con iconos nuevos y más grandes, cifras reducidas -->
+    <!-- Tarjeta de métricas (con nuevo icono de moneda) -->
     <div class="metrics-card animate-item" style="animation-delay: 240ms;">
       <div class="metrics-row">
-        <!-- Inversión mensual -->
+        <!-- Inversión mensual - icono de moneda con $ -->
         <div class="metric-col">
           <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
-              <path fill="#f7c32f" d="M333.3,163.4c-92,0-166.7,43.2-166.7,96.6s74.6,96.6,166.7,96.6s166.7-43.2,166.7-96.6S425.3,163.4,333.3,163.4z M353.1,304.7v10.4c0,9.2-7.5,16.7-16.7,16.7s-16.7-7.5-16.7-16.7v-10.8c-26.4-5.6-46.7-28.7-46.7-56.5v-5c0-4.6,3.7-8.3,8.3-8.3s8.3,3.7,8.3,8.3v5c0,19.4,15.8,35.2,35.2,35.2h3.3c19.4,0,35.2-15.8,35.2-35.2v-2.8c0-19.4-15.8-35.2-35.2-35.2h-3.3c-28.6,0-51.8-23.2-51.8-51.8v-2.8c0-27.8,20.2-50.9,46.7-56.5v-10.4c0-9.2,7.5-16.7,16.7-16.7s16.7,7.5,16.7,16.7v10.8c26.4,5.6,46.7,28.7,46.7,56.5v5c0,4.6-3.7,8.3-8.3,8.3s-8.3-3.7-8.3-8.3v-5c0-19.4-15.8-35.2-35.2-35.2h-3.3c-19.4,0-35.2,15.8-35.2,35.2v2.8c0,19.4,15.8,35.2,35.2,35.2h3.3c28.6,0,51.8,23.2,51.8,51.8v2.8C400,276.1,379.7,299.2,353.1,304.7z"/>
-              <path fill="#f7c32f" d="M141.7,121.7c0,53.3,74.6,96.6,166.7,96.6c11.6,0,23-0.7,33.9-2.1c-5.7-12-8.9-25.5-8.9-39.7c0-3.3,0.2-6.5,0.6-9.8c-8.4,0.6-17,1-25.7,1c-71.1,0-128.7-29.2-128.7-65s57.6-65,128.7-65s128.7,29.2,128.7,65c0,2.9-0.4,5.8-1.2,8.6c13.7,4.3,26.4,10.7,37.6,18.8c2.4-7.8,3.6-16,3.6-24.5c0-53.3-74.6-96.6-166.7-96.6S141.7,68.3,141.7,121.7z"/>
+              <circle cx="256" cy="256" r="200" fill="#f7c32f" stroke="#d4a81a" stroke-width="12"/>
+              <text x="256" y="300" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#06232E" text-anchor="middle">$</text>
             </svg>
           </div>
           <div class="metric-label">Inversión mensual</div>
@@ -431,13 +428,13 @@
       </div>
     </div>
 
-    <!-- Tagline: asterisco + texto a la derecha, sin bombilla -->
+    <!-- Tagline: asterisco + texto original (pegado al contenedor de métricas) -->
     <div class="tagline-wrapper animate-item" style="animation-delay: 320ms;" id="taglineWrapper">
       <span class="tagline-asterisk">*</span>
-      <span class="tagline-text" id="taglineText">Champion: rendimiento superior, beneficios exclusivos.</span>
+      <span class="tagline-text" id="taglineText">Crecemos si tú creces: este presupuesto se ajusta a tu realidad…</span>
     </div>
 
-    <!-- Botón CTA centrado y más pequeño -->
+    <!-- Botón CTA centrado -->
     <div class="cta-wrapper animate-item" style="animation-delay: 400ms;">
       <button class="cta-button" id="ctaBtn">
         <span class="cta-text">Agenda tu diagnóstico gratuito</span>
@@ -467,7 +464,7 @@
     const roiEl = document.getElementById('roiValue');
     const taglineTextEl = document.getElementById('taglineText');
 
-    let currentRangeIndex = 3;  // 10000 hl (muestra $1,200)
+    let currentRangeIndex = 3;  // 10000 hl
     let currentTier = "champion";
     let allowAutoTier = true;
     let isDragging = false;
@@ -523,11 +520,8 @@
       animateValue(optimizacionEl, oldOptim, newVals.optimizacion, true, "USD");
       animateValue(roiEl, oldRoi, newVals.roi, false, "%");
       if (resetTagline) {
-        taglineTextEl.style.opacity = '0';
-        setTimeout(() => {
-          taglineTextEl.innerText = newVals.tagline;
-          taglineTextEl.style.opacity = '1';
-        }, 150);
+        // Solo actualizamos si es por cambio de rango, pero el tagline fijo no se modifica.
+        // Dejamos el texto original inmutable.
       }
     }
 
@@ -545,14 +539,6 @@
         if (suggested && suggested !== currentTier) {
           currentTier = suggested;
           updateTierButtonsActive();
-          const newTag = metricsTable[currentRangeIndex].tagline;
-          if (taglineTextEl.innerText !== newTag) {
-            taglineTextEl.style.opacity = '0';
-            setTimeout(() => {
-              taglineTextEl.innerText = newTag;
-              taglineTextEl.style.opacity = '1';
-            }, 150);
-          }
         }
       }
     }
@@ -638,11 +624,6 @@
         if (currentTier !== 'explorer') {
           currentTier = 'explorer';
           updateTierButtonsActive();
-          taglineTextEl.style.opacity = '0';
-          setTimeout(() => {
-            taglineTextEl.innerText = "Explorer: emprendedores, empezamos juntos.";
-            taglineTextEl.style.opacity = '1';
-          }, 150);
         }
       });
       tierPodium.addEventListener('click', () => {
@@ -650,11 +631,6 @@
         if (currentTier !== 'podium') {
           currentTier = 'podium';
           updateTierButtonsActive();
-          taglineTextEl.style.opacity = '0';
-          setTimeout(() => {
-            taglineTextEl.innerText = "Podium: crecimiento asegurado, alianza estratégica.";
-            taglineTextEl.style.opacity = '1';
-          }, 150);
         }
       });
       tierChampion.addEventListener('click', () => {
@@ -662,11 +638,6 @@
         if (currentTier !== 'champion') {
           currentTier = 'champion';
           updateTierButtonsActive();
-          taglineTextEl.style.opacity = '0';
-          setTimeout(() => {
-            taglineTextEl.innerText = "Champion: liderazgo y beneficios máximos.";
-            taglineTextEl.style.opacity = '1';
-          }, 150);
         }
       });
     }
@@ -686,6 +657,8 @@
       updateSliderVisual(3);
       updateTierButtonsActive();
       updateMetricsAndTagline(true);
+      // Forzar el texto original del tagline (por si acaso)
+      taglineTextEl.innerText = "Crecemos si tú creces: este presupuesto se ajusta a tu realidad…";
     }
     init();
   </script>
