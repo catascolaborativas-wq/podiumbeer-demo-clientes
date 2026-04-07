@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Simulador de Alianza | Podium Beer</title>
-  <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <style>
     /* ===== RESET Y BASE ===== */
@@ -62,7 +61,7 @@
     /* === CONTENEDOR PRINCIPAL === */
     .app-container {
       width: 80vw;            /* 80% del ancho de la pantalla en móvil */
-      max-width: 500px;       /* Para que no se estire demasiado en móviles grandes */
+      max-width: 500px;       /* Límite para no estirarse demasiado en móviles anchos */
       margin: 2rem auto;
       position: relative;
       z-index: 2;
@@ -87,53 +86,66 @@
       color: #CFDEE0;
       margin-top: 0.5rem;
     }
+    /* Bajada debajo del subtítulo (dentro del header) - legible */
     .bajada-header {
       font-size: 14px;
-      font-weight: 400;
-      color: #CFDEE0;
-      margin-top: 0.75rem;
+      font-weight: 500;
+      color: #FFFFFF;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 0.75rem 1rem;
+      border-radius: 24px;
+      margin-top: 1rem;
       line-height: 1.4;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
+      text-align: center;
+      backdrop-filter: blur(4px);
     }
 
-    /* === CONTENEDORES CON EFECTO GLASS + ECO/ESPEJO === */
-    .glass-card, .metrics-card {
-      background: rgba(6, 35, 46, 0.3);   /* más transparente (70% translúcido visual) */
+    /* === CONTENEDORES CON EFECTO GLASS + ECO (pseudo-elemento) === */
+    .glass-card, .metrics-card, .plan-selector-card {
+      position: relative;     /* Necesario para el pseudo-elemento ::before */
+      background: rgba(6, 35, 46, 0.35);
       backdrop-filter: blur(20px);
       border-radius: 2rem;
-      padding: 1.25rem 1rem;
-      /* EFECTO ECO: dirección -43deg, compensación 34, color #d9d9d9 translúcido */
-      background-image: linear-gradient(-43deg, rgba(217,217,217,0.35) 0%, rgba(255,255,255,0.08) 34%, rgba(217,217,217,0.25) 100%);
-      box-shadow: 
-        inset 0 1px 0 rgba(255,255,255,0.1),
-        inset 0 -1px 0 rgba(0,0,0,0.1),
-        0 8px 32px rgba(0,0,0,0.2);
-      border: 1px solid rgba(217,217,217,0.3);
+      padding: 1.5rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease;
     }
+    /* EFECTO ECO: copia detrás con desplazamiento -43°, 15px, color #9e9e9e al 18% */
+    .glass-card::before, .metrics-card::before, .plan-selector-card::before {
+      content: '';
+      position: absolute;
+      left: 11px;        /* offsetX = cos(-43°)*15 ≈ 11 */
+      top: -10px;        /* offsetY = sin(-43°)*15 ≈ -10 */
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: #9e9e9e;
+      opacity: 0.18;
+      z-index: -1;
+      pointer-events: none;
+    }
 
-    /* Títulos de sección */
+    /* Títulos de sección dentro de los contenedores */
     .section-title {
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 2px;
       color: #f7c32f;
       text-transform: uppercase;
       margin-bottom: 0.25rem;
     }
     .section-subtitle {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 700;
       color: #FFFFFF;
       margin-bottom: 0.5rem;
     }
     .section-desc {
-      font-size: 12px;
+      font-size: 13px;
       color: #CFDEE0;
       line-height: 1.4;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
     /* === SLIDER === */
@@ -178,7 +190,7 @@
       cursor: grabbing;
       box-shadow: 0 0 0 6px rgba(255,255,255,0.25);
     }
-    /* Rangos: en móvil dos líneas, en desktop una línea */
+    /* Rangos: en móvil dos líneas, en desktop una línea (usamos <br>) */
     .slider-labels {
       display: flex;
       justify-content: space-between;
@@ -194,41 +206,45 @@
       color: #CFDEE0;
       line-height: 1.3;
     }
-    /* En móvil cada label ocupa dos líneas (con saltos de línea manuales) */
     @media (max-width: 991px) {
       .slider-labels span br {
         display: block;
       }
     }
-    /* En desktop los rangos en una línea */
     @media (min-width: 992px) {
       .slider-labels span br {
         display: none;
       }
     }
 
-    /* === BOTONES TIER (SIN EFECTO GLASS) === */
-    .tier-section {
-      margin-top: 0.5rem;
+    /* === SELECTOR DE PLANES (contenedor unificado) === */
+    .plan-selector-card {
+      margin: 0;
     }
-    .tier-buttons {
+    .tier-buttons-container {
       display: flex;
       justify-content: space-between;
-      gap: 0.75rem;
-      width: 100%;
+      gap: 1rem;
       margin: 1rem 0 0.5rem;
+      flex-wrap: wrap;
     }
-    .tier-btn {
+    .tier-item {
       flex: 1;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tier-btn {
+      width: 100%;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
       background: rgba(0, 0, 0, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.3);
       border-radius: 60px;
-      padding: 0.75rem 0.25rem;
+      padding: 0.6rem 0.25rem;
       cursor: pointer;
       transition: all 250ms ease;
     }
@@ -239,15 +255,14 @@
       transform: scale(1.02) translateY(-2px);
     }
     .tier-icon {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .tier-icon svg {
       fill: #f7c32f;
-      color: #f7c32f;
       width: 20px;
       height: 20px;
     }
@@ -258,91 +273,88 @@
       text-transform: uppercase;
       color: #FFFFFF;
     }
+    /* Bajadas fuera de los botones, centradas, en 3 líneas */
     .tier-bajada {
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 500;
-      color: #CFDEE0;
+      color: #FFFFFF;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.4rem 0.3rem;
+      border-radius: 20px;
       text-align: center;
-      margin-top: 0.25rem;
-      padding: 0 0.25rem;
+      width: 100%;
+      line-height: 1.3;
     }
 
-    /* === TARJETA DE MÉTRICAS (con iconos desde assets) === */
+    /* === BLOQUE DE RESULTADOS (3 columnas) === */
     .metrics-card {
       padding: 1.5rem 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
-    .metrics-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 1.5rem;
-      flex-direction: column;
-    }
-    .metric-col {
+    /* Cada fila de resultado */
+    .metric-row {
       display: flex;
       align-items: center;
       gap: 1rem;
-      width: 100%;
+      margin-bottom: 1.5rem;
     }
-    .metric-icon {
-      width: 60px;
+    .metric-row:last-child {
+      margin-bottom: 0;
+    }
+    /* Columna 1: icono (ocupa 70% de su espacio, centrado) */
+    .metric-icon-col {
+      flex: 0 0 70px;
       text-align: center;
-      flex-shrink: 0;
     }
-    .metric-icon img {
+    .metric-icon-col img {
       width: 48px;
       height: auto;
-      display: block;
-      margin: 0 auto;
+      display: inline-block;
     }
-    .metric-content {
-      flex: 1;
+    /* Columna 2: texto (nombre + bajada en 2 líneas centradas) */
+    .metric-text-col {
+      flex: 2;
+      text-align: center;
     }
-    .metric-label {
-      font-size: 14px;
-      font-weight: 700;
+    .metric-name {
+      font-size: 15px;
+      font-weight: 800;
       color: #FFFFFF;
-      margin-bottom: 0.25rem;
+      margin-bottom: 4px;
     }
     .metric-bajada {
       font-size: 10px;
       color: #CFDEE0;
       line-height: 1.3;
-      margin-bottom: 0.5rem;
+    }
+    /* Columna 3: cifra alineada a la derecha */
+    .metric-value-col {
+      flex: 1;
+      text-align: right;
     }
     .metric-value {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 800;
       color: #FFFFFF;
       white-space: nowrap;
     }
     @media (min-width: 992px) {
-      .metrics-row {
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-      .metric-col {
-        justify-content: space-between;
-      }
       .metric-value {
-        font-size: 32px;
-        text-align: right;
+        font-size: 28px;
       }
     }
 
     /* === FRASE FINAL (sin icono, centrada, destacada) === */
     .frase-final {
       text-align: center;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #FFFFFF;
-      background: rgba(0,0,0,0.3);
-      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.75rem 1rem;
       border-radius: 60px;
       margin: 0.5rem 0;
       letter-spacing: -0.2px;
+      backdrop-filter: blur(4px);
     }
 
     /* === BOTÓN CTA === */
@@ -392,9 +404,8 @@
       }
       .glass-card {
         grid-column: 1 / 2;
-        margin: 0;
       }
-      .tier-section {
+      .plan-selector-card {
         grid-column: 1 / 2;
       }
       .metrics-card {
@@ -407,16 +418,22 @@
       }
       .frase-final {
         grid-column: span 2;
-        width: 70%;
+        width: 80%;
         margin-left: auto;
         margin-right: auto;
       }
       .cta-wrapper {
         grid-column: span 2;
       }
-      /* Ajuste de altura para que métricas iguale a slider + botones */
-      .metrics-card {
-        min-height: 100%;
+      /* Ajuste para que las tres columnas se vean mejor en desktop */
+      .metric-row {
+        gap: 1.5rem;
+      }
+      .metric-icon-col img {
+        width: 56px;
+      }
+      .metric-name {
+        font-size: 18px;
       }
     }
 
@@ -425,14 +442,14 @@
       .app-container {
         gap: 2.2rem;
       }
-      .glass-card, .metrics-card {
-        padding: 1.5rem 1rem;
+      .glass-card, .metrics-card, .plan-selector-card {
+        padding: 1.25rem 0.75rem;
       }
       .metric-value {
-        font-size: 24px;
+        font-size: 18px;
       }
-      .metric-icon img {
-        width: 42px;
+      .metric-icon-col img {
+        width: 40px;
       }
     }
   </style>
@@ -445,7 +462,7 @@
   <div class="vignette"></div>
 
   <div class="app-container">
-    <!-- HEADER con nueva bajada -->
+    <!-- HEADER -->
     <div class="header animate-item">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
@@ -467,7 +484,6 @@
           <div class="slider-thumb" id="sliderThumb"></div>
         </div>
         <div class="slider-labels" id="sliderLabels">
-          <!-- En móvil se renderizan con <br> para dos líneas, en desktop sin br (CSS controla) -->
           <span>&lt;500<br>hl</span>
           <span>501 - 1000<br>hl</span>
           <span>1001 - 5000<br>hl</span>
@@ -477,73 +493,90 @@
       </div>
     </div>
 
-    <!-- SELECTOR DE PLANES (TIER BUTTONS) -->
-    <div class="tier-section animate-item">
+    <!-- SELECTOR DE PLANES (contenedor unificado con efecto eco) -->
+    <div class="plan-selector-card animate-item">
       <div class="section-title">SELECTOR DE PLANES</div>
       <div class="section-subtitle">Nivel de Alianza Estratégica</div>
       <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
-      <div class="tier-buttons" id="tierButtonsContainer">
-        <div class="tier-btn" data-tier="explorer" id="tierExplorer">
-          <div class="tier-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/><path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/></svg>
+      <div class="tier-buttons-container" id="tierButtonsContainer">
+        <div class="tier-item">
+          <div class="tier-btn" data-tier="explorer" id="tierExplorer">
+            <div class="tier-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/><path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/></svg>
+            </div>
+            <div class="tier-label">Explorer</div>
           </div>
-          <div class="tier-label">Explorer</div>
-          <div class="tier-bajada">1° Nivel de Visibilidad basada en datos reales</div>
+          <div class="tier-bajada">1° Nivel de Visibilidad<br>basada en datos reales</div>
         </div>
-        <div class="tier-btn" data-tier="podium" id="tierPodium">
-          <div class="tier-icon">
-            <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="3" fill="currentColor" rx="0.8"/><circle cx="12" cy="11" r="7" fill="currentColor"/><circle cx="12" cy="11" r="3.8" fill="rgba(0,0,0,0.3)"/></svg>
+        <div class="tier-item">
+          <div class="tier-btn" data-tier="podium" id="tierPodium">
+            <div class="tier-icon">
+              <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="3" fill="currentColor" rx="0.8"/><circle cx="12" cy="11" r="7" fill="currentColor"/><circle cx="12" cy="11" r="3.8" fill="rgba(0,0,0,0.3)"/></svg>
+            </div>
+            <div class="tier-label">Podium</div>
           </div>
-          <div class="tier-label">Podium</div>
-          <div class="tier-bajada">Optimización estratégica para competir con ventaja.</div>
+          <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja.</div>
         </div>
-        <div class="tier-btn active" data-tier="champion" id="tierChampion">
-          <div class="tier-icon">
-            <svg viewBox="0 0 24 24"><path d="M7 5H17V15C17 17.5 14.5 19 12 19C9.5 19 7 17.5 7 15V5Z" fill="currentColor"/><path d="M5 5H7V8H5V5Z" fill="currentColor"/><path d="M19 5H17V8H19V5Z" fill="currentColor"/><rect x="11" y="9" width="2" height="3" fill="#1A2A38"/><polygon points="12,9.5 13,11 11,11" fill="#f7c32f"/><path d="M10 19L14 19" stroke="currentColor" stroke-width="1.5"/></svg>
+        <div class="tier-item">
+          <div class="tier-btn active" data-tier="champion" id="tierChampion">
+            <div class="tier-icon">
+              <svg viewBox="0 0 24 24"><path d="M7 5H17V15C17 17.5 14.5 19 12 19C9.5 19 7 17.5 7 15V5Z" fill="currentColor"/><path d="M5 5H7V8H5V5Z" fill="currentColor"/><path d="M19 5H17V8H19V5Z" fill="currentColor"/><rect x="11" y="9" width="2" height="3" fill="#1A2A38"/><polygon points="12,9.5 13,11 11,11" fill="#f7c32f"/><path d="M10 19L14 19" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <div class="tier-label">Champion</div>
           </div>
-          <div class="tier-label">Champion</div>
-          <div class="tier-bajada">Dominio de mercado con respaldo técnico y autoridad</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CONTENEDOR DE MÉTRICAS (con imágenes desde assets) -->
-    <div class="metrics-card animate-item" id="metricsCard">
-      <div class="metrics-row">
-        <div class="metric-col">
-          <div class="metric-icon">
-            <img src="assets/icono_Inversion.png" alt="Inversión Inteligente">
-          </div>
-          <div class="metric-content">
-            <div class="metric-label">Inversión Inteligente</div>
-            <div class="metric-bajada">Una inversión diseñada para generar retorno, no gasto: alineada a tu escala y potencial comercial</div>
-            <div class="metric-value" id="inversionValue">$1,200 USD</div>
-          </div>
-        </div>
-        <div class="metric-col">
-          <div class="metric-icon">
-            <img src="assets/icono_optimizacion.png" alt="Valor Recuperado">
-          </div>
-          <div class="metric-content">
-            <div class="metric-label">Valor Recuperado</div>
-            <div class="metric-bajada">Lo que hoy pierdes en decisiones sin data, lo recuperas con estrategia basada en información validada</div>
-            <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
-          </div>
-        </div>
-        <div class="metric-col">
-          <div class="metric-icon">
-            <img src="assets/icono_roi.png" alt="Impacto en Rentabilidad">
-          </div>
-          <div class="metric-content">
-            <div class="metric-label">Impacto en Rentabilidad</div>
-            <div class="metric-bajada">El retorno proyectado al transformar tus medallas en una herramienta activa de ventas.</div>
-            <div class="metric-value" id="roiValue">65%</div>
-          </div>
+          <div class="tier-bajada">Dominio de mercado con<br>respaldo técnico y autoridad</div>
         </div>
       </div>
     </div>
 
-    <!-- FRASE FINAL (sin icono, centrada, destacada) -->
+    <!-- BLOQUE DE RESULTADOS (contenedor con efecto eco y título) -->
+    <div class="metrics-card animate-item">
+      <div class="section-title">BLOQUE DE RESULTADOS</div>
+      <div class="section-subtitle">Impacto en tu negocio</div>
+      <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
+      
+      <!-- Fila 1: Inversión Inteligente -->
+      <div class="metric-row">
+        <div class="metric-icon-col">
+          <img src="assets/icono_inversion.png" alt="Inversión Inteligente">
+        </div>
+        <div class="metric-text-col">
+          <div class="metric-name">Inversión Inteligente</div>
+          <div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div>
+        </div>
+        <div class="metric-value-col">
+          <div class="metric-value" id="inversionValue">$1,200 USD</div>
+        </div>
+      </div>
+      <!-- Fila 2: Valor Recuperado (antes Optimización Anual) -->
+      <div class="metric-row">
+        <div class="metric-icon-col">
+          <img src="assets/icono_valor.png" alt="Valor Recuperado">
+        </div>
+        <div class="metric-text-col">
+          <div class="metric-name">Valor Recuperado</div>
+          <div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div>
+        </div>
+        <div class="metric-value-col">
+          <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
+        </div>
+      </div>
+      <!-- Fila 3: Impacto en Rentabilidad (antes ROI) -->
+      <div class="metric-row">
+        <div class="metric-icon-col">
+          <img src="assets/icono_optimizacion.png" alt="Impacto en Rentabilidad">
+        </div>
+        <div class="metric-text-col">
+          <div class="metric-name">Impacto en Rentabilidad</div>
+          <div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div>
+        </div>
+        <div class="metric-value-col">
+          <div class="metric-value" id="roiValue">65%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRASE FINAL -->
     <div class="frase-final animate-item">
       Crecemos contigo: este modelo se adapta a tu realidad productiva y a tus objetivos comerciales.
     </div>
