@@ -16,10 +16,13 @@
     body {
       font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
       background: #000;
-      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* --- FONDO CON IMAGEN + OVERLAY 57% + VIÑETA --- */
+    /* --- FONDO CON IMAGEN + OVERLAY + VIÑETA --- */
     .hero-bg {
       position: fixed;
       top: 0;
@@ -54,27 +57,16 @@
       z-index: 0;
     }
 
-    /* --- CONTENEDOR PRINCIPAL --- */
+    /* --- CONTENEDOR PRINCIPAL (responsive móvil: 90% ancho) --- */
     .app-container {
-      max-width: 390px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 44px 20px 40px 20px;
+      width: 90%;
+      max-width: 500px;   /* Evita que se estire demasiado en móviles grandes */
+      margin: 2rem auto;
       position: relative;
       z-index: 2;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-    }
-
-    /* Animación de entrada */
-    @keyframes fadeUp {
-      0% { opacity: 0; transform: translateY(12px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .animate-item {
-      opacity: 0;
-      animation: fadeUp 0.5s ease forwards;
+      gap: 1.5rem;
     }
 
     /* --- HEADER --- */
@@ -82,40 +74,41 @@
       text-align: center;
     }
     .h1-sim {
-      font-size: 32px;
+      font-size: clamp(28px, 8vw, 36px);
       font-weight: 800;
       color: #FFFFFF;
       letter-spacing: -0.3px;
     }
     .h2-sim {
-      font-size: 18px;
+      font-size: clamp(16px, 5vw, 20px);
       font-weight: 500;
       color: #CFDEE0;
-      margin-top: 8px;
+      margin-top: 0.5rem;
     }
 
-    /* --- CONTENEDORES GLASS (flotantes) --- */
+    /* --- CONTENEDORES GLASS (efecto cristal/espejo mejorado) --- */
     .glass-card, .metrics-card {
-      background: rgba(20, 30, 40, 0.4); /* Más transparente */
-      backdrop-filter: blur(24px);        /* Más desenfoque */
-      border: 1.5px solid rgba(255, 255, 255, 0.25);
-      border-radius: 32px;
-      padding: 20px 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Sombra para flotar */
+      background: rgba(20, 30, 40, 0.65);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      padding: 1.25rem 1rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .glass-card:hover, .metrics-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    .glass-card {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .metrics-card {
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* --- SLIDER --- */
+    /* --- SLIDER (ocupa 100% del contenedor) --- */
     .slider-container {
       width: 100%;
     }
     .slider-track-wrapper {
       position: relative;
-      margin: 20px 8px 32px 8px;
+      margin: 1.5rem 0.5rem 2rem 0.5rem;
     }
     .slider-rail {
       width: 100%;
@@ -154,8 +147,9 @@
     .slider-labels {
       display: flex;
       justify-content: space-between;
-      margin-top: 12px;
-      gap: 8px;
+      margin-top: 0.75rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
     .slider-labels span {
       flex: 1;
@@ -164,34 +158,33 @@
       font-weight: 600;
       color: #CFDEE0;
       white-space: nowrap;
-      letter-spacing: 0.2px;
     }
 
     /* --- TIER BUTTONS --- */
     .tier-buttons {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 0.75rem;
       width: 100%;
+      margin-top: 0.5rem;
     }
     .tier-btn {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 0.5rem;
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(8px);
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       border-radius: 60px;
-      padding: 6px 8px;
+      padding: 0.5rem 0.25rem;
       cursor: pointer;
       transition: all 250ms ease;
-      min-width: 0;
     }
     .tier-btn.active {
       background: linear-gradient(90deg, #E40F63, #C32263);
-      border: 1.5px solid rgba(255,255,255,0.4);
+      border-color: rgba(255,255,255,0.4);
       box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3);
       transform: scale(1.02) translateY(-2px);
     }
@@ -201,7 +194,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
     }
     .tier-icon svg {
       fill: #f7c32f;
@@ -218,14 +210,14 @@
       white-space: nowrap;
     }
 
-    /* --- TARJETA DE MÉTRICAS (con títulos en 2 líneas) --- */
+    /* --- TARJETA DE MÉTRICAS --- */
     .metrics-card {
-      padding: 24px 12px;
+      padding: 1.5rem 0.75rem;
     }
     .metrics-row {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
+      gap: 1rem;
     }
     .metric-col {
       flex: 1;
@@ -233,25 +225,22 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 12px;
+      gap: 0.75rem;
     }
     .metric-icon {
       height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 4px;
     }
     .metric-icon svg {
       width: 36px;
       height: 36px;
-      display: block;
     }
     .metric-label {
       font-size: 11px;
       font-weight: 700;
       color: #CFDEE0;
-      letter-spacing: 0.3px;
       text-transform: uppercase;
       line-height: 1.3;
     }
@@ -262,23 +251,20 @@
       font-size: 16px;
       font-weight: 800;
       color: #FFFFFF;
-      line-height: 1.2;
       white-space: nowrap;
     }
-    @media (max-width: 360px) {
-      .metric-label { font-size: 10px; }
+    @media (max-width: 420px) {
       .metric-value { font-size: 14px; }
-      .metrics-row { gap: 12px; }
+      .metric-label { font-size: 10px; }
     }
 
-    /* --- TAGLINE (asterisco + texto original, pegado) --- */
+    /* --- TAGLINE (asterisco + texto) --- */
     .tagline-wrapper {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      gap: 4px;
-      margin-top: -8px; /* Pegado al contenedor anterior */
-      transition: opacity 0.3s ease;
+      gap: 0.25rem;
+      margin-top: -0.5rem;
     }
     .tagline-asterisk {
       font-size: 12px;
@@ -293,11 +279,11 @@
       text-align: right;
     }
 
-    /* --- BOTÓN CTA centrado --- */
+    /* --- BOTÓN CTA --- */
     .cta-wrapper {
       display: flex;
       justify-content: center;
-      margin-top: 8px;
+      margin-top: 0.5rem;
     }
     .cta-button {
       background: linear-gradient(90deg, #E40F63, #C32263);
@@ -318,12 +304,83 @@
       font-size: 14px;
       font-weight: 700;
       color: #FFFFFF;
-      letter-spacing: 0.3px;
       white-space: nowrap;
     }
     @media (max-width: 360px) {
       .cta-text { font-size: 12px; }
       .cta-button { padding: 8px 20px; min-width: 180px; }
+    }
+
+    /* ===== LAYOUT PARA DESKTOP (pantallas ≥ 992px) ===== */
+    @media (min-width: 992px) {
+      .app-container {
+        max-width: 1100px;
+        width: 85%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .header {
+        grid-column: span 2;
+        margin-bottom: 0;
+      }
+      .glass-card {
+        grid-column: 1 / 2;
+        margin: 0;
+      }
+      .tier-buttons {
+        grid-column: 1 / 2;
+      }
+      .metrics-card {
+        grid-column: 2 / 3;
+        grid-row: 2 / 4;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0;
+      }
+      .tagline-wrapper {
+        grid-column: span 2;
+        justify-content: center;
+        margin-top: 0;
+      }
+      .cta-wrapper {
+        grid-column: span 2;
+      }
+      /* Ajuste de márgenes para que quede equilibrado */
+      .tier-buttons {
+        margin-top: 0;
+      }
+      .metrics-card .metrics-row {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .metric-col {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+        gap: 1rem;
+      }
+      .metric-icon {
+        width: 60px;
+        justify-content: flex-start;
+      }
+      .metric-label, .metric-value {
+        flex: 1;
+        white-space: normal;
+      }
+      .metric-value {
+        text-align: right;
+      }
+    }
+
+    /* Para pantallas muy grandes (>1400px) */
+    @media (min-width: 1400px) {
+      .app-container {
+        max-width: 1300px;
+      }
     }
   </style>
 </head>
@@ -376,44 +433,28 @@
       </div>
     </div>
 
-    <!-- Tarjeta de métricas (con iconos corregidos y títulos en 2 líneas) -->
+    <!-- Tarjeta de métricas -->
     <div class="metrics-card animate-item" style="animation-delay: 240ms;">
       <div class="metrics-row">
-        <!-- Inversión mensual -->
         <div class="metric-col">
-          <div class="metric-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
-              <circle cx="256" cy="256" r="200" fill="#f7c32f" stroke="#d4a81a" stroke-width="12"/>
-              <text x="256" y="320" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#FFFFFF" text-anchor="middle">$</text>
-            </svg>
-          </div>
+          <div class="metric-icon"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f7c32f" stroke="#d4a81a" stroke-width="12"/><text x="256" y="320" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#FFFFFF" text-anchor="middle">$</text></svg></div>
           <div class="metric-label"><span>Inversión</span><span>Mensual</span></div>
           <div class="metric-value" id="inversionValue">$1,200 USD</div>
         </div>
-        <!-- Optimización anual -->
         <div class="metric-col">
-          <div class="metric-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
-              <path fill="#f7c32f" d="M492,118H372c-11,0-20,9-20,20s9,20,20,20h81.7L323.3,288.3l-104.6-104.6c-7.8-7.8-20.5-7.8-28.3,0L10.4,363.6c-7.8,7.8-7.8,20.5,0,28.3c7.8,7.8,20.5,7.8,28.3,0l151.7-151.7l104.6,104.6c7.8,7.8,20.5,7.8,28.3,0L472,196.3V278c0,11,9,20,20,20s20-9,20-20V138C512,127,503,118,492,118z"/>
-            </svg>
-          </div>
+          <div class="metric-icon"><svg viewBox="0 0 512 512"><path fill="#f7c32f" d="M492,118H372c-11,0-20,9-20,20s9,20,20,20h81.7L323.3,288.3l-104.6-104.6c-7.8-7.8-20.5-7.8-28.3,0L10.4,363.6c-7.8,7.8-7.8,20.5,0,28.3c7.8,7.8,20.5,7.8,28.3,0l151.7-151.7l104.6,104.6c7.8,7.8,20.5,7.8,28.3,0L472,196.3V278c0,11,9,20,20,20s20-9,20-20V138C512,127,503,118,492,118z"/></svg></div>
           <div class="metric-label"><span>Optimización</span><span>Anual</span></div>
           <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
         </div>
-        <!-- ROI colaborativo (icono corregido y alineado) -->
         <div class="metric-col">
-          <div class="metric-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
-              <path fill="#f7c32f" d="M437.3,325.2c-10.1-13.9-29.4-17-43.3-6.9c-13.9,10.1-17,29.4-6.9,43.3c23.6,32.5,36.9,71.7,36.9,112.4c0,105.9-86.1,192-192,192S40,579.9,40,474S126.1,282,232,282c40.7,0,79.9,13.3,112.4,36.9c13.9,10.1,33.2,7,43.3-6.9c10.1-13.9,7-33.2-6.9-43.3C335,231.8,285.1,214,232,214C88.4,214-28,330.4-28,474s116.4,260,260,260s260-116.4,260-260C492,421,474.2,371,441.3,325.2z M240,422c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S251,422,240,422z M304,486c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S315,486,304,486z M252.8,423.2c-10.1-13.9-7-33.2,6.9-43.3c13.9-10.1,33.2-7,43.3,6.9l80,110c10.1,13.9,7,33.2-6.9,43.3c-13.9,10.1-33.2,7-43.3-6.9L252.8,423.2z"/>
-            </svg>
-          </div>
+          <div class="metric-icon"><svg viewBox="0 0 512 512"><path fill="#f7c32f" d="M437.3,325.2c-10.1-13.9-29.4-17-43.3-6.9c-13.9,10.1-17,29.4-6.9,43.3c23.6,32.5,36.9,71.7,36.9,112.4c0,105.9-86.1,192-192,192S40,579.9,40,474S126.1,282,232,282c40.7,0,79.9,13.3,112.4,36.9c13.9,10.1,33.2,7,43.3-6.9c10.1-13.9,7-33.2-6.9-43.3C335,231.8,285.1,214,232,214C88.4,214-28,330.4-28,474s116.4,260,260,260s260-116.4,260-260C492,421,474.2,371,441.3,325.2z M240,422c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S251,422,240,422z M304,486c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S315,486,304,486z M252.8,423.2c-10.1-13.9-7-33.2,6.9-43.3c13.9-10.1,33.2-7,43.3,6.9l80,110c10.1,13.9,7,33.2-6.9,43.3c-13.9,10.1-33.2,7-43.3-6.9L252.8,423.2z"/></svg></div>
           <div class="metric-label"><span>ROI</span><span>Colaborativo</span></div>
           <div class="metric-value" id="roiValue">65%</div>
         </div>
       </div>
     </div>
 
-    <!-- Tagline (asterisco + texto original, pegado) -->
+    <!-- Tagline -->
     <div class="tagline-wrapper animate-item" style="animation-delay: 320ms;" id="taglineWrapper">
       <span class="tagline-asterisk">*</span>
       <span class="tagline-text" id="taglineText">Crecemos si tú creces: este presupuesto se ajusta a tu realidad…</span>
