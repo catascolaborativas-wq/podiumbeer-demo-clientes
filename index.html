@@ -64,7 +64,7 @@
       z-index: 2;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
     }
 
     /* Animación de entrada */
@@ -94,13 +94,19 @@
       margin-top: 8px;
     }
 
-    /* --- CONTENEDORES GLASS (slider y métricas) --- */
+    /* --- CONTENEDORES GLASS (flotantes) --- */
     .glass-card, .metrics-card {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(20px);
+      background: rgba(20, 30, 40, 0.4); /* Más transparente */
+      backdrop-filter: blur(24px);        /* Más desenfoque */
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       border-radius: 32px;
-      padding: 16px;
+      padding: 20px 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Sombra para flotar */
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .glass-card:hover, .metrics-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
     }
 
     /* --- SLIDER --- */
@@ -161,7 +167,7 @@
       letter-spacing: 0.2px;
     }
 
-    /* --- TIER BUTTONS (mismo ancho, pequeños, iconos dorados) --- */
+    /* --- TIER BUTTONS --- */
     .tier-buttons {
       display: flex;
       justify-content: space-between;
@@ -212,14 +218,14 @@
       white-space: nowrap;
     }
 
-    /* --- TARJETA DE MÉTRICAS (iconos alineados, espaciado entre columnas) --- */
+    /* --- TARJETA DE MÉTRICAS (con títulos en 2 líneas) --- */
     .metrics-card {
-      padding: 20px 12px;
+      padding: 24px 12px;
     }
     .metrics-row {
       display: flex;
       justify-content: space-between;
-      gap: 16px;  /* más separación entre columnas */
+      gap: 16px;
     }
     .metric-col {
       flex: 1;
@@ -227,28 +233,30 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 8px;
-      min-width: 0;
+      gap: 12px;
     }
     .metric-icon {
-      height: 40px;  /* altura fija para alinear */
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 4px;
     }
     .metric-icon svg {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       display: block;
     }
     .metric-label {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       color: #CFDEE0;
       letter-spacing: 0.3px;
       text-transform: uppercase;
-      white-space: nowrap;
+      line-height: 1.3;
+    }
+    .metric-label span {
+      display: block;
     }
     .metric-value {
       font-size: 16px;
@@ -257,20 +265,19 @@
       line-height: 1.2;
       white-space: nowrap;
     }
-    /* Ajuste para pantallas muy pequeñas: reducir fuente de las etiquetas */
     @media (max-width: 360px) {
-      .metric-label { font-size: 9px; }
+      .metric-label { font-size: 10px; }
       .metric-value { font-size: 14px; }
       .metrics-row { gap: 12px; }
     }
 
-    /* --- TAGLINE (asterisco + texto original, pegado al contenedor de métricas) --- */
+    /* --- TAGLINE (asterisco + texto original, pegado) --- */
     .tagline-wrapper {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 4px;
-      margin-top: 0;      /* pegado al contenedor anterior */
+      margin-top: -8px; /* Pegado al contenedor anterior */
       transition: opacity 0.3s ease;
     }
     .tagline-asterisk {
@@ -286,11 +293,11 @@
       text-align: right;
     }
 
-    /* --- BOTÓN CTA centrado y más pequeño --- */
+    /* --- BOTÓN CTA centrado --- */
     .cta-wrapper {
       display: flex;
       justify-content: center;
-      margin-top: 4px;
+      margin-top: 8px;
     }
     .cta-button {
       background: linear-gradient(90deg, #E40F63, #C32263);
@@ -356,85 +363,63 @@
     <!-- Tier buttons -->
     <div class="tier-buttons animate-item" style="animation-delay: 160ms;" id="tierButtonsContainer">
       <div class="tier-btn" data-tier="explorer" id="tierExplorer">
-        <div class="tier-icon">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/>
-            <path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2" fill="none"/>
-            <path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2" fill="none"/>
-            <ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/>
-          </svg>
-        </div>
+        <div class="tier-icon"><svg viewBox="0 0 24 24"><path d="M12 3C9 5 7 8 7 11.5C7 14 8.5 16 10 17.5C11 18.5 12 19 12 21C12 19 13 18.5 14 17.5C15.5 16 17 14 17 11.5C17 8 15 5 12 3Z" fill="currentColor"/><path d="M12 3C9.5 5.5 8 8.5 8 11.5C8 13.5 9 15 10.5 16.5C11.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><path d="M12 3C14.5 5.5 16 8.5 16 11.5C16 13.5 15 15 13.5 16.5C12.5 17.5 12 18.5 12 20" stroke="currentColor" stroke-width="1.2"/><ellipse cx="12" cy="11.5" rx="1.8" ry="2.2" fill="currentColor"/></svg></div>
         <span class="tier-label">Explorer</span>
       </div>
       <div class="tier-btn" data-tier="podium" id="tierPodium">
-        <div class="tier-icon">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="3" width="8" height="3" fill="currentColor" rx="0.8"/>
-            <circle cx="12" cy="11" r="7" fill="currentColor"/>
-            <circle cx="12" cy="11" r="3.8" fill="rgba(0,0,0,0.3)"/>
-          </svg>
-        </div>
+        <div class="tier-icon"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="3" fill="currentColor" rx="0.8"/><circle cx="12" cy="11" r="7" fill="currentColor"/><circle cx="12" cy="11" r="3.8" fill="rgba(0,0,0,0.3)"/></svg></div>
         <span class="tier-label">Podium</span>
       </div>
       <div class="tier-btn active" data-tier="champion" id="tierChampion">
-        <div class="tier-icon">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7 5H17V15C17 17.5 14.5 19 12 19C9.5 19 7 17.5 7 15V5Z" fill="currentColor"/>
-            <path d="M5 5H7V8H5V5Z" fill="currentColor"/>
-            <path d="M19 5H17V8H19V5Z" fill="currentColor"/>
-            <rect x="11" y="9" width="2" height="3" fill="#1A2A38"/>
-            <polygon points="12,9.5 13,11 11,11" fill="#f7c32f"/>
-            <path d="M10 19L14 19" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-        </div>
+        <div class="tier-icon"><svg viewBox="0 0 24 24"><path d="M7 5H17V15C17 17.5 14.5 19 12 19C9.5 19 7 17.5 7 15V5Z" fill="currentColor"/><path d="M5 5H7V8H5V5Z" fill="currentColor"/><path d="M19 5H17V8H19V5Z" fill="currentColor"/><rect x="11" y="9" width="2" height="3" fill="#1A2A38"/><polygon points="12,9.5 13,11 11,11" fill="#f7c32f"/><path d="M10 19L14 19" stroke="currentColor" stroke-width="1.5"/></svg></div>
         <span class="tier-label">Champion</span>
       </div>
     </div>
 
-    <!-- Tarjeta de métricas (con nuevo icono de moneda) -->
+    <!-- Tarjeta de métricas (con iconos corregidos y títulos en 2 líneas) -->
     <div class="metrics-card animate-item" style="animation-delay: 240ms;">
       <div class="metrics-row">
-        <!-- Inversión mensual - icono de moneda con $ -->
+        <!-- Inversión mensual -->
         <div class="metric-col">
           <div class="metric-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
               <circle cx="256" cy="256" r="200" fill="#f7c32f" stroke="#d4a81a" stroke-width="12"/>
-              <text x="256" y="300" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#06232E" text-anchor="middle">$</text>
+              <text x="256" y="320" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="#FFFFFF" text-anchor="middle">$</text>
             </svg>
           </div>
-          <div class="metric-label">Inversión mensual</div>
+          <div class="metric-label"><span>Inversión</span><span>Mensual</span></div>
           <div class="metric-value" id="inversionValue">$1,200 USD</div>
         </div>
         <!-- Optimización anual -->
         <div class="metric-col">
           <div class="metric-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
               <path fill="#f7c32f" d="M492,118H372c-11,0-20,9-20,20s9,20,20,20h81.7L323.3,288.3l-104.6-104.6c-7.8-7.8-20.5-7.8-28.3,0L10.4,363.6c-7.8,7.8-7.8,20.5,0,28.3c7.8,7.8,20.5,7.8,28.3,0l151.7-151.7l104.6,104.6c7.8,7.8,20.5,7.8,28.3,0L472,196.3V278c0,11,9,20,20,20s20-9,20-20V138C512,127,503,118,492,118z"/>
             </svg>
           </div>
-          <div class="metric-label">Optimización anual</div>
+          <div class="metric-label"><span>Optimización</span><span>Anual</span></div>
           <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
         </div>
-        <!-- ROI colaborativo -->
+        <!-- ROI colaborativo (icono corregido y alineado) -->
         <div class="metric-col">
           <div class="metric-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
               <path fill="#f7c32f" d="M437.3,325.2c-10.1-13.9-29.4-17-43.3-6.9c-13.9,10.1-17,29.4-6.9,43.3c23.6,32.5,36.9,71.7,36.9,112.4c0,105.9-86.1,192-192,192S40,579.9,40,474S126.1,282,232,282c40.7,0,79.9,13.3,112.4,36.9c13.9,10.1,33.2,7,43.3-6.9c10.1-13.9,7-33.2-6.9-43.3C335,231.8,285.1,214,232,214C88.4,214-28,330.4-28,474s116.4,260,260,260s260-116.4,260-260C492,421,474.2,371,441.3,325.2z M240,422c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S251,422,240,422z M304,486c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S315,486,304,486z M252.8,423.2c-10.1-13.9-7-33.2,6.9-43.3c13.9-10.1,33.2-7,43.3,6.9l80,110c10.1,13.9,7,33.2-6.9,43.3c-13.9,10.1-33.2,7-43.3-6.9L252.8,423.2z"/>
             </svg>
           </div>
-          <div class="metric-label">ROI colaborativo</div>
+          <div class="metric-label"><span>ROI</span><span>Colaborativo</span></div>
           <div class="metric-value" id="roiValue">65%</div>
         </div>
       </div>
     </div>
 
-    <!-- Tagline: asterisco + texto original (pegado al contenedor de métricas) -->
+    <!-- Tagline (asterisco + texto original, pegado) -->
     <div class="tagline-wrapper animate-item" style="animation-delay: 320ms;" id="taglineWrapper">
       <span class="tagline-asterisk">*</span>
       <span class="tagline-text" id="taglineText">Crecemos si tú creces: este presupuesto se ajusta a tu realidad…</span>
     </div>
 
-    <!-- Botón CTA centrado -->
+    <!-- Botón CTA -->
     <div class="cta-wrapper animate-item" style="animation-delay: 400ms;">
       <button class="cta-button" id="ctaBtn">
         <span class="cta-text">Agenda tu diagnóstico gratuito</span>
@@ -443,13 +428,13 @@
   </div>
 
   <script>
-    // Tabla de valores según rangos: 0:<500, 1:1000, 2:5000, 3:10000, 4:≥20000
+    // Tabla de valores (rangos)
     const metricsTable = [
-      { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer", tagline: "Explorer: primeros pasos, acompañamiento personalizado." },
-      { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer", tagline: "Explorer: creciendo con confianza." },
-      { inversion: "$600 USD", optimizacion: "$7,200 USD", roi: "55%", suggestedTier: "podium", tagline: "Podium: escalando con soporte estratégico." },
-      { inversion: "$1,200 USD", optimizacion: "$14,500 USD", roi: "65%", suggestedTier: "champion", tagline: "Champion: rendimiento superior, beneficios exclusivos." },
-      { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion", tagline: "Champion: volumen industrial, alianza premium." }
+      { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
+      { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
+      { inversion: "$600 USD", optimizacion: "$7,200 USD", roi: "55%", suggestedTier: "podium" },
+      { inversion: "$1,200 USD", optimizacion: "$14,500 USD", roi: "65%", suggestedTier: "champion" },
+      { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion" }
     ];
 
     // Elementos DOM
@@ -462,9 +447,8 @@
     const inversionEl = document.getElementById('inversionValue');
     const optimizacionEl = document.getElementById('optimizacionValue');
     const roiEl = document.getElementById('roiValue');
-    const taglineTextEl = document.getElementById('taglineText');
 
-    let currentRangeIndex = 3;  // 10000 hl
+    let currentRangeIndex = 3;
     let currentTier = "champion";
     let allowAutoTier = true;
     let isDragging = false;
@@ -511,7 +495,7 @@
       return metricsTable[currentRangeIndex];
     }
 
-    function updateMetricsAndTagline(resetTagline = true) {
+    function updateMetrics() {
       const newVals = getCurrentMetrics();
       const oldInversion = inversionEl.innerText;
       const oldOptim = optimizacionEl.innerText;
@@ -519,10 +503,6 @@
       animateValue(inversionEl, oldInversion, newVals.inversion, true, "USD");
       animateValue(optimizacionEl, oldOptim, newVals.optimizacion, true, "USD");
       animateValue(roiEl, oldRoi, newVals.roi, false, "%");
-      if (resetTagline) {
-        // Solo actualizamos si es por cambio de rango, pero el tagline fijo no se modifica.
-        // Dejamos el texto original inmutable.
-      }
     }
 
     function updateTierButtonsActive() {
@@ -551,7 +531,7 @@
         allowAutoTier = true;
         autoSelectTierFromRange();
       }
-      updateMetricsAndTagline(true);
+      updateMetrics();
     }
 
     // Slider interactivo
@@ -656,9 +636,7 @@
       allowAutoTier = true;
       updateSliderVisual(3);
       updateTierButtonsActive();
-      updateMetricsAndTagline(true);
-      // Forzar el texto original del tagline (por si acaso)
-      taglineTextEl.innerText = "Crecemos si tú creces: este presupuesto se ajusta a tu realidad…";
+      updateMetrics();
     }
     init();
   </script>
