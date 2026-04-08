@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
+    /* ===== RESET Y ESTILOS BASE ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
@@ -23,9 +24,22 @@
     .glass-card, .metrics-card, .plan-selector-card, .chart-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
     .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
     .shift-content { margin-left: 2.5%; width: 97.5%; }
+    /* Títulos de sección generales (no afecta al título del gráfico) */
     .section-title { font-size: 14px; font-weight: 800; letter-spacing: 2px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
     .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
     .section-desc { font-size: 13px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
+    /* Título específico del gráfico (homólogo a PodiumBeer) */
+    .chart-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-left: 5px solid #e32c6c;
+      padding-left: 1rem;
+      color: #f7c32f;
+      text-transform: none;
+      letter-spacing: normal;
+      margin-bottom: 1.5rem;  /* más espacio entre título y gráfico */
+    }
+    /* SLIDER */
     .slider-container { width: 100%; padding: 0 0.5rem; }
     .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
     .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
@@ -33,9 +47,13 @@
     .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
     .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
     .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
-    .slider-labels span { flex: 1; text-align: center; font-size: 10px; font-weight: 600; color: #CFDEE0; line-height: 1.3; }
-    @media (max-width: 991px) { .slider-labels span br { display: block; } }
+    .slider-labels span { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: #CFDEE0; line-height: 1.3; }
+    @media (max-width: 991px) {
+      .slider-labels span { font-size: 11px; }
+      .slider-labels span br { display: block; }
+    }
     @media (min-width: 992px) { .slider-labels span br { display: none; } }
+    /* SELECTOR DE PLANES */
     .tier-buttons-container { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
     .tier-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
     .tier-btn { width: auto; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 1.2rem; cursor: pointer; transition: all 250ms ease; }
@@ -43,6 +61,7 @@
     .tier-icon img { width: 24px; height: auto; display: block; }
     .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
     .tier-bajada { font-size: 11px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
+    /* BLOQUE DE RESULTADOS */
     .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
     .metric-row:last-child { margin-bottom: 0; }
     .metric-icon-col { flex: 0 0 70px; text-align: center; }
@@ -52,15 +71,19 @@
     .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
     .metric-value-col { flex: 1; text-align: right; }
     .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
+    /* CRÉDITOS */
     .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
+    /* BOTÓN CTA */
     .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
     .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
     .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
     .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
+    /* GRÁFICO */
     .chart-card { padding: 1rem; }
-    .chart-container { width: 100%; min-height: 450px; margin-top: 1rem; position: relative; }
+    .chart-container { width: 100%; min-height: 450px; margin-top: 0; position: relative; }
+    canvas { touch-action: none; }  /* Evita desplazamiento al tocar */
     /* Leyenda: en móvil dos filas centradas, en desktop scroll horizontal */
-    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
+    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 2rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
     @media (min-width: 992px) {
       .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
       .legend-item { flex-shrink: 0; }
@@ -87,20 +110,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       white-space: nowrap;
     }
-    @media (max-width: 991px) {
-      .app-container { gap: 1.8rem; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
-      .metric-value { font-size: 18px; }
-      .metric-icon-col { flex-basis: 60px; }
-      .metric-icon-col img { width: 44px; }
-      .metric-name { font-size: 14px; }
-      .metric-bajada { font-size: 9px; }
-      .h1-sim { white-space: normal; font-size: 28px; }
-      .bajada-header { font-size: 14px; }
-      .credits { font-size: 16px; }
-      .tier-btn { padding: 0.5rem 1rem; }
-      .legend-item { font-size: 9px; }
-    }
+    /* RESPONSIVE DESKTOP */
     @media (min-width: 992px) {
       .app-container { width: 85%; max-width: 1300px; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
       .header { grid-column: span 2; }
@@ -116,6 +126,22 @@
       .metric-icon-col img { width: 64px; }
       .metric-name { font-size: 18px; }
       .metric-value { font-size: 28px; }
+    }
+    /* RESPONSIVE MÓVIL */
+    @media (max-width: 991px) {
+      .app-container { gap: 1.8rem; }
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
+      .metric-value { font-size: 18px; }
+      .metric-icon-col { flex-basis: 60px; }
+      .metric-icon-col img { width: 44px; }
+      .metric-name { font-size: 14px; }
+      .metric-bajada { font-size: 9px; }
+      .h1-sim { white-space: normal; font-size: 28px; }
+      .bajada-header { font-size: 14px; }
+      .credits { font-size: 16px; }
+      .tier-btn { padding: 0.5rem 1rem; }
+      .legend-item { font-size: 9px; }
+      .slider-labels span { font-size: 11px; }
     }
     @media (max-width: 380px) {
       .app-container { width: 95%; }
@@ -161,7 +187,7 @@
     <!-- GRÁFICO Chilean Competition Wings - 2025 -->
     <div class="chart-card animate-item" id="chartCard">
       <div class="shift-content">
-        <div class="section-title">📊 Chilean Competition Wings - 2025</div>
+        <div class="chart-title">📊 Chilean Competition Wings - 2025</div>
       </div>
       <div class="chart-container shift-content">
         <canvas id="breweryChart" width="800" height="400"></canvas>
@@ -236,7 +262,7 @@
   </div>
 
   <script>
-    // ======================== CARGA DE CSV (MISMA QUE PODIUMBEER) ========================
+    // ======================== CARGA DE CSV (MISMA LÓGICA QUE PODIUMBEER) ========================
     let allData = [];
 
     function formatearTextoPresentacion(str) {
@@ -301,16 +327,19 @@
       });
       if (!data2025.length) return;
 
+      // Normalizar y contar total por cervecería (usando .trim() y formateo)
       const breweryTotal = {};
       data2025.forEach(item => {
-        const brew = item.cerveceria;
+        let brew = item.cerveceria ? item.cerveceria.trim() : '';
         if (!brew) return;
         breweryTotal[brew] = (breweryTotal[brew] || 0) + 1;
       });
+
       const sorted = Object.entries(breweryTotal).sort((a,b) => b[1] - a[1]);
       const top15 = sorted.slice(0, 15).map(entry => entry[0]);
       console.log('Top 15 cervecerías:', top15);
 
+      // Inicializar estructuras mensuales (total, oro, plata, bronce)
       const monthlyTotal = {};
       const monthlyOro = {};
       const monthlyPlata = {};
@@ -322,12 +351,16 @@
         monthlyBronce[brew] = Array(10).fill(0);
       });
 
+      // Llenar datos mes a mes
       data2025.forEach(item => {
-        const brew = item.cerveceria;
+        let brew = item.cerveceria ? item.cerveceria.trim() : '';
         if (!top15.includes(brew)) return;
         const fecha = item.fecha;
         if (!fecha) return;
-        const mes = parseInt(fecha.split('-')[1], 10);
+        // Formato esperado: YYYY-MM-DD
+        const partes = fecha.split('-');
+        if (partes.length < 2) return;
+        const mes = parseInt(partes[1], 10);
         if (mes >= 3 && mes <= 12) {
           const idx = mes - 3;
           monthlyTotal[brew][idx]++;
@@ -338,6 +371,7 @@
         }
       });
 
+      // Construir datasets
       const datasets = [];
       tooltipDetails = [];
       top15.forEach((brew, idx) => {
@@ -351,7 +385,7 @@
           fill: true,
           pointRadius: 4,
           pointHoverRadius: 8,
-          pointHitRadius: 10,
+          pointHitRadius: 18,  // Para facilitar toque en móvil
           hidden: false
         });
         tooltipDetails.push({
@@ -370,10 +404,28 @@
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: { tooltip: { enabled: false }, legend: { display: false } },
+          layout: {
+            padding: {
+              top: 10,
+              bottom: 10
+            }
+          },
+          plugins: {
+            tooltip: { enabled: false },
+            legend: { display: false }
+          },
           scales: {
-            y: { beginAtZero: true, ticks: { color: '#fff', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.1)' }, title: { display: false } },
-            x: { ticks: { color: '#fff' }, grid: { display: false }, title: { display: false } }
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#fff', stepSize: 1 },
+              grid: { color: 'rgba(255,255,255,0.1)' },
+              title: { display: false }
+            },
+            x: {
+              ticks: { color: '#fff' },
+              grid: { display: false },
+              title: { display: false }
+            }
           },
           onHover: (event, activeElements) => { showTooltip(event, activeElements); },
           onLeave: () => { hideTooltip(); }
@@ -384,21 +436,16 @@
       // Eventos táctiles para Android
       canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        const activeElements = breweryChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
-        showTooltip({ native: { clientX: touch.clientX, clientY: touch.clientY } }, activeElements);
+        const activeElements = breweryChart.getElementsAtEvent(e);
+        showTooltip(e, activeElements);
       });
-      canvas.addEventListener('touchend', () => { hideTooltip(); });
       canvas.addEventListener('touchmove', (e) => {
         e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const activeElements = breweryChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
-        showTooltip({ native: { clientX: touch.clientX, clientY: touch.clientY } }, activeElements);
+        const activeElements = breweryChart.getElementsAtEvent(e);
+        showTooltip(e, activeElements);
       });
+      canvas.addEventListener('touchend', () => { hideTooltip(); });
+      canvas.addEventListener('touchcancel', () => { hideTooltip(); });
 
       function showTooltip(event, activeElements) {
         const tooltipDiv = document.getElementById('custom-tooltip');
@@ -422,11 +469,13 @@
         }
         tooltipDiv.innerHTML = `<strong style="color: ${datasets[datasetIndex].borderColor}">${breweryName}</strong><br>${month}<br>🥇 Oro: ${oro} | 🥈 Plata: ${plata} | 🥉 Bronce: ${bronce}<br>Total: ${total} medallas`;
         tooltipDiv.style.display = 'block';
-        let left = event.native?.clientX + 15;
-        let top = event.native?.clientY - 30;
+        let clientX = event.native?.clientX ?? (event.touches ? event.touches[0].clientX : 0);
+        let clientY = event.native?.clientY ?? (event.touches ? event.touches[0].clientY : 0);
+        let left = clientX + 15;
+        let top = clientY - 30;
         const tooltipRect = tooltipDiv.getBoundingClientRect();
-        if (left + tooltipRect.width > window.innerWidth) left = event.native.clientX - tooltipRect.width - 10;
-        if (top + tooltipRect.height > window.innerHeight) top = event.native.clientY - tooltipRect.height - 10;
+        if (left + tooltipRect.width > window.innerWidth) left = clientX - tooltipRect.width - 10;
+        if (top + tooltipRect.height > window.innerHeight) top = clientY - tooltipRect.height - 10;
         tooltipDiv.style.left = `${left}px`;
         tooltipDiv.style.top = `${top}px`;
       }
@@ -436,6 +485,7 @@
         if (tooltipDiv) tooltipDiv.style.display = 'none';
       }
 
+      // Leyenda interactiva
       const legendContainer = document.getElementById('legendContainer');
       legendContainer.innerHTML = '';
       datasets.forEach((ds, idx) => {
