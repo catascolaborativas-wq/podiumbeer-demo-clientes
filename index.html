@@ -10,16 +10,12 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       font-family: 'Inter', sans-serif;
       background: #000;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      /* IMPORTANTE: Sin margin ni padding para que el contenedor ocupe todo el ancho */
       margin: 0;
       padding: 0;
     }
@@ -59,7 +55,7 @@
       z-index: 0;
     }
 
-    /* === CONTENEDOR PRINCIPAL (exactamente como PodiumBeer) === */
+    /* === CONTENEDOR PRINCIPAL (EXACTAMENTE COMO PODIUMBEER) === */
     .app-container {
       max-width: 1400px;
       margin: 0 auto;
@@ -78,7 +74,8 @@
     .logo-header {
       display: block;
       margin: 0 auto 1rem auto;
-      width: clamp(120px, 40vw, 200px);  /* en móvil ocupa 40% del ancho, máximo 200px */
+      width: 50%;              /* Ocupa la mitad del ancho disponible */
+      max-width: 200px;       /* Pero no más de 200px */
       height: auto;
     }
     .h1-sim {
@@ -95,11 +92,11 @@
       margin-top: 0.5rem;
     }
     .bajada-header {
-      font-size: clamp(15px, 4vw, 18px);
+      font-size: clamp(16px, 4.5vw, 18px);
       font-weight: 500;
       color: #FFFFFF;
       background: rgba(0, 0, 0, 0.65);
-      padding: 0.6rem 0.8rem;
+      padding: 0.6rem 1rem;
       border-radius: 28px;
       margin: 1rem auto 0 auto;
       line-height: 1.4;
@@ -108,7 +105,7 @@
       width: fit-content;
     }
 
-    /* === CONTENEDORES INTERNOS === */
+    /* === CONTENEDORES INTERNOS (SIN PADDING LATERAL QUE DESBORDE) === */
     .glass-card, .metrics-card, .plan-selector-card {
       position: relative;
       background: rgba(6, 35, 46, 0.35);
@@ -116,10 +113,10 @@
       border-radius: 2rem;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s ease;
       padding: 1.5rem;
+      /* No añadir padding lateral extra aquí */
     }
-    /* Efecto eco con imagen espejo.png (opacidad media) */
+    /* Efecto eco con imagen espejo.png */
     .glass-card::before, .metrics-card::before, .plan-selector-card::before {
       content: '';
       position: absolute;
@@ -131,7 +128,7 @@
       background-image: url('assets/espejo.png');
       background-size: cover;
       background-position: center;
-      opacity: 0.5;
+      opacity: 0.6;
       mix-blend-mode: overlay;
       z-index: -1;
       pointer-events: none;
@@ -145,10 +142,16 @@
       width: 100%;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+      background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%);
       mix-blend-mode: overlay;
       pointer-events: none;
       z-index: 1;
+    }
+
+    /* Para desplazar el contenido hacia la derecha en móvil (sin desbordar) */
+    .content-shift {
+      /* Esta clase se aplicará a un div interno en cada contenedor */
+      width: 100%;
     }
 
     /* Títulos de sección */
@@ -383,7 +386,7 @@
       white-space: nowrap;
     }
 
-    /* === LAYOUT DESKTOP (≥992px) === */
+    /* === LAYOUT DESKTOP === */
     @media (min-width: 992px) {
       .app-container {
         display: grid;
@@ -431,29 +434,34 @@
       }
     }
 
-    /* === AJUSTES MÓVIL (ANDROID) - DESPLAZAMIENTO SUAVE DEL 8% Y BRILLO === */
+    /* === AJUSTES MÓVIL (ANDROID) - DESPLAZAMIENTO SIN DESBORDAR === */
     @media (max-width: 991px) {
       .app-container {
         padding: 0.8rem;
         gap: 1.8rem;
       }
-      /* Desplazamiento hacia la derecha del 8% (mucho más proporcionado que el 20%) */
+      /* Desplazamos el contenido interno con margin, no con padding en el contenedor */
       .glass-card, .metrics-card, .plan-selector-card {
-        padding: 1.2rem 1rem 1.2rem 8%;
+        padding: 1.2rem 1rem;
+      }
+      /* Creamos un div interno para desplazar el contenido */
+      .shift-content {
+        margin-left: 5%;   /* desplazamiento suave del 5% */
+        width: 95%;
       }
       .logo-header {
-        width: 40vw;
+        width: 45%;
         max-width: 180px;
       }
       .h1-sim {
-        font-size: 34px;
+        font-size: 32px;
         white-space: normal;
       }
       .h2-sim {
-        font-size: 24px;
+        font-size: 22px;
       }
       .bajada-header {
-        font-size: 16px;
+        font-size: 15px;
         padding: 0.5rem 0.8rem;
         max-width: 95%;
       }
@@ -469,26 +477,21 @@
       .metric-name {
         font-size: 14px;
       }
-      /* Refuerzo del brillo en móvil */
+      /* Reforzamos brillo */
       .glass-card::before, .metrics-card::before, .plan-selector-card::before {
-        opacity: 0.6;
+        opacity: 0.7;
       }
       .glass-card::after, .metrics-card::after, .plan-selector-card::after {
-        background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-      }
-      .glass-card, .metrics-card, .plan-selector-card {
-        box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0,0,0,0.2);
+        background: linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 70%);
       }
     }
     @media (max-width: 380px) {
       .app-container {
         padding: 0.5rem;
       }
-      .glass-card, .metrics-card, .plan-selector-card {
-        padding: 1rem 0.8rem 1rem 6%;
-      }
-      .bajada-header {
-        font-size: 15px;
+      .shift-content {
+        margin-left: 3%;
+        width: 97%;
       }
     }
   </style>
@@ -507,12 +510,14 @@
       <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </div>
 
-    <!-- SLIDER -->
+    <!-- SLIDER con desplazamiento interno -->
     <div class="glass-card">
-      <div class="section-title">SLIDER</div>
-      <div class="section-subtitle">Escala de Producción</div>
-      <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
-      <div class="slider-container">
+      <div class="shift-content">
+        <div class="section-title">SLIDER</div>
+        <div class="section-subtitle">Escala de Producción</div>
+        <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
+      </div>
+      <div class="slider-container shift-content">
         <div class="slider-track-wrapper" id="sliderWrapper">
           <div class="slider-rail" id="sliderRail"><div class="slider-fill" id="sliderFill"></div></div>
           <div class="slider-thumb" id="sliderThumb"></div>
@@ -527,12 +532,14 @@
       </div>
     </div>
 
-    <!-- SELECTOR DE PLANES -->
+    <!-- SELECTOR DE PLANES con desplazamiento interno -->
     <div class="plan-selector-card">
-      <div class="section-title">SELECTOR DE PLANES</div>
-      <div class="section-subtitle">Nivel de Alianza Estratégica</div>
-      <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
-      <div class="tier-buttons-container" id="tierButtonsContainer">
+      <div class="shift-content">
+        <div class="section-title">SELECTOR DE PLANES</div>
+        <div class="section-subtitle">Nivel de Alianza Estratégica</div>
+        <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
+      </div>
+      <div class="tier-buttons-container shift-content" id="tierButtonsContainer">
         <div class="tier-item">
           <div class="tier-btn" data-tier="explorer" id="tierExplorer">
             <div class="tier-icon"><img src="assets/explorer.png" alt="Explorer"></div>
@@ -557,25 +564,29 @@
       </div>
     </div>
 
-    <!-- BLOQUE DE RESULTADOS -->
+    <!-- BLOQUE DE RESULTADOS con desplazamiento interno -->
     <div class="metrics-card">
-      <div class="section-title">BLOQUE DE RESULTADOS</div>
-      <div class="section-subtitle">Impacto en tu negocio</div>
-      <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
-      <div class="metric-row">
-        <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
-        <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div></div>
-        <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
+      <div class="shift-content">
+        <div class="section-title">BLOQUE DE RESULTADOS</div>
+        <div class="section-subtitle">Impacto en tu negocio</div>
+        <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
       </div>
-      <div class="metric-row">
-        <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
-        <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div></div>
-        <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
-        <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div></div>
-        <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
+      <div class="shift-content">
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
+          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
+          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
+          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
+        </div>
       </div>
     </div>
 
