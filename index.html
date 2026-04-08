@@ -57,6 +57,7 @@
       z-index: 0;
     }
 
+    /* === CONTENEDOR PRINCIPAL === */
     .app-container {
       width: 90%;
       max-width: none;
@@ -69,6 +70,7 @@
       gap: 1.8rem;
     }
 
+    /* === HEADER === */
     .header {
       text-align: center;
     }
@@ -110,6 +112,7 @@
       backdrop-filter: blur(4px);
     }
 
+    /* === CONTENEDORES GLASS Y DESPLAZAMIENTO DEL 10% === */
     .glass-card, .metrics-card, .plan-selector-card {
       position: relative;
       background: rgba(6, 35, 46, 0.35);
@@ -134,6 +137,12 @@
       opacity: 0.18;
       z-index: -1;
       pointer-events: none;
+    }
+
+    /* Desplazamiento del 10% hacia la derecha (contenido interno) */
+    .shift-content {
+      margin-left: 10%;
+      width: 90%;
     }
 
     .section-title {
@@ -225,23 +234,22 @@
       .slider-labels span br { display: none; }
     }
 
-    /* === SELECTOR DE PLANES === */
+    /* === SELECTOR DE PLANES (botones más angostos y separados) === */
     .tier-buttons-container {
       display: flex;
-      justify-content: space-between;
-      gap: 1rem;
+      justify-content: center;
+      gap: 1.5rem;
       margin: 1rem 0 0.5rem;
       flex-wrap: wrap;
     }
     .tier-item {
-      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.5rem;
     }
     .tier-btn {
-      width: 100%;
+      width: auto;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -249,7 +257,7 @@
       background: rgba(0, 0, 0, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.3);
       border-radius: 60px;
-      padding: 0.6rem 0.25rem;
+      padding: 0.6rem 1.2rem;
       cursor: pointer;
       transition: all 250ms ease;
     }
@@ -272,7 +280,7 @@
       color: #FFFFFF;
     }
     .tier-bajada {
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 500;
       color: #CFDEE0;
       text-align: center;
@@ -326,9 +334,10 @@
       white-space: nowrap;
     }
 
+    /* === PIE DE PÁGINA (más grande) === */
     .credits {
       text-align: center;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
       color: #f7c32f;
       background: rgba(0, 0, 0, 0.5);
@@ -340,6 +349,7 @@
       max-width: 90%;
     }
 
+    /* === BOTÓN CTA === */
     .cta-wrapper {
       display: flex;
       justify-content: center;
@@ -367,6 +377,7 @@
       white-space: nowrap;
     }
 
+    /* === GRÁFICO === */
     .chart-container {
       width: 100%;
       min-height: 450px;
@@ -381,6 +392,7 @@
       font-size: 0.8rem;
     }
 
+    /* === LAYOUT DESKTOP === */
     @media (min-width: 992px) {
       .app-container {
         width: 85%;
@@ -414,7 +426,7 @@
       }
       .credits {
         grid-column: span 2;
-        font-size: 18px;
+        font-size: 20px;
       }
       .cta-wrapper {
         grid-column: span 2;
@@ -472,8 +484,10 @@
         font-size: 14px;
       }
       .credits {
-        font-size: 14px;
-        padding: 0.6rem 1.2rem;
+        font-size: 16px;
+      }
+      .tier-btn {
+        padding: 0.5rem 1rem;
       }
     }
     @media (max-width: 380px) {
@@ -482,6 +496,9 @@
       }
       .glass-card, .metrics-card, .plan-selector-card {
         padding: 1rem 0.8rem;
+      }
+      .credits {
+        font-size: 14px;
       }
     }
   </style>
@@ -503,11 +520,14 @@
       </div>
     </div>
 
+    <!-- SLIDER -->
     <div class="glass-card animate-item">
-      <div class="section-title">SLIDER</div>
-      <div class="section-subtitle">Escala de Producción</div>
-      <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
-      <div class="slider-container">
+      <div class="shift-content">
+        <div class="section-title">SLIDER</div>
+        <div class="section-subtitle">Escala de Producción</div>
+        <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
+      </div>
+      <div class="slider-container shift-content">
         <div class="slider-track-wrapper" id="sliderWrapper">
           <div class="slider-rail" id="sliderRail">
             <div class="slider-fill" id="sliderFill"></div>
@@ -524,90 +544,76 @@
       </div>
     </div>
 
-    <!-- GRÁFICO Chilean Competition Wings - 2025 con líneas de cervecerías -->
+    <!-- GRÁFICO Chilean Competition Wings - 2025 (sin leyenda, con relleno) -->
     <div class="glass-card global-chart-card animate-item" id="chartRankingContainer">
-      <div class="section-title">📊 Chilean Competition Wings - 2025</div>
-      <div class="chart-container">
+      <div class="shift-content">
+        <div class="section-title">📊 Chilean Competition Wings - 2025</div>
+      </div>
+      <div class="chart-container shift-content">
         <canvas id="evolucionCerveceriasChart" width="800" height="400"></canvas>
       </div>
     </div>
 
+    <!-- SELECTOR DE PLANES -->
     <div class="plan-selector-card animate-item">
-      <div class="section-title">SELECTOR DE PLANES</div>
-      <div class="section-subtitle">Nivel de Alianza Estratégica</div>
-      <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
-      <div class="tier-buttons-container" id="tierButtonsContainer">
+      <div class="shift-content">
+        <div class="section-title">SELECTOR DE PLANES</div>
+        <div class="section-subtitle">Nivel de Alianza Estratégica</div>
+        <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
+      </div>
+      <div class="tier-buttons-container shift-content" id="tierButtonsContainer">
         <div class="tier-item">
           <div class="tier-btn" data-tier="explorer" id="tierExplorer">
             <div class="tier-icon"><img src="assets/explorer.png" alt="Explorer"></div>
             <div class="tier-label">Explorer</div>
           </div>
-          <div class="tier-bajada">1° Nivel de Visibilidad basada en datos reales</div>
+          <div class="tier-bajada">1° Nivel de Visibilidad<br>basada en datos reales</div>
         </div>
         <div class="tier-item">
           <div class="tier-btn" data-tier="podium" id="tierPodium">
             <div class="tier-icon"><img src="assets/podium.png" alt="Podium"></div>
             <div class="tier-label">Podium</div>
           </div>
-          <div class="tier-bajada">Optimización estratégica para competir con ventaja.</div>
+          <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja.</div>
         </div>
         <div class="tier-item">
           <div class="tier-btn active" data-tier="champion" id="tierChampion">
             <div class="tier-icon"><img src="assets/champion.png" alt="Champion"></div>
             <div class="tier-label">Champion</div>
           </div>
-          <div class="tier-bajada">Dominio de mercado con respaldo técnico y autoridad</div>
+          <div class="tier-bajada">Dominio de mercado con<br>respaldo técnico y autoridad</div>
         </div>
       </div>
     </div>
 
+    <!-- BLOQUE DE RESULTADOS -->
     <div class="metrics-card animate-item">
-      <div class="section-title">BLOQUE DE RESULTADOS</div>
-      <div class="section-subtitle">Impacto en tu negocio</div>
-      <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
-      
-      <div class="metric-row">
-        <div class="metric-icon-col">
-          <img src="assets/icono_inversion.png" alt="Inversión Inteligente">
-        </div>
-        <div class="metric-text-col">
-          <div class="metric-name">Inversión Inteligente</div>
-          <div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div>
-        </div>
-        <div class="metric-value-col">
-          <div class="metric-value" id="inversionValue">$1,200 USD</div>
-        </div>
+      <div class="shift-content">
+        <div class="section-title">BLOQUE DE RESULTADOS</div>
+        <div class="section-subtitle">Impacto en tu negocio</div>
+        <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
       </div>
-      <div class="metric-row">
-        <div class="metric-icon-col">
-          <img src="assets/icono_valor.png" alt="Valor Recuperado">
+      <div class="shift-content">
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
+          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
         </div>
-        <div class="metric-text-col">
-          <div class="metric-name">Valor Recuperado</div>
-          <div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div>
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
+          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
         </div>
-        <div class="metric-value-col">
-          <div class="metric-value" id="optimizacionValue">$14,500 USD</div>
-        </div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-icon-col">
-          <img src="assets/icono_impacto.png" alt="Impacto en Rentabilidad">
-        </div>
-        <div class="metric-text-col">
-          <div class="metric-name">Impacto en Rentabilidad</div>
-          <div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div>
-        </div>
-        <div class="metric-value-col">
-          <div class="metric-value" id="roiValue">65%</div>
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
+          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
         </div>
       </div>
     </div>
 
     <div class="cta-wrapper animate-item">
-      <button class="cta-button" id="ctaBtn">
-        <span class="cta-text">Agenda tu Diagnóstico Estratégico</span>
-      </button>
+      <button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button>
     </div>
 
     <div class="credits animate-item">
@@ -659,11 +665,10 @@
       }
     }
 
-    // ======================== GRÁFICO DE EVOLUCIÓN MENSUAL POR CERVEZA ========================
+    // ======================== GRÁFICO DE EVOLUCIÓN MENSUAL POR CERVEZA (Marzo a Diciembre, con relleno y sin leyenda) ========================
     let cerveceriasChart;
 
     function renderEvolucionCervecerias(data) {
-      // Filtrar datos de 2025
       const data2025 = data.filter(item => {
         const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
         return anio === '2025';
@@ -678,21 +683,19 @@
         totalMedallas[cerveza] = (totalMedallas[cerveza] || 0) + 1;
       });
 
-      // Ordenar y seleccionar top 10 y bottom 5
       const sorted = Object.entries(totalMedallas).sort((a,b) => b[1] - a[1]);
       const top10 = sorted.slice(0, 10).map(entry => entry[0]);
       const bottom5 = sorted.slice(-5).map(entry => entry[0]);
-      const selectedBreweries = [...top10, ...bottom5]; // 15 cervecerías
+      const selectedBreweries = [...top10, ...bottom5];
 
-      // Colores de la paleta
       const colores = [
         '#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f',
         '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
         '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
       ];
 
-      // Preparar datos mensuales para cada cervecería
-      const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      // Meses de marzo a diciembre (índices 2 a 11)
+      const meses = ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
       const datasets = [];
 
       selectedBreweries.forEach((brewery, idx) => {
@@ -703,11 +706,14 @@
             if (mes >= 0 && mes < 12) monthlyCount[mes]++;
           }
         });
+        // Extraer solo de marzo a diciembre (índices 2 a 11)
+        const monthlyMarToDec = monthlyCount.slice(2, 12);
         datasets.push({
           label: brewery,
-          data: monthlyCount,
+          data: monthlyMarToDec,
           borderColor: colores[idx % colores.length],
-          backgroundColor: 'transparent',
+          backgroundColor: colores[idx % colores.length] + '40', // 25% de opacidad
+          fill: true,
           tension: 0.4,
           pointRadius: 3,
           pointHoverRadius: 6,
@@ -724,23 +730,26 @@
           responsive: true,
           maintainAspectRatio: true,
           plugins: {
-            tooltip: { mode: 'index', intersect: false },
-            legend: { 
-              labels: { color: '#fff', font: { size: 10 } },
-              position: 'bottom',
-              maxHeight: 100,
-              maxWidth: 300
-            }
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${context.raw} medallas`;
+                }
+              }
+            },
+            legend: { display: false }  // <<--- LEYENDA DESACTIVADA
           },
           scales: {
-            y: { 
-              beginAtZero: true, 
+            y: {
+              beginAtZero: true,
               ticks: { color: '#fff', stepSize: 1 },
               grid: { color: 'rgba(255,255,255,0.1)' },
               title: { display: true, text: 'Medallas', color: '#fff' }
             },
-            x: { 
-              ticks: { color: '#fff' }, 
+            x: {
+              ticks: { color: '#fff' },
               grid: { display: false },
               title: { display: true, text: 'Mes 2025', color: '#fff' }
             }
