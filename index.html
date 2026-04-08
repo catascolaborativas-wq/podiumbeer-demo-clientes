@@ -23,6 +23,7 @@
       justify-content: center;
     }
 
+    /* === FONDO === */
     .hero-bg {
       position: fixed;
       top: 0;
@@ -112,8 +113,8 @@
       backdrop-filter: blur(4px);
     }
 
-    /* === CONTENEDORES GLASS Y DESPLAZAMIENTO DEL 10% === */
-    .glass-card, .metrics-card, .plan-selector-card {
+    /* === CONTENEDORES GLASS Y DESPLAZAMIENTO DEL 5% === */
+    .glass-card, .metrics-card, .plan-selector-card, .chart-card {
       position: relative;
       background: rgba(6, 35, 46, 0.35);
       backdrop-filter: blur(20px);
@@ -123,7 +124,7 @@
       transition: transform 0.2s ease;
       padding: 1.5rem;
     }
-    .glass-card::before, .metrics-card::before, .plan-selector-card::before {
+    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before {
       content: '';
       position: absolute;
       left: 11px;
@@ -139,10 +140,10 @@
       pointer-events: none;
     }
 
-    /* Desplazamiento del 10% hacia la derecha (contenido interno) */
+    /* Desplazamiento del 5% hacia la derecha (contenido interno) */
     .shift-content {
-      margin-left: 10%;
-      width: 90%;
+      margin-left: 5%;
+      width: 95%;
     }
 
     .section-title {
@@ -234,7 +235,7 @@
       .slider-labels span br { display: none; }
     }
 
-    /* === SELECTOR DE PLANES (botones más angostos y separados) === */
+    /* === SELECTOR DE PLANES === */
     .tier-buttons-container {
       display: flex;
       justify-content: center;
@@ -334,7 +335,7 @@
       white-space: nowrap;
     }
 
-    /* === PIE DE PÁGINA (más grande) === */
+    /* === PIE DE PÁGINA === */
     .credits {
       text-align: center;
       font-size: 18px;
@@ -377,11 +378,52 @@
       white-space: nowrap;
     }
 
-    /* === GRÁFICO === */
+    /* === GRÁFICO Y LEYENDA INTERACTIVA === */
+    .chart-card {
+      padding: 1rem;
+    }
     .chart-container {
       width: 100%;
       min-height: 450px;
       margin-top: 1rem;
+    }
+    .legend-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 11px;
+      cursor: pointer;
+      background: rgba(0,0,0,0.5);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      transition: 0.2s;
+    }
+    .legend-item:hover {
+      background: rgba(0,0,0,0.8);
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+    .legend-label {
+      color: #fff;
+      white-space: nowrap;
+    }
+    .legend-item.hidden .legend-label {
+      text-decoration: line-through;
+      opacity: 0.5;
     }
     .error-message {
       background: #e32c6c;
@@ -408,7 +450,7 @@
       .glass-card {
         grid-column: 1 / 2;
       }
-      .global-chart-card {
+      .chart-card {
         grid-column: span 2;
         margin-top: 0;
       }
@@ -458,7 +500,7 @@
       .app-container {
         gap: 1.8rem;
       }
-      .glass-card, .metrics-card, .plan-selector-card {
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card {
         padding: 1.2rem 1rem;
       }
       .metric-value {
@@ -489,12 +531,15 @@
       .tier-btn {
         padding: 0.5rem 1rem;
       }
+      .legend-item {
+        font-size: 9px;
+      }
     }
     @media (max-width: 380px) {
       .app-container {
         width: 95%;
       }
-      .glass-card, .metrics-card, .plan-selector-card {
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card {
         padding: 1rem 0.8rem;
       }
       .credits {
@@ -544,14 +589,15 @@
       </div>
     </div>
 
-    <!-- GRÁFICO Chilean Competition Wings - 2025 (sin leyenda, con relleno) -->
-    <div class="glass-card global-chart-card animate-item" id="chartRankingContainer">
+    <!-- GRÁFICO Chilean Competition Wings - 2025 -->
+    <div class="chart-card animate-item" id="chartCard">
       <div class="shift-content">
         <div class="section-title">📊 Chilean Competition Wings - 2025</div>
       </div>
       <div class="chart-container shift-content">
-        <canvas id="evolucionCerveceriasChart" width="800" height="400"></canvas>
+        <canvas id="breweryChart" width="800" height="400"></canvas>
       </div>
+      <div class="legend-container shift-content" id="legendContainer"></div>
     </div>
 
     <!-- SELECTOR DE PLANES -->
@@ -660,72 +706,144 @@
         return datos;
       } catch (err) {
         console.error("Error cargando CSV:", err);
-        document.getElementById('chartRankingContainer').innerHTML += '<div class="error-message">⚠️ No se pudo cargar el archivo BBDD_Medallero_Chile.csv. Asegúrate de que esté en la raíz.</div>';
+        document.getElementById('chartCard').innerHTML += '<div class="error-message">⚠️ No se pudo cargar el archivo BBDD_Medallero_Chile.csv. Asegúrate de que esté en la raíz.</div>';
         return [];
       }
     }
 
-    // ======================== GRÁFICO DE EVOLUCIÓN MENSUAL POR CERVEZA (Marzo a Diciembre, con relleno y sin leyenda) ========================
-    let cerveceriasChart;
+    // ======================== GRÁFICO RENDIMIENTO MENSUAL 15 CERVEZAS ========================
+    let breweryChart;
+    let currentDatasets = [];
 
-    function renderEvolucionCervecerias(data) {
-      const data2025 = data.filter(item => {
-        const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
-        return anio === '2025';
+    // Mapeo de meses (marzo a diciembre)
+    const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+
+    function getMonthIndex(fechaStr) {
+      if (!fechaStr) return -1;
+      const partes = fechaStr.split('-');
+      if (partes.length < 2) return -1;
+      const mes = parseInt(partes[1], 10);
+      if (mes >= 3 && mes <= 12) return mes - 3; // 3->0, 12->9
+      return -1;
+    }
+
+    async function renderBreweryChart() {
+      const data = allData;
+      if (!data.length) return;
+
+      // Filtrar Chile y fechas entre marzo y diciembre 2025
+      const filtered = data.filter(item => {
+        const pais = item.pais;
+        const fecha = item.fecha;
+        if (pais !== 'Chile') return false;
+        if (!fecha) return false;
+        const anio = fecha.split('-')[0];
+        if (anio !== '2025') return false;
+        const mes = parseInt(fecha.split('-')[1], 10);
+        return mes >= 3 && mes <= 12;
       });
-      if (!data2025.length) return;
 
-      // Calcular total de medallas por cervecería en 2025
-      const totalMedallas = {};
-      data2025.forEach(item => {
+      if (filtered.length === 0) {
+        console.warn('No hay datos para Chile 2025 (mar-dic)');
+        return;
+      }
+
+      // Agrupar por cervecería y mes: contar total y desglose (oro, plata, bronce)
+      const breweryMonthly = new Map(); // key: cerveceria-mes, value: { total, oro, plata, bronce }
+      filtered.forEach(item => {
         const cerveza = item.cerveceria;
-        if (!cerveza) return;
-        totalMedallas[cerveza] = (totalMedallas[cerveza] || 0) + 1;
+        const fecha = item.fecha;
+        const medalla = (item.medalla_base || '').toLowerCase();
+        const mesIdx = getMonthIndex(fecha);
+        if (mesIdx === -1) return;
+        const key = `${cerveza}|${mesIdx}`;
+        if (!breweryMonthly.has(key)) {
+          breweryMonthly.set(key, { total: 0, oro: 0, plata: 0, bronce: 0 });
+        }
+        const entry = breweryMonthly.get(key);
+        entry.total++;
+        if (medalla === 'oro') entry.oro++;
+        else if (medalla === 'plata') entry.plata++;
+        else if (medalla === 'bronce') entry.bronce++;
       });
 
-      const sorted = Object.entries(totalMedallas).sort((a,b) => b[1] - a[1]);
-      const top10 = sorted.slice(0, 10).map(entry => entry[0]);
-      const bottom5 = sorted.slice(-5).map(entry => entry[0]);
-      const selectedBreweries = [...top10, ...bottom5];
+      // Calcular total por cervecería (suma de todos los meses)
+      const breweryTotal = new Map();
+      for (let [key, value] of breweryMonthly.entries()) {
+        const cerveza = key.split('|')[0];
+        const prev = breweryTotal.get(cerveza) || 0;
+        breweryTotal.set(cerveza, prev + value.total);
+      }
 
-      const colores = [
-        '#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f',
-        '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
-        '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
-      ];
+      // Ordenar y seleccionar top 15
+      const sortedBreweries = Array.from(breweryTotal.entries()).sort((a,b) => b[1] - a[1]);
+      const top15 = sortedBreweries.slice(0, 15).map(entry => entry[0]);
 
-      // Meses de marzo a diciembre (índices 2 a 11)
-      const meses = ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      // Preparar datasets para cada cervecería
       const datasets = [];
+      const colors = {
+        leader: '#e32c6c',
+        top2_5: ['#40E0D0', '#f7c32f', '#40E0D0', '#f7c32f'], // se repetirán
+        ghost: '#06232e'
+      };
 
-      selectedBreweries.forEach((brewery, idx) => {
-        const monthlyCount = Array(12).fill(0);
-        data2025.forEach(item => {
-          if (item.cerveceria === brewery && item.fecha) {
-            const mes = parseInt(item.fecha.split('-')[1]) - 1;
-            if (mes >= 0 && mes < 12) monthlyCount[mes]++;
+      // Asignar colores según ranking
+      const breweryColor = new Map();
+      top15.forEach((brewery, idx) => {
+        if (idx === 0) breweryColor.set(brewery, { color: colors.leader, borderWidth: 2.5, opacity: 1, group: 'leader' });
+        else if (idx >= 1 && idx <= 4) {
+          const color = colors.top2_5[(idx-1) % colors.top2_5.length];
+          breweryColor.set(brewery, { color: color, borderWidth: 1.5, opacity: 1, group: 'top5' });
+        } else {
+          breweryColor.set(brewery, { color: colors.ghost, borderWidth: 1, opacity: 0.3, group: 'ghost' });
+        }
+      });
+
+      // Construir arrays de datos por mes (10 meses)
+      for (let brewery of top15) {
+        const monthlyData = Array(10).fill(0);
+        const monthlyOro = Array(10).fill(0);
+        const monthlyPlata = Array(10).fill(0);
+        const monthlyBronce = Array(10).fill(0);
+        for (let mes = 0; mes < 10; mes++) {
+          const key = `${brewery}|${mes}`;
+          const val = breweryMonthly.get(key);
+          if (val) {
+            monthlyData[mes] = val.total;
+            monthlyOro[mes] = val.oro;
+            monthlyPlata[mes] = val.plata;
+            monthlyBronce[mes] = val.bronce;
           }
-        });
-        // Extraer solo de marzo a diciembre (índices 2 a 11)
-        const monthlyMarToDec = monthlyCount.slice(2, 12);
+        }
+        const style = breweryColor.get(brewery);
+        const bgColor = style.opacity === 1 ? style.color + '33' : style.color + '1A'; // 20% y 10% opacidad para relleno
         datasets.push({
           label: brewery,
-          data: monthlyMarToDec,
-          borderColor: colores[idx % colores.length],
-          backgroundColor: colores[idx % colores.length] + '40', // 25% de opacidad
-          fill: true,
+          data: monthlyData,
+          borderColor: style.color,
+          backgroundColor: bgColor,
+          borderWidth: style.borderWidth,
           tension: 0.4,
+          fill: true,
           pointRadius: 3,
           pointHoverRadius: 6,
-          borderWidth: 2
+          hidden: false,
+          // Guardamos los desgloses para el tooltip
+          _oro: monthlyOro,
+          _plata: monthlyPlata,
+          _bronce: monthlyBronce,
+          _color: style.color
         });
-      });
+      }
 
-      const ctx = document.getElementById('evolucionCerveceriasChart').getContext('2d');
-      if (cerveceriasChart) cerveceriasChart.destroy();
-      cerveceriasChart = new Chart(ctx, {
+      currentDatasets = datasets;
+
+      const ctx = document.getElementById('breweryChart').getContext('2d');
+      if (breweryChart) breweryChart.destroy();
+
+      breweryChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: meses, datasets },
+        data: { labels: monthNames, datasets },
         options: {
           responsive: true,
           maintainAspectRatio: true,
@@ -735,30 +853,67 @@
               intersect: false,
               callbacks: {
                 label: function(context) {
-                  return `${context.dataset.label}: ${context.raw} medallas`;
+                  const dataset = context.dataset;
+                  const breweryName = dataset.label;
+                  const month = context.label;
+                  const value = context.raw;
+                  const oro = dataset._oro[context.dataIndex];
+                  const plata = dataset._plata[context.dataIndex];
+                  const bronce = dataset._bronce[context.dataIndex];
+                  return [
+                    `${breweryName}: ${value} medallas`,
+                    `  🥇 Oro: ${oro}`,
+                    `  🥈 Plata: ${plata}`,
+                    `  🥉 Bronce: ${bronce}`
+                  ];
                 }
               }
             },
-            legend: { display: false }  // <<--- LEYENDA DESACTIVADA
+            legend: { display: false }
           },
           scales: {
             y: {
               beginAtZero: true,
               ticks: { color: '#fff', stepSize: 1 },
               grid: { color: 'rgba(255,255,255,0.1)' },
-              title: { display: true, text: 'Medallas', color: '#fff' }
+              title: { display: true, text: 'Medallas por mes', color: '#fff' }
             },
             x: {
               ticks: { color: '#fff' },
               grid: { display: false },
-              title: { display: true, text: 'Mes 2025', color: '#fff' }
+              title: { display: true, text: 'Mes', color: '#fff' }
             }
           }
         }
       });
+
+      // Generar leyenda interactiva
+      renderLegend(datasets);
     }
 
-    // ======================== LÓGICA DEL SIMULADOR (EXISTENTE) ========================
+    function renderLegend(datasets) {
+      const container = document.getElementById('legendContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      datasets.forEach((ds, idx) => {
+        const div = document.createElement('div');
+        div.className = 'legend-item';
+        div.style.display = 'flex';
+        div.innerHTML = `
+          <div class="legend-color" style="background: ${ds.borderColor};"></div>
+          <span class="legend-label">${ds.label}</span>
+        `;
+        div.addEventListener('click', () => {
+          const meta = breweryChart.getDatasetMeta(idx);
+          meta.hidden = !meta.hidden;
+          div.classList.toggle('hidden', meta.hidden);
+          breweryChart.update();
+        });
+        container.appendChild(div);
+      });
+    }
+
+    // ======================== LÓGICA DEL SIMULADOR ========================
     const metricsTable = [
       { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
       { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
@@ -935,10 +1090,9 @@
     });
 
     async function init() {
-      const data = await cargarCSV();
-      if (data.length) {
-        allData = data;
-        renderEvolucionCervecerias(data);
+      await cargarCSV();
+      if (allData.length) {
+        await renderBreweryChart();
       }
       initSlider();
       bindTierEvents();
