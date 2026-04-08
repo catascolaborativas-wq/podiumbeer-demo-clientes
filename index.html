@@ -59,7 +59,7 @@
       z-index: 0;
     }
 
-    /* === CONTENEDOR PRINCIPAL: MISMO COMPORTAMIENTO QUE PODIUMBEER === */
+    /* === CONTENEDOR PRINCIPAL === */
     .app-container {
       width: 100%;
       max-width: 1400px;
@@ -72,12 +72,18 @@
       gap: 1.5rem;
     }
 
-    /* === HEADER === */
+    /* === HEADER CON LOGO === */
     .header {
       text-align: center;
     }
+    .logo-header {
+      max-width: 200px;
+      width: 80%;
+      height: auto;
+      margin-bottom: 1rem;
+    }
     .h1-sim {
-      font-size: clamp(28px, 8vw, 44px);
+      font-size: clamp(32px, 10vw, 52px);
       font-weight: 800;
       color: #FFFFFF;
       letter-spacing: -0.5px;
@@ -89,34 +95,36 @@
       display: none;
     }
     .h2-sim {
-      font-size: clamp(20px, 6vw, 32px);
+      font-size: clamp(22px, 6vw, 34px);
       font-weight: 500;
       color: #CFDEE0;
       margin-top: 0.5rem;
     }
     .bajada-header {
-      font-size: 16px;      /* +14% aproximadamente respecto a 14px original */
+      font-size: 17px;
       font-weight: 500;
       color: #FFFFFF;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 0.8rem 1rem;
       border-radius: 28px;
       margin-top: 1rem;
-      line-height: 1.4;
+      line-height: 1.5;
       backdrop-filter: blur(4px);
     }
 
-    /* === CONTENEDORES INTERNOS CON DESPLAZAMIENTO DEL 20% HACIA LA DERECHA === */
+    /* === CONTENEDORES INTERNOS CON DESPLAZAMIENTO (20% en móvil) === */
     .glass-card, .metrics-card, .plan-selector-card {
       position: relative;
       background: rgba(6, 35, 46, 0.35);
       backdrop-filter: blur(20px);
       border-radius: 2rem;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      padding: 1.5rem 1.5rem 1.5rem 20%;   /* 20% a la derecha (desplazamiento) */
+      /* Sombra interior para efecto brillo/espejo */
+      box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+      padding: 1.5rem 1.5rem 1.5rem 1.5rem; /* por defecto (escritorio) */
     }
-    /* EFECTO ECO CON IMAGEN ESPEJO.PNG */
+    /* Efecto eco + brillo con imagen espejo.png */
     .glass-card::before, .metrics-card::before, .plan-selector-card::before {
       content: '';
       position: absolute;
@@ -128,10 +136,23 @@
       background-image: url('assets/espejo.png');
       background-size: cover;
       background-position: center;
-      opacity: 0.45;
+      opacity: 0.6;
       mix-blend-mode: overlay;
       z-index: -1;
       pointer-events: none;
+    }
+    /* Gradiente extra para realzar el brillo */
+    .glass-card::after, .metrics-card::after, .plan-selector-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      pointer-events: none;
+      z-index: 1;
     }
 
     /* Títulos de sección */
@@ -328,11 +349,11 @@
     /* === FRASE FINAL === */
     .frase-final {
       text-align: center;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: #FFFFFF;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 0.8rem 1rem;
       border-radius: 60px;
       margin: 0.5rem 0;
       backdrop-filter: blur(4px);
@@ -414,13 +435,28 @@
       }
     }
 
-    /* === AJUSTES MÓVIL (desplazamiento reducido a 10%) === */
+    /* === AJUSTES MÓVIL (ANDROID) - DESPLAZAMIENTO DEL 20% Y BRILLO === */
     @media (max-width: 991px) {
       .app-container {
         padding: 0.8rem;
       }
+      /* Aplicar padding-left del 20% a todos los contenedores internos */
       .glass-card, .metrics-card, .plan-selector-card {
-        padding: 1.2rem 1rem 1.2rem 10%;   /* en móvil, 10% de desplazamiento */
+        padding: 1.2rem 1rem 1.2rem 20%;   /* 20% hacia la derecha */
+      }
+      .logo-header {
+        max-width: 160px;
+      }
+      .h1-sim {
+        font-size: 30px;
+        white-space: normal;
+      }
+      .h2-sim {
+        font-size: 22px;
+      }
+      .bajada-header {
+        font-size: 16px;
+        padding: 0.7rem 0.8rem;
       }
       .metric-value {
         font-size: 18px;
@@ -434,9 +470,12 @@
       .metric-name {
         font-size: 14px;
       }
-      .h1-sim {
-        white-space: normal;
-        font-size: 28px;
+      /* Ajuste de brillo: aumentar opacidad del gradiente interior */
+      .glass-card::before, .metrics-card::before, .plan-selector-card::before {
+        opacity: 0.7;
+      }
+      .glass-card, .metrics-card, .plan-selector-card {
+        box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0,0,0,0.2);
       }
     }
     @media (max-width: 380px) {
@@ -444,7 +483,10 @@
         padding: 0.5rem;
       }
       .glass-card, .metrics-card, .plan-selector-card {
-        padding: 1rem 0.8rem 1rem 8%;
+        padding: 1rem 0.8rem 1rem 18%;   /* un poco menos para no perder contenido */
+      }
+      .bajada-header {
+        font-size: 15px;
       }
     }
   </style>
@@ -455,12 +497,15 @@
   <div class="vignette"></div>
 
   <div class="app-container">
+    <!-- HEADER CON LOGO -->
     <div class="header">
+      <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
       <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </div>
 
+    <!-- SLIDER -->
     <div class="glass-card">
       <div class="section-title">SLIDER</div>
       <div class="section-subtitle">Escala de Producción</div>
@@ -480,6 +525,7 @@
       </div>
     </div>
 
+    <!-- SELECTOR DE PLANES -->
     <div class="plan-selector-card">
       <div class="section-title">SELECTOR DE PLANES</div>
       <div class="section-subtitle">Nivel de Alianza Estratégica</div>
@@ -509,6 +555,7 @@
       </div>
     </div>
 
+    <!-- BLOQUE DE RESULTADOS -->
     <div class="metrics-card">
       <div class="section-title">BLOQUE DE RESULTADOS</div>
       <div class="section-subtitle">Impacto en tu negocio</div>
@@ -530,7 +577,10 @@
       </div>
     </div>
 
+    <!-- FRASE FINAL -->
     <div class="frase-final">Crecemos contigo: este modelo se adapta a tu realidad productiva y a tus objetivos comerciales.</div>
+
+    <!-- CTA -->
     <div class="cta-wrapper"><button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button></div>
   </div>
 
