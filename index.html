@@ -138,7 +138,7 @@
       </div>
     </div>
 
-    <!-- GRÁFICO Chilean Competition Wings - 2025 (versión corregida) -->
+    <!-- GRÁFICO Chilean Competition Wings - 2025 (CORREGIDO) -->
     <div class="chart-card animate-item" id="chartCard">
       <div class="shift-content">
         <div class="section-title">📊 Chilean Competition Wings - 2025</div>
@@ -261,14 +261,19 @@
       }
     }
 
-    // ======================== GRÁFICO DE CERVEZAS (USANDO LA MISMA LÓGICA QUE EL DE PAÍSES) ========================
+    // ======================== GRÁFICO DE CERVEZAS (CORREGIDO: 15 COLORES, TOOLTIP INDIVIDUAL) ========================
     let breweryChart;
-    let currentDatasets = [];
 
     const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+    // Paleta de 15 colores (la que usted me dio)
+    const colorPalette = [
+      '#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f',
+      '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
+      '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
+    ];
 
     function renderBreweryChart(data) {
-      // Filtrar Chile y fechas 2025 (sin restringir a partir de marzo, porque el gráfico de países usaba todo 2025)
+      // Filtrar Chile y año 2025
       const chileData = data.filter(item => item.pais === 'Chile');
       const data2025 = chileData.filter(item => {
         const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
@@ -292,8 +297,7 @@
       const top15 = sorted.slice(0, 15).map(entry => entry[0]);
       console.log('Top 15 cervecerías:', top15);
 
-      // Agrupar medallas por cervecería y mes (para todo 2025, pero luego el gráfico solo mostrará meses con datos)
-      // Para simplificar, usamos los 10 meses de marzo a diciembre, pero permitimos que Chart.js muestre solo los que tengan datos
+      // Agrupar medallas por cervecería y mes (marzo a diciembre)
       const monthlyData = {};
       top15.forEach(brew => { monthlyData[brew] = Array(10).fill(0); });
 
@@ -309,24 +313,15 @@
         }
       });
 
-      // Colores y estilos según ranking
-      const colors = [
-        '#e32c6c', // 1º
-        '#40E0D0', '#f7c32f', '#40E0D0', '#f7c32f', // 2º a 5º
-        '#06232e', '#06232e', '#06232e', '#06232e', '#06232e', // 6º a 10º
-        '#06232e', '#06232e', '#06232e', '#06232e', '#06232e'  // 11º a 15º
-      ];
-      const borderWidths = [2.5, 1.5, 1.5, 1.5, 1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-      const opacities = [0.2, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-
+      // Construir datasets con colores únicos de la paleta
       const datasets = [];
       top15.forEach((brew, idx) => {
         datasets.push({
           label: brew,
           data: monthlyData[brew],
-          borderColor: colors[idx],
-          backgroundColor: colors[idx] + (idx < 5 ? '33' : '1A'), // 20% y 10% opacidad
-          borderWidth: borderWidths[idx],
+          borderColor: colorPalette[idx % colorPalette.length],
+          backgroundColor: colorPalette[idx % colorPalette.length] + '33', // 20% opacidad
+          borderWidth: idx === 0 ? 2.5 : (idx < 5 ? 1.5 : 1),
           tension: 0.4,
           fill: true,
           pointRadius: 3,
@@ -334,8 +329,6 @@
           hidden: false
         });
       });
-
-      currentDatasets = datasets;
 
       const ctx = document.getElementById('breweryChart').getContext('2d');
       if (breweryChart) breweryChart.destroy();
@@ -348,16 +341,14 @@
           maintainAspectRatio: true,
           plugins: {
             tooltip: {
-              mode: 'index',
-              intersect: false,
+              mode: 'nearest',    // <--- SOLO LA LÍNEA MÁS CERCANA
+              intersect: true,    // <--- SOLO SI EL CURSOR ESTÁ SOBRE UN PUNTO
               callbacks: {
                 label: function(context) {
                   const dataset = context.dataset;
                   const breweryName = dataset.label;
                   const month = context.label;
                   const value = context.raw;
-                  // No tenemos desglose por tipo de medalla aquí, pero podemos mostrarlo si se requiere.
-                  // Por ahora mostramos el total.
                   return `${breweryName}: ${value} medalla${value !== 1 ? 's' : ''} en ${month}`;
                 }
               }
@@ -380,7 +371,7 @@
         }
       });
 
-      // Generar leyenda interactiva
+      // Leyenda interactiva
       const legendContainer = document.getElementById('legendContainer');
       legendContainer.innerHTML = '';
       datasets.forEach((ds, idx) => {
