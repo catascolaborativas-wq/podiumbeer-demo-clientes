@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    /* ===== TODO EL CSS ANTERIOR (EL MISMO QUE FUNCIONABA) ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
@@ -20,10 +19,10 @@
     .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
     .h1-sim::-webkit-scrollbar { display: none; }
     .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
-    .bajada-header { font-size: 15px; font-weight: 500; color: #FFFFFF; background: rgba(0,0,0,0.6); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
+    .bajada-header { font-size: 15px; font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.7); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
     .glass-card, .metrics-card, .plan-selector-card, .chart-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
     .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
-    .shift-content { margin-left: 5%; width: 95%; }
+    .shift-content { margin-left: 2.5%; width: 97.5%; }
     .section-title { font-size: 14px; font-weight: 800; letter-spacing: 2px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
     .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
     .section-desc { font-size: 13px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
@@ -59,14 +58,49 @@
     .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
     .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
     .chart-card { padding: 1rem; }
-    .chart-container { width: 100%; min-height: 450px; margin-top: 1rem; }
-    .legend-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
+    .chart-container { width: 100%; min-height: 450px; margin-top: 1rem; position: relative; }
+    /* Leyenda: en móvil dos filas centradas, en desktop scroll horizontal */
+    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
+    @media (min-width: 992px) {
+      .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
+      .legend-item { flex-shrink: 0; }
+    }
     .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 20px; transition: 0.2s; }
     .legend-item:hover { background: rgba(0,0,0,0.8); }
     .legend-color { width: 12px; height: 12px; border-radius: 2px; }
     .legend-label { color: #fff; white-space: nowrap; }
     .legend-item.hidden .legend-label { text-decoration: line-through; opacity: 0.5; }
     .error-message { background: #e32c6c; color: white; padding: 0.5rem; border-radius: 1rem; text-align: center; font-size: 0.8rem; }
+    /* Tooltip personalizado */
+    #custom-tooltip {
+      position: absolute;
+      background: rgba(6,35,46,0.95);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid #f7c32f;
+      pointer-events: none;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+    @media (max-width: 991px) {
+      .app-container { gap: 1.8rem; }
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
+      .metric-value { font-size: 18px; }
+      .metric-icon-col { flex-basis: 60px; }
+      .metric-icon-col img { width: 44px; }
+      .metric-name { font-size: 14px; }
+      .metric-bajada { font-size: 9px; }
+      .h1-sim { white-space: normal; font-size: 28px; }
+      .bajada-header { font-size: 14px; }
+      .credits { font-size: 16px; }
+      .tier-btn { padding: 0.5rem 1rem; }
+      .legend-item { font-size: 9px; }
+    }
     @media (min-width: 992px) {
       .app-container { width: 85%; max-width: 1300px; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
       .header { grid-column: span 2; }
@@ -82,20 +116,6 @@
       .metric-icon-col img { width: 64px; }
       .metric-name { font-size: 18px; }
       .metric-value { font-size: 28px; }
-    }
-    @media (max-width: 991px) {
-      .app-container { gap: 1.8rem; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
-      .metric-value { font-size: 18px; }
-      .metric-icon-col { flex-basis: 60px; }
-      .metric-icon-col img { width: 44px; }
-      .metric-name { font-size: 14px; }
-      .metric-bajada { font-size: 9px; }
-      .h1-sim { white-space: normal; font-size: 28px; }
-      .bajada-header { font-size: 14px; }
-      .credits { font-size: 16px; }
-      .tier-btn { padding: 0.5rem 1rem; }
-      .legend-item { font-size: 9px; }
     }
     @media (max-width: 380px) {
       .app-container { width: 95%; }
@@ -138,13 +158,14 @@
       </div>
     </div>
 
-    <!-- GRÁFICO Chilean Competition Wings - 2025 (CORREGIDO) -->
+    <!-- GRÁFICO Chilean Competition Wings - 2025 -->
     <div class="chart-card animate-item" id="chartCard">
       <div class="shift-content">
         <div class="section-title">📊 Chilean Competition Wings - 2025</div>
       </div>
       <div class="chart-container shift-content">
         <canvas id="breweryChart" width="800" height="400"></canvas>
+        <div id="custom-tooltip" style="display: none;"></div>
       </div>
       <div class="legend-container shift-content" id="legendContainer"></div>
     </div>
@@ -215,7 +236,7 @@
   </div>
 
   <script>
-    // ======================== CARGA DE CSV (IGUAL QUE EN PODIUMBEER) ========================
+    // ======================== CARGA DE CSV (MISMA QUE PODIUMBEER) ========================
     let allData = [];
 
     function formatearTextoPresentacion(str) {
@@ -261,45 +282,45 @@
       }
     }
 
-    // ======================== GRÁFICO DE CERVEZAS (CORREGIDO: 15 COLORES, TOOLTIP INDIVIDUAL) ========================
+    // ======================== GRÁFICO DE CERVEZAS CON TOOLTIP PERSONALIZADO ========================
     let breweryChart;
-
     const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-    // Paleta de 15 colores (la que usted me dio)
     const colorPalette = [
       '#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f',
       '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
       '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
     ];
 
+    let tooltipDetails = [];
+
     function renderBreweryChart(data) {
-      // Filtrar Chile y año 2025
       const chileData = data.filter(item => item.pais === 'Chile');
       const data2025 = chileData.filter(item => {
         const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
         return anio === '2025';
       });
-      if (!data2025.length) {
-        console.warn('No hay datos de Chile para 2025');
-        return;
-      }
+      if (!data2025.length) return;
 
-      // Calcular total de medallas por cervecería en 2025
       const breweryTotal = {};
       data2025.forEach(item => {
-        const brewery = item.cerveceria;
-        if (!brewery) return;
-        breweryTotal[brewery] = (breweryTotal[brewery] || 0) + 1;
+        const brew = item.cerveceria;
+        if (!brew) return;
+        breweryTotal[brew] = (breweryTotal[brew] || 0) + 1;
       });
-
-      // Seleccionar top 15
       const sorted = Object.entries(breweryTotal).sort((a,b) => b[1] - a[1]);
       const top15 = sorted.slice(0, 15).map(entry => entry[0]);
       console.log('Top 15 cervecerías:', top15);
 
-      // Agrupar medallas por cervecería y mes (marzo a diciembre)
-      const monthlyData = {};
-      top15.forEach(brew => { monthlyData[brew] = Array(10).fill(0); });
+      const monthlyTotal = {};
+      const monthlyOro = {};
+      const monthlyPlata = {};
+      const monthlyBronce = {};
+      top15.forEach(brew => {
+        monthlyTotal[brew] = Array(10).fill(0);
+        monthlyOro[brew] = Array(10).fill(0);
+        monthlyPlata[brew] = Array(10).fill(0);
+        monthlyBronce[brew] = Array(10).fill(0);
+      });
 
       data2025.forEach(item => {
         const brew = item.cerveceria;
@@ -309,24 +330,34 @@
         const mes = parseInt(fecha.split('-')[1], 10);
         if (mes >= 3 && mes <= 12) {
           const idx = mes - 3;
-          monthlyData[brew][idx]++;
+          monthlyTotal[brew][idx]++;
+          const medalla = (item.medalla_base || '').toLowerCase();
+          if (medalla === 'oro') monthlyOro[brew][idx]++;
+          else if (medalla === 'plata') monthlyPlata[brew][idx]++;
+          else if (medalla === 'bronce') monthlyBronce[brew][idx]++;
         }
       });
 
-      // Construir datasets con colores únicos de la paleta
       const datasets = [];
+      tooltipDetails = [];
       top15.forEach((brew, idx) => {
         datasets.push({
           label: brew,
-          data: monthlyData[brew],
+          data: monthlyTotal[brew],
           borderColor: colorPalette[idx % colorPalette.length],
-          backgroundColor: colorPalette[idx % colorPalette.length] + '33', // 20% opacidad
+          backgroundColor: colorPalette[idx % colorPalette.length] + '33',
           borderWidth: idx === 0 ? 2.5 : (idx < 5 ? 1.5 : 1),
           tension: 0.4,
           fill: true,
-          pointRadius: 3,
-          pointHoverRadius: 6,
+          pointRadius: 4,
+          pointHoverRadius: 8,
+          pointHitRadius: 10,
           hidden: false
+        });
+        tooltipDetails.push({
+          oro: monthlyOro[brew],
+          plata: monthlyPlata[brew],
+          bronce: monthlyBronce[brew]
         });
       });
 
@@ -339,48 +370,78 @@
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: {
-            tooltip: {
-              mode: 'nearest',    // <--- SOLO LA LÍNEA MÁS CERCANA
-              intersect: true,    // <--- SOLO SI EL CURSOR ESTÁ SOBRE UN PUNTO
-              callbacks: {
-                label: function(context) {
-                  const dataset = context.dataset;
-                  const breweryName = dataset.label;
-                  const month = context.label;
-                  const value = context.raw;
-                  return `${breweryName}: ${value} medalla${value !== 1 ? 's' : ''} en ${month}`;
-                }
-              }
-            },
-            legend: { display: false }
-          },
+          plugins: { tooltip: { enabled: false }, legend: { display: false } },
           scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { color: '#fff', stepSize: 1 },
-              grid: { color: 'rgba(255,255,255,0.1)' },
-              title: { display: true, text: 'Medallas', color: '#fff' }
-            },
-            x: {
-              ticks: { color: '#fff' },
-              grid: { display: false },
-              title: { display: true, text: 'Mes 2025', color: '#fff' }
-            }
-          }
+            y: { beginAtZero: true, ticks: { color: '#fff', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.1)' }, title: { display: false } },
+            x: { ticks: { color: '#fff' }, grid: { display: false }, title: { display: false } }
+          },
+          onHover: (event, activeElements) => { showTooltip(event, activeElements); },
+          onLeave: () => { hideTooltip(); }
         }
       });
 
-      // Leyenda interactiva
+      const canvas = document.getElementById('breweryChart');
+      // Eventos táctiles para Android
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const activeElements = breweryChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
+        showTooltip({ native: { clientX: touch.clientX, clientY: touch.clientY } }, activeElements);
+      });
+      canvas.addEventListener('touchend', () => { hideTooltip(); });
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const activeElements = breweryChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
+        showTooltip({ native: { clientX: touch.clientX, clientY: touch.clientY } }, activeElements);
+      });
+
+      function showTooltip(event, activeElements) {
+        const tooltipDiv = document.getElementById('custom-tooltip');
+        if (!tooltipDiv) return;
+        if (!activeElements || activeElements.length === 0) {
+          tooltipDiv.style.display = 'none';
+          return;
+        }
+        const element = activeElements[0];
+        const datasetIndex = element.datasetIndex;
+        const dataIndex = element.dataIndex;
+        const breweryName = datasets[datasetIndex].label;
+        const month = monthNames[dataIndex];
+        const total = datasets[datasetIndex].data[dataIndex];
+        const oro = tooltipDetails[datasetIndex]?.oro[dataIndex] || 0;
+        const plata = tooltipDetails[datasetIndex]?.plata[dataIndex] || 0;
+        const bronce = tooltipDetails[datasetIndex]?.bronce[dataIndex] || 0;
+        if (total === 0 && oro === 0 && plata === 0 && bronce === 0) {
+          tooltipDiv.style.display = 'none';
+          return;
+        }
+        tooltipDiv.innerHTML = `<strong style="color: ${datasets[datasetIndex].borderColor}">${breweryName}</strong><br>${month}<br>🥇 Oro: ${oro} | 🥈 Plata: ${plata} | 🥉 Bronce: ${bronce}<br>Total: ${total} medallas`;
+        tooltipDiv.style.display = 'block';
+        let left = event.native?.clientX + 15;
+        let top = event.native?.clientY - 30;
+        const tooltipRect = tooltipDiv.getBoundingClientRect();
+        if (left + tooltipRect.width > window.innerWidth) left = event.native.clientX - tooltipRect.width - 10;
+        if (top + tooltipRect.height > window.innerHeight) top = event.native.clientY - tooltipRect.height - 10;
+        tooltipDiv.style.left = `${left}px`;
+        tooltipDiv.style.top = `${top}px`;
+      }
+
+      function hideTooltip() {
+        const tooltipDiv = document.getElementById('custom-tooltip');
+        if (tooltipDiv) tooltipDiv.style.display = 'none';
+      }
+
       const legendContainer = document.getElementById('legendContainer');
       legendContainer.innerHTML = '';
       datasets.forEach((ds, idx) => {
         const div = document.createElement('div');
         div.className = 'legend-item';
-        div.innerHTML = `
-          <div class="legend-color" style="background: ${ds.borderColor};"></div>
-          <span class="legend-label">${ds.label}</span>
-        `;
+        div.innerHTML = `<div class="legend-color" style="background: ${ds.borderColor};"></div><span class="legend-label">${ds.label}</span>`;
         div.addEventListener('click', () => {
           const meta = breweryChart.getDatasetMeta(idx);
           meta.hidden = !meta.hidden;
@@ -391,7 +452,7 @@
       });
     }
 
-    // ======================== LÓGICA DEL SIMULADOR (EXISTENTE) ========================
+    // ======================== LÓGICA DEL SIMULADOR ========================
     const metricsTable = [
       { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
       { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
