@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Simulador de Alianza | Podium Beer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -57,12 +58,12 @@
       z-index: 0;
     }
 
-    /* === CONTENEDOR PRINCIPAL (móvil: 90% ancho, sin límite) === */
+    /* === CONTENEDOR PRINCIPAL === */
     .app-container {
-      width: 90%;           /* 90% del ancho del viewport */
-      max-width: none;      /* sin límite en móvil para que ocupe el 90% real */
+      width: 90%;
+      max-width: none;
       margin: 1.5rem auto;
-      padding: 0 0.5rem;    /* pequeño margen lateral de seguridad */
+      padding: 0 0.5rem;
       position: relative;
       z-index: 2;
       display: flex;
@@ -70,9 +71,16 @@
       gap: 1.8rem;
     }
 
-    /* === HEADER (título en una sola línea) === */
+    /* === HEADER === */
     .header {
       text-align: center;
+    }
+    .logo-header {
+      display: block;
+      margin: 0 auto 1rem auto;
+      width: 60%;
+      max-width: 200px;
+      height: auto;
     }
     .h1-sim {
       font-size: clamp(28px, 8vw, 44px);
@@ -92,7 +100,6 @@
       color: #CFDEE0;
       margin-top: 0.5rem;
     }
-    /* Bajada del header */
     .bajada-header {
       font-size: 15px;
       font-weight: 500;
@@ -106,7 +113,7 @@
       backdrop-filter: blur(4px);
     }
 
-    /* === CONTENEDORES CON EFECTO GLASS + ECO (imagen espejo.png) === */
+    /* === CONTENEDORES GLASS === */
     .glass-card, .metrics-card, .plan-selector-card {
       position: relative;
       background: rgba(6, 35, 46, 0.35);
@@ -117,7 +124,6 @@
       transition: transform 0.2s ease;
       padding: 1.5rem;
     }
-    /* Efecto eco con imagen espejo.png */
     .glass-card::before, .metrics-card::before, .plan-selector-card::before {
       content: '';
       position: absolute;
@@ -134,7 +140,6 @@
       pointer-events: none;
     }
 
-    /* Títulos de sección */
     .section-title {
       font-size: 14px;
       font-weight: 800;
@@ -325,17 +330,16 @@
       white-space: nowrap;
     }
 
-    /* === FRASE FINAL === */
-    .frase-final {
+    /* === FRASE FINAL (ahora es el crédito) */
+    .credits {
       text-align: center;
       font-size: 14px;
       font-weight: 600;
-      color: #FFFFFF;
+      color: #f7c32f;
       background: rgba(0, 0, 0, 0.5);
       padding: 0.75rem 1rem;
       border-radius: 60px;
       margin: 0.5rem 0;
-      letter-spacing: -0.2px;
       backdrop-filter: blur(4px);
     }
 
@@ -367,11 +371,58 @@
       white-space: nowrap;
     }
 
-    /* === LAYOUT DESKTOP (≥992px) === */
+    /* === ESTILOS PARA GRÁFICO Y RANKING === */
+    .chart-container {
+      width: 100%;
+      min-height: 300px;
+      margin-top: 1rem;
+    }
+    .ranking-container {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+    .ranking-box {
+      background: rgba(0,0,0,0.5);
+      border-radius: 1rem;
+      padding: 1rem;
+      flex: 1;
+      min-width: 200px;
+    }
+    .ranking-box h4 {
+      color: #f7c32f;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    .ranking-box ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .ranking-box li {
+      font-size: 0.8rem;
+      margin-bottom: 0.3rem;
+      color: #CFDEE0;
+    }
+    .ranking-box .medal-count {
+      color: #f7c32f;
+      font-weight: bold;
+    }
+    .error-message {
+      background: #e32c6c;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    /* === LAYOUT DESKTOP === */
     @media (min-width: 992px) {
       .app-container {
         width: 85%;
-        max-width: 1300px;   /* solo en desktop ponemos un límite */
+        max-width: 1300px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
@@ -383,25 +434,41 @@
       .glass-card {
         grid-column: 1 / 2;
       }
+      /* El gráfico y ranking se pondrán después del slider, dentro de una nueva tarjeta que abarcará ambas columnas? 
+         Para mantener el orden: slider (col1), luego la tarjeta del gráfico y ranking debe ir en la columna 1 también, 
+         pero para que no rompa el diseño, pondremos el gráfico y ranking en una nueva tarjeta que ocupe toda la fila (span 2) 
+         justo después del slider y antes del selector de planes. */
+      .global-chart-card {
+        grid-column: span 2;
+        margin-top: 0;
+      }
       .plan-selector-card {
         grid-column: 1 / 2;
+        grid-row: auto;
       }
       .metrics-card {
         grid-column: 2 / 3;
-        grid-row: 2 / 4;
+        grid-row: 2 / 5;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
       }
-      .frase-final {
+      .credits {
         grid-column: span 2;
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
       }
       .cta-wrapper {
         grid-column: span 2;
+      }
+      /* Ajuste de la bajada en desktop: mitad de ancho y fuente más pequeña que H2 */
+      .bajada-header {
+        max-width: 45%;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 16px;
+      }
+      .h2-sim {
+        font-size: 28px;
       }
       .metric-row {
         gap: 1.5rem;
@@ -417,7 +484,7 @@
       }
     }
 
-    /* Ajustes móvil adicionales */
+    /* Ajustes móvil */
     @media (max-width: 991px) {
       .app-container {
         gap: 1.8rem;
@@ -447,10 +514,13 @@
       .bajada-header {
         font-size: 14px;
       }
+      .ranking-box {
+        min-width: 100%;
+      }
     }
     @media (max-width: 380px) {
       .app-container {
-        width: 95%;         /* en pantallas muy pequeñas, 95% para no perder contenido */
+        width: 95%;
       }
       .glass-card, .metrics-card, .plan-selector-card {
         padding: 1rem 0.8rem;
@@ -466,8 +536,9 @@
   <div class="vignette"></div>
 
   <div class="app-container">
-    <!-- HEADER -->
+    <!-- HEADER con logo -->
     <div class="header animate-item">
+      <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
       <div class="bajada-header">
@@ -493,6 +564,25 @@
           <span>1001 - 5000<br>hl</span>
           <span>5001 - 10000<br>hl</span>
           <span>≥20000<br>hl</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO GLOBAL COMPETITION WINGS – 2025 y RANKING DE CERVEZAS CHILENAS -->
+    <div class="glass-card global-chart-card animate-item" id="chartRankingContainer">
+      <div class="section-title">📊 GLOBAL COMPETITION WINGS – 2025</div>
+      <div class="chart-container">
+        <canvas id="evolucionMensualChart" width="800" height="400"></canvas>
+      </div>
+      <div id="rankingData" class="ranking-container">
+        <!-- Aquí se cargarán dinámicamente los rankings -->
+        <div class="ranking-box">
+          <h4>🏆 Cervecería con más medallas</h4>
+          <ul id="topBreweryList"><li>Cargando...</li></ul>
+        </div>
+        <div class="ranking-box">
+          <h4>⚠️ 5 con menos medallas</h4>
+          <ul id="bottomBreweryList"><li>Cargando...</li></ul>
         </div>
       </div>
     </div>
@@ -571,21 +661,136 @@
       </div>
     </div>
 
-    <!-- FRASE FINAL -->
-    <div class="frase-final animate-item">
-      Crecemos contigo: este modelo se adapta a tu realidad productiva y a tus objetivos comerciales.
-    </div>
-
     <!-- CTA -->
     <div class="cta-wrapper animate-item">
       <button class="cta-button" id="ctaBtn">
         <span class="cta-text">Agenda tu Diagnóstico Estratégico</span>
       </button>
     </div>
+
+    <!-- CRÉDITOS (color amarillo) -->
+    <div class="credits animate-item">
+      Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
+    </div>
   </div>
 
   <script>
-    // (Mismo JavaScript funcional de siempre)
+    // ======================== 1. FUNCIONES DE LIMPIEZA Y CARGA CSV ========================
+    function limpiarTexto(texto) {
+      if (!texto) return "";
+      return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
+
+    function esBasura(valor) {
+      if (!valor) return true;
+      const limpio = valor.toString().toUpperCase().trim();
+      return limpio === "PENDIENTE" || limpio === "COMPLETAR" || limpio === "-";
+    }
+
+    let allData = [];
+
+    async function cargarCSV() {
+      try {
+        const response = await fetch('BBDD_Medallero_Chile.csv');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const texto = await response.text();
+        const lineas = texto.split('\n');
+        const encabezados = lineas[0].split(';').map(h => h.trim());
+        const datos = [];
+        for (let i = 1; i < lineas.length; i++) {
+          if (!lineas[i].trim()) continue;
+          const valores = lineas[i].split(';');
+          const fila = {};
+          encabezados.forEach((enc, idx) => {
+            let val = valores[idx] ? valores[idx].trim() : '';
+            fila[enc] = val;
+          });
+          if (esBasura(fila.medalla_base)) continue;
+          if (esBasura(fila.cerveceria)) continue;
+          datos.push(fila);
+        }
+        console.log(`✅ CSV cargado: ${datos.length} registros válidos`);
+        return datos;
+      } catch (err) {
+        console.error("Error cargando CSV:", err);
+        document.getElementById('chartRankingContainer').innerHTML += '<div class="error-message">⚠️ No se pudo cargar el archivo BBDD_Medallero_Chile.csv. Asegúrate de que esté en la raíz.</div>';
+        return [];
+      }
+    }
+
+    // ======================== 2. GRÁFICO DE EVOLUCIÓN MENSUAL ========================
+    let evolucionChart;
+    function renderEvolucionMensual(data) {
+      const data2025 = data.filter(item => {
+        const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
+        return anio === '2025';
+      });
+      if (!data2025.length) return;
+      const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const paises = ['Brasil', 'Chile', 'Argentina'];
+      const agrupado = { Brasil: Array(12).fill(0), Chile: Array(12).fill(0), Argentina: Array(12).fill(0) };
+      data2025.forEach(item => {
+        const fecha = item.fecha;
+        if (!fecha) return;
+        const mes = fecha.split('-')[1];
+        const pais = item.pais;
+        if (!pais || !paises.includes(pais)) return;
+        const idx = parseInt(mes) - 1;
+        if (idx >= 0 && idx < 12) agrupado[pais][idx]++;
+      });
+      const ctx = document.getElementById('evolucionMensualChart').getContext('2d');
+      if (evolucionChart) evolucionChart.destroy();
+      const datasets = paises.map(p => ({
+        label: p,
+        data: agrupado[p],
+        borderColor: p === 'Brasil' ? '#f7c32f' : (p === 'Chile' ? '#e32c6c' : '#1eab9b'),
+        backgroundColor: p === 'Brasil' ? 'rgba(247,195,47,0.2)' : (p === 'Chile' ? 'rgba(227,44,108,0.2)' : 'rgba(30,171,155,0.2)'),
+        fill: true, tension: 0.4, pointRadius: 3, pointHoverRadius: 6
+      }));
+      evolucionChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: meses, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          plugins: { tooltip: { mode: 'index', intersect: false }, legend: { labels: { color: '#fff' } } },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+            x: { ticks: { color: '#fff' }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // ======================== 3. RANKING DE CERVEZAS CHILENAS ========================
+    function renderRankingChile(data) {
+      const chileData = data.filter(item => item.pais === 'Chile');
+      const breweries = {};
+      chileData.forEach(item => {
+        const nombre = item.cerveceria;
+        if (!nombre) return;
+        if (!breweries[nombre]) breweries[nombre] = { total: 0 };
+        breweries[nombre].total++;
+      });
+      const entries = Object.entries(breweries).map(([name, vals]) => ({ name, total: vals.total }));
+      entries.sort((a,b) => b.total - a.total);
+      const top = entries[0];
+      const bottom = entries.slice(-5).reverse(); // las 5 con menos medallas (de menor a mayor)
+
+      const topList = document.getElementById('topBreweryList');
+      const bottomList = document.getElementById('bottomBreweryList');
+      if (top) {
+        topList.innerHTML = `<li><strong>${top.name}</strong> <span class="medal-count">(${top.total} medallas)</span></li>`;
+      } else {
+        topList.innerHTML = '<li>Sin datos</li>';
+      }
+      if (bottom.length) {
+        bottomList.innerHTML = bottom.map(b => `<li>${b.name} <span class="medal-count">(${b.total} medallas)</span></li>`).join('');
+      } else {
+        bottomList.innerHTML = '<li>Sin datos</li>';
+      }
+    }
+
+    // ======================== 4. LÓGICA DEL SIMULADOR (EXISTENTE) ========================
     const metricsTable = [
       { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
       { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
@@ -760,7 +965,17 @@
       if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
       alert("📞 Diagnóstico estratégico – Un asesor te contactará para potenciar tu negocio.");
     });
-    function init() {
+
+    // ======================== 5. INICIALIZACIÓN PRINCIPAL ========================
+    async function init() {
+      // Cargar datos del CSV
+      const data = await cargarCSV();
+      if (data.length) {
+        allData = data;
+        renderEvolucionMensual(data);
+        renderRankingChile(data);
+      }
+      // Inicializar simulador
       initSlider();
       bindTierEvents();
       currentRangeIndex = 3;
