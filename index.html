@@ -330,7 +330,7 @@
       white-space: nowrap;
     }
 
-    /* === FRASE FINAL (ahora es el crédito) */
+    /* === CRÉDITOS (amarillo) === */
     .credits {
       text-align: center;
       font-size: 14px;
@@ -434,10 +434,6 @@
       .glass-card {
         grid-column: 1 / 2;
       }
-      /* El gráfico y ranking se pondrán después del slider, dentro de una nueva tarjeta que abarcará ambas columnas? 
-         Para mantener el orden: slider (col1), luego la tarjeta del gráfico y ranking debe ir en la columna 1 también, 
-         pero para que no rompa el diseño, pondremos el gráfico y ranking en una nueva tarjeta que ocupe toda la fila (span 2) 
-         justo después del slider y antes del selector de planes. */
       .global-chart-card {
         grid-column: span 2;
         margin-top: 0;
@@ -460,7 +456,6 @@
       .cta-wrapper {
         grid-column: span 2;
       }
-      /* Ajuste de la bajada en desktop: mitad de ancho y fuente más pequeña que H2 */
       .bajada-header {
         max-width: 45%;
         margin-left: auto;
@@ -568,14 +563,13 @@
       </div>
     </div>
 
-    <!-- GRÁFICO GLOBAL COMPETITION WINGS – 2025 y RANKING DE CERVEZAS CHILENAS -->
+    <!-- GRÁFICO Chilean Competition Wings - 2025 y RANKING DE CERVEZAS CHILENAS -->
     <div class="glass-card global-chart-card animate-item" id="chartRankingContainer">
-      <div class="section-title">📊 GLOBAL COMPETITION WINGS – 2025</div>
+      <div class="section-title">📊 Chilean Competition Wings - 2025</div>
       <div class="chart-container">
         <canvas id="evolucionMensualChart" width="800" height="400"></canvas>
       </div>
       <div id="rankingData" class="ranking-container">
-        <!-- Aquí se cargarán dinámicamente los rankings -->
         <div class="ranking-box">
           <h4>🏆 Cervecería con más medallas</h4>
           <ul id="topBreweryList"><li>Cargando...</li></ul>
@@ -968,14 +962,12 @@
 
     // ======================== 5. INICIALIZACIÓN PRINCIPAL ========================
     async function init() {
-      // Cargar datos del CSV
       const data = await cargarCSV();
       if (data.length) {
         allData = data;
         renderEvolucionMensual(data);
         renderRankingChile(data);
       }
-      // Inicializar simulador
       initSlider();
       bindTierEvents();
       currentRangeIndex = 3;
