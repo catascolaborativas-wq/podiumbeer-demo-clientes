@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    /* ===== RESET Y ESTILOS BASE ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
@@ -20,14 +19,27 @@
     .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
     .h1-sim::-webkit-scrollbar { display: none; }
     .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
-    .bajada-header { font-size: 15px; font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.7); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
+    /* Bajada del header – más grande, 3 líneas permitidas */
+    .bajada-header { 
+      font-size: clamp(16px, 5vw, 20px); 
+      font-weight: 500; 
+      color: #FFFFFF; 
+      background: rgba(6,35,46,0.7); 
+      padding: 0.75rem 1rem; 
+      border-radius: 28px; 
+      margin-top: 1rem; 
+      line-height: 1.4; 
+      text-align: center; 
+      backdrop-filter: blur(4px); 
+    }
     .glass-card, .metrics-card, .plan-selector-card, .chart-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
     .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
     .shift-content { margin-left: 2.5%; width: 97.5%; }
-    /* Títulos de sección generales (no afecta al título del gráfico) */
-    .section-title { font-size: 14px; font-weight: 800; letter-spacing: 2px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
+    /* Títulos de sección generales (amarillos) */
+    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
     .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
-    .section-desc { font-size: 13px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
+    /* Bajada del slider (más grande) */
+    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
     /* Título específico del gráfico (homólogo a PodiumBeer) */
     .chart-title {
       font-size: 1.3rem;
@@ -37,7 +49,14 @@
       color: #f7c32f;
       text-transform: none;
       letter-spacing: normal;
-      margin-bottom: 1.5rem;  /* más espacio entre título y gráfico */
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .chart-title img {
+      height: 24px;
+      vertical-align: middle;
     }
     /* SLIDER */
     .slider-container { width: 100%; padding: 0 0.5rem; }
@@ -47,20 +66,16 @@
     .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
     .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
     .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
-    .slider-labels span { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: #CFDEE0; line-height: 1.3; }
-    @media (max-width: 991px) {
-      .slider-labels span { font-size: 11px; }
-      .slider-labels span br { display: block; }
-    }
-    @media (min-width: 992px) { .slider-labels span br { display: none; } }
+    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
     /* SELECTOR DE PLANES */
-    .tier-buttons-container { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
-    .tier-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .tier-btn { width: auto; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 1.2rem; cursor: pointer; transition: all 250ms ease; }
+    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
+    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
     .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
     .tier-icon img { width: 24px; height: auto; display: block; }
     .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
-    .tier-bajada { font-size: 11px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
+    /* Bajadas debajo de cada botón (más grandes, 3 líneas si es necesario) */
+    .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
     /* BLOQUE DE RESULTADOS */
     .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
     .metric-row:last-child { margin-bottom: 0; }
@@ -71,9 +86,7 @@
     .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
     .metric-value-col { flex: 1; text-align: right; }
     .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
-    /* CRÉDITOS */
     .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
-    /* BOTÓN CTA */
     .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
     .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
     .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
@@ -81,12 +94,15 @@
     /* GRÁFICO */
     .chart-card { padding: 1rem; }
     .chart-container { width: 100%; min-height: 450px; margin-top: 0; position: relative; }
-    canvas { touch-action: none; }  /* Evita desplazamiento al tocar */
+    canvas { touch-action: none; }
     /* Leyenda: en móvil dos filas centradas, en desktop scroll horizontal */
     .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 2rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
     @media (min-width: 992px) {
       .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
       .legend-item { flex-shrink: 0; }
+      .slider-labels span { font-size: 14px; }
+      .tier-bajada { font-size: 13px; }
+      .section-desc { font-size: 15px; }
     }
     .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 20px; transition: 0.2s; }
     .legend-item:hover { background: rgba(0,0,0,0.8); }
@@ -94,39 +110,6 @@
     .legend-label { color: #fff; white-space: nowrap; }
     .legend-item.hidden .legend-label { text-decoration: line-through; opacity: 0.5; }
     .error-message { background: #e32c6c; color: white; padding: 0.5rem; border-radius: 1rem; text-align: center; font-size: 0.8rem; }
-    /* Tooltip personalizado */
-    #custom-tooltip {
-      position: absolute;
-      background: rgba(6,35,46,0.95);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 500;
-      border: 1px solid #f7c32f;
-      pointer-events: none;
-      z-index: 1000;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      white-space: nowrap;
-    }
-    /* RESPONSIVE DESKTOP */
-    @media (min-width: 992px) {
-      .app-container { width: 85%; max-width: 1300px; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
-      .header { grid-column: span 2; }
-      .glass-card { grid-column: 1 / 2; }
-      .chart-card { grid-column: span 2; margin-top: 0; }
-      .plan-selector-card { grid-column: 1 / 2; grid-row: auto; }
-      .metrics-card { grid-column: 2 / 3; grid-row: 2 / 5; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-      .credits { grid-column: span 2; font-size: 20px; }
-      .cta-wrapper { grid-column: span 2; }
-      .bajada-header { max-width: 45%; margin-left: auto; margin-right: auto; font-size: 16px; }
-      .h2-sim { font-size: 28px; }
-      .metric-row { gap: 1.5rem; }
-      .metric-icon-col img { width: 64px; }
-      .metric-name { font-size: 18px; }
-      .metric-value { font-size: 28px; }
-    }
     /* RESPONSIVE MÓVIL */
     @media (max-width: 991px) {
       .app-container { gap: 1.8rem; }
@@ -137,16 +120,22 @@
       .metric-name { font-size: 14px; }
       .metric-bajada { font-size: 9px; }
       .h1-sim { white-space: normal; font-size: 28px; }
-      .bajada-header { font-size: 14px; }
+      .bajada-header { font-size: 16px; }
       .credits { font-size: 16px; }
-      .tier-btn { padding: 0.5rem 1rem; }
-      .legend-item { font-size: 9px; }
-      .slider-labels span { font-size: 11px; }
+      .tier-btn { padding: 0.5rem 0.8rem; }
+      .tier-item { max-width: 140px; }
+      .tier-bajada { font-size: 12px; }
+      .section-desc { font-size: 14px; }
+      .slider-labels span { font-size: 12px; white-space: normal; }
+      .chart-title { font-size: 1.2rem; }
+      .chart-title img { height: 20px; }
     }
     @media (max-width: 380px) {
       .app-container { width: 95%; }
       .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1rem 0.8rem; }
       .credits { font-size: 14px; }
+      .tier-item { max-width: 120px; }
+      .tier-bajada { font-size: 11px; }
     }
   </style>
 </head>
@@ -175,11 +164,11 @@
           <div class="slider-thumb" id="sliderThumb"></div>
         </div>
         <div class="slider-labels">
-          <span>&lt;500<br>hl</span>
-          <span>501 - 1000<br>hl</span>
-          <span>1001 - 5000<br>hl</span>
-          <span>5001 - 10000<br>hl</span>
-          <span>≥20000<br>hl</span>
+          <span>&lt;500 hl</span>
+          <span>501 - 1000 hl</span>
+          <span>1001 - 5000 hl</span>
+          <span>5001 - 10000 hl</span>
+          <span>≥20000 hl</span>
         </div>
       </div>
     </div>
@@ -187,11 +176,12 @@
     <!-- GRÁFICO Chilean Competition Wings - 2025 -->
     <div class="chart-card animate-item" id="chartCard">
       <div class="shift-content">
-        <div class="chart-title">📊 Chilean Competition Wings - 2025</div>
+        <div class="chart-title">
+          <img src="assets/bandera.png" alt="Bandera"> Chilean Competition Wings - 2025
+        </div>
       </div>
       <div class="chart-container shift-content">
         <canvas id="breweryChart" width="800" height="400"></canvas>
-        <div id="custom-tooltip" style="display: none;"></div>
       </div>
       <div class="legend-container shift-content" id="legendContainer"></div>
     </div>
@@ -308,7 +298,7 @@
       }
     }
 
-    // ======================== GRÁFICO DE CERVEZAS CON TOOLTIP PERSONALIZADO ========================
+    // ======================== GRÁFICO DE CERVEZAS (TOOLTIP NATIVO) ========================
     let breweryChart;
     const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
     const colorPalette = [
@@ -316,8 +306,6 @@
       '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
       '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
     ];
-
-    let tooltipDetails = [];
 
     function renderBreweryChart(data) {
       const chileData = data.filter(item => item.pais === 'Chile');
@@ -327,53 +315,37 @@
       });
       if (!data2025.length) return;
 
-      // Normalizar y contar total por cervecería (usando .trim() y formateo)
+      // Calcular total de medallas por cervecería (para el top 15)
       const breweryTotal = {};
       data2025.forEach(item => {
         let brew = item.cerveceria ? item.cerveceria.trim() : '';
         if (!brew) return;
         breweryTotal[brew] = (breweryTotal[brew] || 0) + 1;
       });
-
       const sorted = Object.entries(breweryTotal).sort((a,b) => b[1] - a[1]);
       const top15 = sorted.slice(0, 15).map(entry => entry[0]);
       console.log('Top 15 cervecerías:', top15);
 
-      // Inicializar estructuras mensuales (total, oro, plata, bronce)
+      // Inicializar datos mensuales (total de medallas por mes)
       const monthlyTotal = {};
-      const monthlyOro = {};
-      const monthlyPlata = {};
-      const monthlyBronce = {};
-      top15.forEach(brew => {
-        monthlyTotal[brew] = Array(10).fill(0);
-        monthlyOro[brew] = Array(10).fill(0);
-        monthlyPlata[brew] = Array(10).fill(0);
-        monthlyBronce[brew] = Array(10).fill(0);
-      });
+      top15.forEach(brew => { monthlyTotal[brew] = Array(10).fill(0); });
 
-      // Llenar datos mes a mes
       data2025.forEach(item => {
         let brew = item.cerveceria ? item.cerveceria.trim() : '';
         if (!top15.includes(brew)) return;
         const fecha = item.fecha;
         if (!fecha) return;
-        // Formato esperado: YYYY-MM-DD
         const partes = fecha.split('-');
         if (partes.length < 2) return;
         const mes = parseInt(partes[1], 10);
         if (mes >= 3 && mes <= 12) {
           const idx = mes - 3;
           monthlyTotal[brew][idx]++;
-          const medalla = (item.medalla_base || '').toLowerCase();
-          if (medalla === 'oro') monthlyOro[brew][idx]++;
-          else if (medalla === 'plata') monthlyPlata[brew][idx]++;
-          else if (medalla === 'bronce') monthlyBronce[brew][idx]++;
         }
       });
 
-      // Construir datasets
+      // Construir datasets para Chart.js
       const datasets = [];
-      tooltipDetails = [];
       top15.forEach((brew, idx) => {
         datasets.push({
           label: brew,
@@ -385,13 +357,8 @@
           fill: true,
           pointRadius: 4,
           pointHoverRadius: 8,
-          pointHitRadius: 18,  // Para facilitar toque en móvil
+          pointHitRadius: 15,  // Para facilitar toque en móvil
           hidden: false
-        });
-        tooltipDetails.push({
-          oro: monthlyOro[brew],
-          plata: monthlyPlata[brew],
-          bronce: monthlyBronce[brew]
         });
       });
 
@@ -407,11 +374,23 @@
           layout: {
             padding: {
               top: 10,
-              bottom: 10
+              bottom: 10,
+              left: 10,
+              right: 10
             }
           },
           plugins: {
-            tooltip: { enabled: false },
+            tooltip: {
+              mode: 'nearest',
+              intersect: true,
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label;
+                  const value = context.raw;
+                  return `${label}: ${value} medalla${value !== 1 ? 's' : ''}`;
+                }
+              }
+            },
             legend: { display: false }
           },
           scales: {
@@ -422,68 +401,13 @@
               title: { display: false }
             },
             x: {
-              ticks: { color: '#fff' },
+              ticks: { color: '#fff', maxRotation: 45, autoSkip: true },
               grid: { display: false },
               title: { display: false }
             }
-          },
-          onHover: (event, activeElements) => { showTooltip(event, activeElements); },
-          onLeave: () => { hideTooltip(); }
+          }
         }
       });
-
-      const canvas = document.getElementById('breweryChart');
-      // Eventos táctiles para Android
-      canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const activeElements = breweryChart.getElementsAtEvent(e);
-        showTooltip(e, activeElements);
-      });
-      canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const activeElements = breweryChart.getElementsAtEvent(e);
-        showTooltip(e, activeElements);
-      });
-      canvas.addEventListener('touchend', () => { hideTooltip(); });
-      canvas.addEventListener('touchcancel', () => { hideTooltip(); });
-
-      function showTooltip(event, activeElements) {
-        const tooltipDiv = document.getElementById('custom-tooltip');
-        if (!tooltipDiv) return;
-        if (!activeElements || activeElements.length === 0) {
-          tooltipDiv.style.display = 'none';
-          return;
-        }
-        const element = activeElements[0];
-        const datasetIndex = element.datasetIndex;
-        const dataIndex = element.dataIndex;
-        const breweryName = datasets[datasetIndex].label;
-        const month = monthNames[dataIndex];
-        const total = datasets[datasetIndex].data[dataIndex];
-        const oro = tooltipDetails[datasetIndex]?.oro[dataIndex] || 0;
-        const plata = tooltipDetails[datasetIndex]?.plata[dataIndex] || 0;
-        const bronce = tooltipDetails[datasetIndex]?.bronce[dataIndex] || 0;
-        if (total === 0 && oro === 0 && plata === 0 && bronce === 0) {
-          tooltipDiv.style.display = 'none';
-          return;
-        }
-        tooltipDiv.innerHTML = `<strong style="color: ${datasets[datasetIndex].borderColor}">${breweryName}</strong><br>${month}<br>🥇 Oro: ${oro} | 🥈 Plata: ${plata} | 🥉 Bronce: ${bronce}<br>Total: ${total} medallas`;
-        tooltipDiv.style.display = 'block';
-        let clientX = event.native?.clientX ?? (event.touches ? event.touches[0].clientX : 0);
-        let clientY = event.native?.clientY ?? (event.touches ? event.touches[0].clientY : 0);
-        let left = clientX + 15;
-        let top = clientY - 30;
-        const tooltipRect = tooltipDiv.getBoundingClientRect();
-        if (left + tooltipRect.width > window.innerWidth) left = clientX - tooltipRect.width - 10;
-        if (top + tooltipRect.height > window.innerHeight) top = clientY - tooltipRect.height - 10;
-        tooltipDiv.style.left = `${left}px`;
-        tooltipDiv.style.top = `${top}px`;
-      }
-
-      function hideTooltip() {
-        const tooltipDiv = document.getElementById('custom-tooltip');
-        if (tooltipDiv) tooltipDiv.style.display = 'none';
-      }
 
       // Leyenda interactiva
       const legendContainer = document.getElementById('legendContainer');
