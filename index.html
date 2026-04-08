@@ -59,12 +59,12 @@
       z-index: 0;
     }
 
-    /* === CONTENEDOR PRINCIPAL: 90% ANCHO REAL EN MÓVIL === */
+    /* === CONTENEDOR PRINCIPAL: MISMO COMPORTAMIENTO QUE PODIUMBEER === */
     .app-container {
-      width: 90%;
-      max-width: none;
-      margin: 1.5rem auto;
-      padding: 0;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
       position: relative;
       z-index: 2;
       display: flex;
@@ -95,7 +95,7 @@
       margin-top: 0.5rem;
     }
     .bajada-header {
-      font-size: 15px;
+      font-size: 16px;      /* +14% aproximadamente respecto a 14px original */
       font-weight: 500;
       color: #FFFFFF;
       background: rgba(0, 0, 0, 0.6);
@@ -106,7 +106,7 @@
       backdrop-filter: blur(4px);
     }
 
-    /* === CONTENEDORES CON EFECTO GLASS + ECO VISIBLE === */
+    /* === CONTENEDORES INTERNOS CON DESPLAZAMIENTO DEL 20% HACIA LA DERECHA === */
     .glass-card, .metrics-card, .plan-selector-card {
       position: relative;
       background: rgba(6, 35, 46, 0.35);
@@ -114,9 +114,9 @@
       border-radius: 2rem;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      padding: 1.5rem 1.8rem;
+      padding: 1.5rem 1.5rem 1.5rem 20%;   /* 20% a la derecha (desplazamiento) */
     }
-    /* Efecto eco con imagen espejo.png */
+    /* EFECTO ECO CON IMAGEN ESPEJO.PNG */
     .glass-card::before, .metrics-card::before, .plan-selector-card::before {
       content: '';
       position: absolute;
@@ -366,11 +366,9 @@
       white-space: nowrap;
     }
 
-    /* === LAYOUT DESKTOP (≥992px) === */
+    /* === LAYOUT DESKTOP === */
     @media (min-width: 992px) {
       .app-container {
-        width: 85%;
-        max-width: 1300px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
@@ -416,13 +414,13 @@
       }
     }
 
-    /* === AJUSTES MÓVIL === */
+    /* === AJUSTES MÓVIL (desplazamiento reducido a 10%) === */
     @media (max-width: 991px) {
       .app-container {
-        gap: 1.5rem;
+        padding: 0.8rem;
       }
       .glass-card, .metrics-card, .plan-selector-card {
-        padding: 1.2rem 1rem;
+        padding: 1.2rem 1rem 1.2rem 10%;   /* en móvil, 10% de desplazamiento */
       }
       .metric-value {
         font-size: 18px;
@@ -443,10 +441,10 @@
     }
     @media (max-width: 380px) {
       .app-container {
-        width: 95%;
+        padding: 0.5rem;
       }
       .glass-card, .metrics-card, .plan-selector-card {
-        padding: 1rem 0.8rem;
+        padding: 1rem 0.8rem 1rem 8%;
       }
     }
   </style>
@@ -457,14 +455,12 @@
   <div class="vignette"></div>
 
   <div class="app-container">
-    <!-- HEADER -->
     <div class="header">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
       <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </div>
 
-    <!-- SLIDER -->
     <div class="glass-card">
       <div class="section-title">SLIDER</div>
       <div class="section-subtitle">Escala de Producción</div>
@@ -484,7 +480,6 @@
       </div>
     </div>
 
-    <!-- SELECTOR DE PLANES -->
     <div class="plan-selector-card">
       <div class="section-title">SELECTOR DE PLANES</div>
       <div class="section-subtitle">Nivel de Alianza Estratégica</div>
@@ -514,7 +509,6 @@
       </div>
     </div>
 
-    <!-- BLOQUE DE RESULTADOS -->
     <div class="metrics-card">
       <div class="section-title">BLOQUE DE RESULTADOS</div>
       <div class="section-subtitle">Impacto en tu negocio</div>
@@ -536,13 +530,8 @@
       </div>
     </div>
 
-    <!-- FRASE FINAL -->
     <div class="frase-final">Crecemos contigo: este modelo se adapta a tu realidad productiva y a tus objetivos comerciales.</div>
-
-    <!-- CTA -->
-    <div class="cta-wrapper">
-      <button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button>
-    </div>
+    <div class="cta-wrapper"><button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button></div>
   </div>
 
   <script>
