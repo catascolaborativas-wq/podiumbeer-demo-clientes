@@ -8,112 +8,327 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
+
+    :root{
+      --pink:#e32c6c;
+      --navy:#06232e;
+      --gold:#f7c32f;
+      --soft:#CFDEE0;
+      --panel:rgba(6,35,46,0.35);
+      --panel-strong:rgba(6,35,46,0.7);
+      --edge:rgba(255,255,255,0.2);
+      --shadow:0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; color:#fff; }
+    .hero-bg { position: fixed; inset: 0; z-index: -2; }
     .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
-    .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
-    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
+    .overlay-color { position: fixed; inset: 0; background: #06232E; opacity: 0.57; z-index: -1; }
+    .vignette { position: fixed; inset: 0; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
+
     .app-container { width: 90%; max-width: none; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
     .header { text-align: center; }
     .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
     .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
     .h1-sim::-webkit-scrollbar { display: none; }
-    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
-    /* Bajada del header – más grande, 3 líneas permitidas */
-    .bajada-header { 
-      font-size: clamp(16px, 5vw, 20px); 
-      font-weight: 500; 
-      color: #FFFFFF; 
-      background: rgba(6,35,46,0.7); 
-      padding: 0.75rem 1rem; 
-      border-radius: 28px; 
-      margin-top: 1rem; 
-      line-height: 1.4; 
-      text-align: center; 
-      backdrop-filter: blur(4px); 
+    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: var(--soft); margin-top: 0.5rem; }
+    .bajada-header {
+      font-size: clamp(16px, 5vw, 20px);
+      font-weight: 500;
+      color: #FFFFFF;
+      background: rgba(6,35,46,0.7);
+      padding: 0.75rem 1rem;
+      border-radius: 28px;
+      margin-top: 1rem;
+      line-height: 1.4;
+      text-align: center;
+      backdrop-filter: blur(4px);
     }
-    .glass-card, .metrics-card, .plan-selector-card, .chart-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
-    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
+
+    .glass-card, .metrics-card, .plan-selector-card, .chart-card, .iceberg-card {
+      position: relative;
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease;
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before, .iceberg-card::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: -10px;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background-image: url('assets/espejo.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.18;
+      z-index: -1;
+      pointer-events: none;
+    }
+
     .shift-content { margin-left: 2.5%; width: 97.5%; }
-    /* Títulos de sección generales (amarillos) */
-    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
+    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: var(--gold); text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
     .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
-    /* Bajada del slider (más grande) */
-    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
-    /* Título específico del gráfico (homólogo a PodiumBeer) */
+    .section-desc { font-size: 15px; color: var(--soft); line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
+
     .chart-title {
       font-size: 1.3rem;
       font-weight: 700;
-      border-left: 5px solid #e32c6c;
+      border-left: 5px solid var(--pink);
       padding-left: 1rem;
-      color: #f7c32f;
-      text-transform: none;
-      letter-spacing: normal;
-      margin-bottom: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 0.7rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    .chart-title img {
-      height: 24px;
-      vertical-align: middle;
+
+    .chart-title img { height: 24px; vertical-align: middle; }
+
+    .chart-kicker {
+      font-size: 12px;
+      color: var(--soft);
+      line-height: 1.45;
+      margin: 0 0 1rem 1rem;
     }
-    /* SLIDER */
-    .slider-container { width: 100%; padding: 0 0.5rem; }
-    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
-    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
-    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
-    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
-    .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
-    .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
-    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
-    /* SELECTOR DE PLANES */
-    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
-    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
-    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
-    .tier-icon img { width: 24px; height: auto; display: block; }
-    .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
-    /* Bajadas debajo de cada botón (más grandes, 3 líneas si es necesario) */
-    .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
-    /* BLOQUE DE RESULTADOS */
-    .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
-    .metric-row:last-child { margin-bottom: 0; }
-    .metric-icon-col { flex: 0 0 70px; text-align: center; }
-    .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
-    .metric-text-col { flex: 2; text-align: center; }
-    .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
-    .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
-    .metric-value-col { flex: 1; text-align: right; }
-    .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
-    .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
-    .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
-    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
-    .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
-    .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
-    /* GRÁFICO */
+
+    .insight-box {
+      background: rgba(0,0,0,0.32);
+      border: 1px solid rgba(247,195,47,0.18);
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      margin: 1rem 0 0 1rem;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .insight-box strong { color: var(--gold); }
+
+    .brewery-input-wrap {
+      margin-top: 1rem;
+      background: rgba(6,35,46,0.76);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.45rem 0.55rem 0.45rem 1rem;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .brewery-input-wrap input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #fff;
+      outline: none;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .brewery-input-wrap input::placeholder { color: rgba(255,255,255,0.55); }
+
+    .brewery-btn {
+      background: linear-gradient(90deg, #E40F63, #C32263);
+      color: #fff;
+      border: none;
+      border-radius: 60px;
+      padding: 11px 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(228,15,99,0.35);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .context-note {
+      margin-top: 0.85rem;
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.8rem;
+    }
+
     .chart-card { padding: 1rem; }
-    .chart-container { width: 100%; min-height: 450px; margin-top: 0; position: relative; }
+    .chart-container { width: 100%; min-height: 430px; margin-top: 0; position: relative; }
+    .chart-container.compact { min-height: 360px; }
     canvas { touch-action: none; }
-    /* Leyenda: en móvil dos filas centradas, en desktop scroll horizontal */
-    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 2rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
-    @media (min-width: 992px) {
-      .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
-      .legend-item { flex-shrink: 0; }
-      .slider-labels span { font-size: 14px; }
-      .tier-bajada { font-size: 13px; }
-      .section-desc { font-size: 15px; }
+
+    .legend-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      max-height: 90px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
     }
     .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 20px; transition: 0.2s; }
     .legend-item:hover { background: rgba(0,0,0,0.8); }
     .legend-color { width: 12px; height: 12px; border-radius: 2px; }
     .legend-label { color: #fff; white-space: nowrap; }
     .legend-item.hidden .legend-label { text-decoration: line-through; opacity: 0.5; }
-    .error-message { background: #e32c6c; color: white; padding: 0.5rem; border-radius: 1rem; text-align: center; font-size: 0.8rem; }
-    /* RESPONSIVE MÓVIL */
+
+    .svg-box {
+      width: 100%;
+      min-height: inherit;
+      background: transparent;
+    }
+    .svg-chart {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slider-container { width: 100%; padding: 0 0.5rem; }
+    .slider-block { margin-bottom: 2rem; }
+    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
+    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
+    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
+    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
+    .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
+    .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
+    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: var(--soft); line-height: 1.3; white-space: nowrap; }
+    .slider-current {
+      display: inline-flex;
+      margin-top: 0.35rem;
+      align-items: center;
+      justify-content: center;
+      min-width: 160px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0,0,0,0.42);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+    }
+
+    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
+    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
+    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
+    .tier-icon img { width: 24px; height: auto; display: block; }
+    .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
+    .tier-bajada { font-size: 13px; font-weight: 500; color: var(--soft); text-align: center; line-height: 1.3; margin-top: 0.2rem; }
+
+    .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
+    .metric-row:last-child { margin-bottom: 0; }
+    .metric-icon-col { flex: 0 0 70px; text-align: center; }
+    .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
+    .metric-text-col { flex: 2; text-align: center; }
+    .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
+    .metric-bajada { font-size: 10px; color: var(--soft); line-height: 1.3; }
+    .metric-value-col { flex: 1; text-align: right; }
+    .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
+
+    .premium-note {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(247,195,47,0.18);
+      border-radius: 16px;
+      padding: 0.85rem 1rem;
+      margin-top: 1rem;
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .premium-note strong { color: var(--gold); }
+
+    .iceberg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .iceberg-box {
+      background: rgba(0,0,0,0.28);
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .iceberg-box.top {
+      border-color: rgba(247,195,47,0.22);
+    }
+
+    .iceberg-box.bottom {
+      border-color: rgba(227,44,108,0.22);
+    }
+
+    .iceberg-box-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .iceberg-box.top .iceberg-box-title { color: var(--gold); }
+    .iceberg-box.bottom .iceberg-box-title { color: var(--pink); }
+
+    .iceberg-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .iceberg-list li {
+      position: relative;
+      padding-left: 1rem;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--soft);
+    }
+
+    .iceberg-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.45rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .iceberg-box.bottom .iceberg-list li::before { background: var(--pink); }
+
+    .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
+    .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
+    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
+    .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
+    .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
+
+    .error-message { background: #e32c6c; color: white; padding: 0.75rem; border-radius: 1rem; text-align: center; font-size: 0.85rem; line-height: 1.4; white-space: pre-wrap; }
+
+    @media (min-width: 992px) {
+      .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
+      .legend-item { flex-shrink: 0; }
+    }
+
     @media (max-width: 991px) {
       .app-container { gap: 1.8rem; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card, .iceberg-card { padding: 1.2rem 1rem; }
       .metric-value { font-size: 18px; }
       .metric-icon-col { flex-basis: 60px; }
       .metric-icon-col img { width: 44px; }
@@ -129,10 +344,12 @@
       .slider-labels span { font-size: 12px; white-space: normal; }
       .chart-title { font-size: 1.2rem; }
       .chart-title img { height: 20px; }
+      .iceberg-grid { grid-template-columns: 1fr; }
     }
+
     @media (max-width: 380px) {
       .app-container { width: 95%; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1rem 0.8rem; }
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card, .iceberg-card { padding: 1rem 0.8rem; }
       .credits { font-size: 14px; }
       .tier-item { max-width: 120px; }
       .tier-bajada { font-size: 11px; }
@@ -150,13 +367,65 @@
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
       <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
+
+      <div class="brewery-input-wrap">
+        <input id="breweryNameInput" type="text" list="brewerySuggestions" placeholder="Escribe el nombre de tu cervecería">
+        <datalist id="brewerySuggestions"></datalist>
+        <button class="brewery-btn" id="analyzeBtn">Analizar</button>
+      </div>
+      <div class="context-note" id="contextNote">Ingresa tu cervecería para comparar tu posición, el peso real de tus medallas y los vacíos de categoría desde tu BBDD real.</div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card animate-item" id="chartCard">
+        <div class="shift-content">
+          <div class="chart-title"><img src="assets/bandera.png" alt="Bandera"> Chilean Competition Wings - 2025</div>
+          <div class="chart-kicker" id="existingChartKicker">Visualiza a las cervecerías chilenas más activas del año y detecta quién está liderando realmente el ritmo competitivo.</div>
+        </div>
+        <div class="chart-container shift-content" id="existingChartWrap">
+          <canvas id="breweryChart" width="800" height="400"></canvas>
+        </div>
+        <div class="legend-container shift-content" id="legendContainer"></div>
+      </div>
+
+      <div class="chart-card animate-item">
+        <div class="shift-content">
+          <div class="chart-title">🧭 El Espejo</div>
+          <div class="chart-kicker" id="radarTitleText">Radar comparativo de performance, consistencia, diversidad, dificultad y posicionamiento frente al promedio de la industria chilena.</div>
+        </div>
+        <div class="chart-container compact shift-content" id="radarWrap">
+          <canvas id="radarChart" width="800" height="400"></canvas>
+        </div>
+        <div class="insight-box shift-content" id="radarInsight">Ingresa una cervecería para activar este radar estratégico.</div>
+      </div>
+
+      <div class="chart-card animate-item">
+        <div class="shift-content">
+          <div class="chart-title">🫧 IAC</div>
+          <div class="chart-kicker" id="bubbleTitleText">Cada burbuja cruza dificultad del certamen, percentil dentro del estilo y densidad de competidores para estimar el peso relativo de cada medalla.</div>
+        </div>
+        <div class="chart-container shift-content" id="bubbleWrap">
+          <canvas id="bubbleChart" width="800" height="420"></canvas>
+        </div>
+        <div class="legend-container shift-content" id="bubbleLegend"></div>
+        <div class="insight-box shift-content" id="bubbleInsight">Ingresa una cervecería para revelar qué medalla realmente tiene más valor estratégico.</div>
+      </div>
+
+      <div class="chart-card animate-item">
+        <div class="shift-content">
+          <div class="chart-title">🗺️ IVC</div>
+          <div class="chart-kicker" id="heatmapTitleText">Heatmap de vacíos de categoría: identifica dónde existen menos medallas chilenas y, por tanto, más espacio para ocupar una categoría.</div>
+        </div>
+        <div class="chart-container compact shift-content" id="heatmapWrap"></div>
+        <div class="insight-box shift-content" id="heatmapInsight">Ingresa una cervecería para detectar oportunidades reales de categoría desde la BBDD.</div>
+      </div>
     </div>
 
     <div class="glass-card animate-item">
       <div class="shift-content">
         <div class="section-title">SLIDER</div>
         <div class="section-subtitle">Escala de Producción</div>
-        <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
+        <div class="section-desc">Tu volumen define la complejidad del análisis y el potencial de retorno del servicio.</div>
       </div>
       <div class="slider-container shift-content">
         <div class="slider-track-wrapper" id="sliderWrapper">
@@ -170,20 +439,30 @@
           <span>5001 - 10000 hl</span>
           <span>≥20000 hl</span>
         </div>
+        <div class="slider-current" id="sliderAValue">5001 - 10000 hl</div>
       </div>
     </div>
 
-    <!-- GRÁFICO Chilean Competition Wings - 2025 -->
-    <div class="chart-card animate-item" id="chartCard">
+    <div class="glass-card animate-item">
       <div class="shift-content">
-        <div class="chart-title">
-          <img src="assets/bandera.png" alt="Bandera"> Chilean Competition Wings - 2025
+        <div class="section-title">SLIDER</div>
+        <div class="section-subtitle">Ventas Anuales</div>
+      </div>
+      <div class="slider-container shift-content">
+        <div class="slider-track-wrapper" id="sliderWrapperB">
+          <div class="slider-rail" id="sliderRailB">
+            <div class="slider-fill" id="sliderFillB"></div>
+          </div>
+          <div class="slider-thumb" id="sliderThumbB"></div>
         </div>
+        <div class="slider-labels">
+          <span>$54M</span>
+          <span>$216M</span>
+          <span>$540M</span>
+          <span>$720M</span>
+        </div>
+        <div class="slider-current" id="sliderBValue">$216M CLP</div>
       </div>
-      <div class="chart-container shift-content">
-        <canvas id="breweryChart" width="800" height="400"></canvas>
-      </div>
-      <div class="legend-container shift-content" id="legendContainer"></div>
     </div>
 
     <div class="plan-selector-card animate-item">
@@ -198,14 +477,14 @@
             <div class="tier-icon"><img src="assets/explorer.png" alt="Explorer"></div>
             <div class="tier-label">Explorer</div>
           </div>
-          <div class="tier-bajada">1° Nivel de Visibilidad<br>basada en datos reales</div>
+          <div class="tier-bajada">Primer nivel de visibilidad<br>basada en data real</div>
         </div>
         <div class="tier-item">
           <div class="tier-btn" data-tier="podium" id="tierPodium">
             <div class="tier-icon"><img src="assets/podium.png" alt="Podium"></div>
             <div class="tier-label">Podium</div>
           </div>
-          <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja.</div>
+          <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja</div>
         </div>
         <div class="tier-item">
           <div class="tier-btn active" data-tier="champion" id="tierChampion">
@@ -221,23 +500,52 @@
       <div class="shift-content">
         <div class="section-title">BLOQUE DE RESULTADOS</div>
         <div class="section-subtitle">Impacto en tu negocio</div>
-        <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
+        <div class="section-desc">Una herramienta de decisión: cruza escala, ventas, plan y señales competitivas para estimar inversión y retorno.</div>
       </div>
       <div class="shift-content">
         <div class="metric-row">
           <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
-          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div></div>
+          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Valor mensual ajustado a escala y complejidad comercial.</div></div>
           <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
         </div>
         <div class="metric-row">
           <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
-          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div></div>
+          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Retorno anual estimado por decisiones mejores, más rápidas y mejor comunicadas.</div></div>
           <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
         </div>
         <div class="metric-row">
           <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
-          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div></div>
+          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">Indicador de impacto probable según nivel de plan, escala y fortaleza competitiva.</div></div>
           <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
+        </div>
+      </div>
+      <div class="shift-content">
+        <div class="premium-note" id="resultsNote">La simulación ya está conectada: producción + ventas + plan. Ingresa una cervecería para sumar lectura competitiva real.</div>
+      </div>
+    </div>
+
+    <div class="iceberg-card animate-item">
+      <div class="shift-content">
+        <div class="section-title">ICEBERG</div>
+        <div class="section-subtitle">Lo visible y lo oculto del servicio</div>
+        <div class="section-desc">La demo no muestra un dashboard: muestra una herramienta de decisión que combina estrategia visible con trabajo analítico profundo.</div>
+      </div>
+      <div class="iceberg-grid shift-content">
+        <div class="iceberg-box top">
+          <div class="iceberg-box-title">Superficie</div>
+          <ul class="iceberg-list">
+            <li>Estrategia comercial basada en medallas reales.</li>
+            <li>Posicionamiento competitivo frente a la industria.</li>
+            <li>Insights accionables para ventas, marketing y relato técnico.</li>
+          </ul>
+        </div>
+        <div class="iceberg-box bottom">
+          <div class="iceberg-box-title">Fondo</div>
+          <ul class="iceberg-list">
+            <li>Data mining sobre certámenes, estilos y medallas.</li>
+            <li>Modelos predictivos y scoring de señales competitivas.</li>
+            <li>Análisis oculto para detectar valor relativo y vacíos de categoría.</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -252,35 +560,181 @@
   </div>
 
   <script>
-    // ======================== CARGA DE CSV (MISMA LÓGICA QUE PODIUMBEER) ========================
     let allData = [];
+    let breweryChart;
+    let radarChart;
+    let bubbleChart;
+
+    const legacyIOS12 = /iPad|iPhone|iPod/.test(navigator.userAgent) && /OS 12_/.test(navigator.userAgent);
+
+    const BASE_COLOR = { h: 338, s: 78, l: 53 };
+
+    function getPlanModifier(tier) {
+      switch (tier) {
+      case "explorer": return { s: -20, l: +15 };
+      case "podium": return { s: 0, l: 0 };
+      case "champion": return { s: +10, l: -10 };
+      default: return { s: 0, l: 0 };
+      }
+    }
+
+    function getScaleModifier(index) {
+      const scaleMap = [
+      { l: +20 },
+      { l: +10 },
+      { l: 0 },
+      { l: -10 },
+      { l: -20 }
+      ];
+      return scaleMap[index];
+    }
+
+    function generateDynamicColor(index, tier) {
+      const planMod = getPlanModifier(tier);
+      const scaleMod = getScaleModifier(index);
+
+      let s = BASE_COLOR.s + planMod.s;
+      let l = BASE_COLOR.l + planMod.l + scaleMod.l;
+
+      s = Math.max(20, Math.min(100, s));
+      l = Math.max(20, Math.min(70, l));
+
+      return `hsl(${BASE_COLOR.h}, ${s}%, ${l}%)`;
+    }
+
+    const sliderRail = document.getElementById('sliderRail');
+    const sliderThumb = document.getElementById('sliderThumb');
+    const sliderFill = document.getElementById('sliderFill');
+
+    function updateSliderColor() {
+      const color = generateDynamicColor(currentRangeIndex, currentTier);
+      sliderFill.style.background = `linear-gradient(90deg, ${color}, #ffffff)`;
+      sliderThumb.style.background = color;
+      sliderThumb.style.boxShadow = `0 0 12px ${color}`;
+    }
+
+    const sliderRailB = document.getElementById('sliderRailB');
+    const sliderThumbB = document.getElementById('sliderThumbB');
+    const sliderFillB = document.getElementById('sliderFillB');
+
+    const salesSteps = [0, 0.33, 0.66, 1];
+
+    const salesData = [
+    54000000,
+    216036000,
+    540036000,
+    720000000
+    ];
+
+    let currentSalesIndex = 1;
+
+    function updateSliderBVisual(index) {
+      const percent = salesSteps[index] * 100;
+      sliderFillB.style.width = `${percent}%`;
+
+      const thumbLeft = percent * sliderRailB.clientWidth / 100;
+      sliderThumbB.style.left = `${thumbLeft}px`;
+
+      document.getElementById('sliderBValue').innerText = salesLabels[index];
+      updateSliderBColor();
+    }
+
+    function updateSliderBColor() {
+      const color = generateDynamicColor(currentSalesIndex, currentTier);
+      sliderFillB.style.background = `linear-gradient(90deg, ${color}, #ffffff)`;
+      sliderThumbB.style.background = color;
+      sliderThumbB.style.boxShadow = `0 0 12px ${color}`;
+    }
+
+    const planLabels = {
+      explorer: 'Explorer',
+      podium: 'Podium',
+      champion: 'Champion'
+    };
+
+    const salesLabels = [
+      '$54M CLP',
+      '$216M CLP',
+      '$540M CLP',
+      '$720M CLP'
+    ];
+
+    function normalizeText(str) {
+      if (!str) return '';
+      return str.toString()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     function formatearTextoPresentacion(str) {
       if (!str) return '';
-      return str.replace(/\b\w/g, l => l.toUpperCase());
+      return str
+        .replace(/\bBrewery\b/gi, "Brew.")
+        .replace(/\bBrewing\b/gi, "Brew.")
+        .replace(/\bCompany\b/gi, "Co.")
+        .replace(/\bCompañía\b/gi, "Cia.")
+        .replace(/Colaboración/gi, "(Colab.)")
+        .replace(/\b\w/g, function(l) { return l.toUpperCase(); });
     }
 
     function esBasura(valor) {
       if (!valor) return true;
       const limpio = valor.toString().toUpperCase().trim();
-      return limpio === "PENDIENTE" || limpio === "COMPLETAR" || limpio === "-";
+      return limpio === "PENDIENTE" || limpio === "COMPLETAR" || limpio === "-" || limpio === "#N/D";
+    }
+
+    function getYear(item) {
+      const raw = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
+      return raw ? parseInt(raw, 10) : null;
+    }
+
+    function getMedalWeight(medalla) {
+      const val = normalizeText(medalla);
+      if (val === 'oro') return 3;
+      if (val === 'plata') return 2;
+      if (val === 'bronce') return 1;
+      return 1;
+    }
+
+    function getDifficulty(item) {
+      const cert = normalizeText(item.certamen || '');
+      const origen = normalizeText(item.origen || '');
+      if (cert.includes('world beer cup') || cert.includes('world beer awards')) return 5;
+      if (cert.includes('copa cervezas de america')) return 4.5;
+      if (cert.includes('south beer cup')) return 4.2;
+      if (cert.includes('tayrona') || cert.includes('capital') || cert.includes('conquistadores')) return 3.8;
+      if (origen === 'internacional') return 3.6;
+      if (origen === 'nacional') return 2.8;
+      if (normalizeText(item.pais) && normalizeText(item.pais) !== 'chile') return 3.2;
+      return 2.5;
     }
 
     async function cargarCSV() {
       try {
-        const response = await fetch('BBDD_Medallero_Chile.csv');
+        const response = await fetch('BBDD_Medallero_Chile.csv', { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const texto = await response.text();
         const lineas = texto.split('\n');
-        const encabezados = lineas[0].split(';').map(h => h.trim());
+        const encabezados = lineas[0].replace(/\r/g, '').split(';').map(h => h.trim());
         const datos = [];
         for (let i = 1; i < lineas.length; i++) {
           if (!lineas[i].trim()) continue;
-          const valores = lineas[i].split(';');
+          const valores = lineas[i].replace(/\r/g, '').split(';');
           const fila = {};
           encabezados.forEach((enc, idx) => {
             let val = valores[idx] ? valores[idx].trim() : '';
-            if (enc === 'cerveceria' || enc === 'cerveza_ganadora' || enc === 'estilo' || enc === 'certamen') {
+            if (enc === 'cerveceria' || enc === 'cerveza_ganadora' || enc === 'estilo' || enc === 'estilo_cliente' || enc === 'certamen') {
               val = formatearTextoPresentacion(val);
             }
             fila[enc] = val;
@@ -289,81 +743,84 @@
           if (esBasura(fila.cerveceria)) continue;
           datos.push(fila);
         }
-        console.log(`✅ CSV cargado: ${datos.length} registros válidos`);
         return datos;
       } catch (err) {
-        console.error("Error cargando CSV:", err);
-        document.getElementById('chartCard').innerHTML += '<div class="error-message">⚠️ No se pudo cargar el archivo BBDD_Medallero_Chile.csv. Asegúrate de que esté en la raíz.</div>';
+        const card = document.getElementById('chartCard');
+        card.innerHTML += '<div class="error-message">⚠️ No se pudo cargar BBDD_Medallero_Chile.csv\n' + err.message + '</div>';
         return [];
       }
     }
 
-    // ======================== GRÁFICO DE CERVEZAS (TOOLTIP NATIVO) ========================
-    let breweryChart;
-    const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-    const colorPalette = [
-      '#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f',
-      '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
-      '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
-    ];
+    function getAllBreweries() {
+      return [...new Set(allData.map(d => d.cerveceria).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'es'));
+    }
 
-    function renderBreweryChart(data) {
-      const chileData = data.filter(item => item.pais === 'Chile');
+    function getBreweryRecords(name) {
+      const target = normalizeText(name);
+      return allData.filter(row => normalizeText(row.cerveceria) === target);
+    }
+
+    function fillSuggestions() {
+      const dataList = document.getElementById('brewerySuggestions');
+      dataList.innerHTML = getAllBreweries().map(name => `<option value="${escapeHtml(name)}"></option>`).join('');
+    }
+
+    function renderExistingChart(data) {
+      const chileData = data.filter(item => normalizeText(item.pais) === 'chile');
       const data2025 = chileData.filter(item => {
-        const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
-        return anio === '2025';
+        const y = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
+        return y === '2025';
       });
-      if (!data2025.length) return;
 
-      // Calcular total de medallas por cervecería (para el top 15)
       const breweryTotal = {};
       data2025.forEach(item => {
-        let brew = item.cerveceria ? item.cerveceria.trim() : '';
+        const brew = item.cerveceria || '';
         if (!brew) return;
         breweryTotal[brew] = (breweryTotal[brew] || 0) + 1;
       });
-      const sorted = Object.entries(breweryTotal).sort((a,b) => b[1] - a[1]);
-      const top15 = sorted.slice(0, 15).map(entry => entry[0]);
-      console.log('Top 15 cervecerías:', top15);
 
-      // Inicializar datos mensuales (total de medallas por mes)
+      const sorted = Object.entries(breweryTotal).sort((a,b) => b[1] - a[1]).slice(0, 12);
+      const topBreweries = sorted.map(entry => entry[0]);
+      const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+
       const monthlyTotal = {};
-      top15.forEach(brew => { monthlyTotal[brew] = Array(10).fill(0); });
+      topBreweries.forEach(brew => { monthlyTotal[brew] = Array(10).fill(0); });
 
       data2025.forEach(item => {
-        let brew = item.cerveceria ? item.cerveceria.trim() : '';
-        if (!top15.includes(brew)) return;
+        const brew = item.cerveceria || '';
+        if (!topBreweries.includes(brew)) return;
         const fecha = item.fecha;
         if (!fecha) return;
-        const partes = fecha.split('-');
-        if (partes.length < 2) return;
-        const mes = parseInt(partes[1], 10);
-        if (mes >= 3 && mes <= 12) {
-          const idx = mes - 3;
-          monthlyTotal[brew][idx]++;
-        }
+        const mes = parseInt(fecha.split('-')[1], 10);
+        if (mes >= 3 && mes <= 12) monthlyTotal[brew][mes - 3]++;
       });
 
-      // Construir datasets para Chart.js
-      const datasets = [];
-      top15.forEach((brew, idx) => {
-        datasets.push({
-          label: brew,
-          data: monthlyTotal[brew],
-          borderColor: colorPalette[idx % colorPalette.length],
-          backgroundColor: colorPalette[idx % colorPalette.length] + '33',
-          borderWidth: idx === 0 ? 2.5 : (idx < 5 ? 1.5 : 1),
-          tension: 0.4,
-          fill: true,
-          pointRadius: 4,
-          pointHoverRadius: 8,
-          pointHitRadius: 15,  // Para facilitar toque en móvil
-          hidden: false
-        });
-      });
+      if (legacyIOS12) {
+        renderLegacyLine('existingChartWrap', monthNames, topBreweries, monthlyTotal);
+        renderExistingLegend(topBreweries);
+        return;
+      }
 
       const ctx = document.getElementById('breweryChart').getContext('2d');
       if (breweryChart) breweryChart.destroy();
+
+      const leader = topBreweries[0];
+      const datasets = topBreweries.map((brew, idx) => {
+        const color = idx === 0 ? '#f7c32f' : ['#e32c6c','#df0db1','#d81891','#f7b32f','#f198ee','#8c52ff','#1eab9b','#33ebd6','#5170ff','#a5f6ed','#ff66c4'][idx % 11];
+        const dataset = {
+          label: brew,
+          data: monthlyTotal[brew],
+          borderColor: color,
+          backgroundColor: color + (idx === 0 ? '55' : '22'),
+          borderWidth: idx === 0 ? 3.2 : 1.6,
+          tension: 0.4,
+          fill: true,
+          pointRadius: idx === 0 ? 4 : 2.5,
+          pointHoverRadius: idx === 0 ? 7 : 5,
+          pointHitRadius: 14
+        };
+        return dataset;
+      });
 
       breweryChart = new Chart(ctx, {
         type: 'line',
@@ -371,14 +828,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          layout: {
-            padding: {
-              top: 10,
-              bottom: 10,
-              left: 10,
-              right: 10
-            }
-          },
+          animation: false,
           plugins: {
             tooltip: {
               mode: 'nearest',
@@ -387,7 +837,8 @@
                 label: function(context) {
                   const label = context.dataset.label;
                   const value = context.raw;
-                  return `${label}: ${value} medalla${value !== 1 ? 's' : ''}`;
+                  const status = label === leader ? ' · líder actual' : '';
+                  return `${label}: ${value} medalla${value !== 1 ? 's' : ''}${status}`;
                 }
               }
             },
@@ -397,45 +848,545 @@
             y: {
               beginAtZero: true,
               ticks: { color: '#fff', stepSize: 1 },
-              grid: { color: 'rgba(255,255,255,0.1)' },
-              title: { display: false }
+              grid: { color: 'rgba(255,255,255,0.1)' }
             },
             x: {
               ticks: { color: '#fff', maxRotation: 45, autoSkip: true },
-              grid: { display: false },
-              title: { display: false }
+              grid: { display: false }
             }
           }
         }
       });
 
-      // Leyenda interactiva
+      renderExistingLegend(topBreweries);
+    }
+
+    function renderExistingLegend(labels) {
+      const colors = {};
+      labels.forEach((label, idx) => {
+        colors[label] = idx === 0 ? '#f7c32f' : ['#e32c6c','#df0db1','#d81891','#f7b32f','#f198ee','#8c52ff','#1eab9b','#33ebd6','#5170ff','#a5f6ed','#ff66c4'][idx % 11];
+      });
+
       const legendContainer = document.getElementById('legendContainer');
       legendContainer.innerHTML = '';
-      datasets.forEach((ds, idx) => {
+      labels.forEach((label, idx) => {
         const div = document.createElement('div');
         div.className = 'legend-item';
-        div.innerHTML = `<div class="legend-color" style="background: ${ds.borderColor};"></div><span class="legend-label">${ds.label}</span>`;
-        div.addEventListener('click', () => {
-          const meta = breweryChart.getDatasetMeta(idx);
-          meta.hidden = !meta.hidden;
-          div.classList.toggle('hidden', meta.hidden);
-          breweryChart.update();
-        });
+        div.innerHTML = `<div class="legend-color" style="background:${colors[label]};"></div><span class="legend-label">${escapeHtml(label)}</span>`;
+        if (!legacyIOS12 && breweryChart) {
+          div.addEventListener('click', () => {
+            const meta = breweryChart.getDatasetMeta(idx);
+            meta.hidden = !meta.hidden;
+            div.classList.toggle('hidden', meta.hidden);
+            breweryChart.update();
+          });
+        }
         legendContainer.appendChild(div);
       });
     }
 
-    // ======================== LÓGICA DEL SIMULADOR ========================
-    const metricsTable = [
-      { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
-      { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
-      { inversion: "$600 USD", optimizacion: "$7,200 USD", roi: "55%", suggestedTier: "podium" },
-      { inversion: "$1,200 USD", optimizacion: "$14,500 USD", roi: "65%", suggestedTier: "champion" },
-      { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion" }
-    ];
+    function renderLegacyLine(targetId, months, topBreweries, monthlyTotal) {
+      const container = document.getElementById(targetId);
+      const width = container.clientWidth || 780;
+      const height = 360;
+      const pad = { top: 18, right: 18, bottom: 32, left: 34 };
+      const innerW = width - pad.left - pad.right;
+      const innerH = height - pad.top - pad.bottom;
+      const leader = topBreweries[0];
 
-    const sliderRail = document.getElementById('sliderRail');
+      let maxVal = 1;
+      topBreweries.forEach(b => {
+        monthlyTotal[b].forEach(v => { if (v > maxVal) maxVal = v; });
+      });
+
+      const palette = {};
+      topBreweries.forEach((label, idx) => {
+        palette[label] = idx === 0 ? '#f7c32f' : ['#e32c6c','#df0db1','#d81891','#f7b32f','#f198ee','#8c52ff','#1eab9b','#33ebd6','#5170ff','#a5f6ed','#ff66c4'][idx % 11];
+      });
+
+      let svg = [];
+      svg.push(`<svg class="svg-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`);
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (innerH / 4) * i;
+        svg.push(`<line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="rgba(255,255,255,0.08)"></line>`);
+      }
+      months.forEach((m, i) => {
+        const x = pad.left + (innerW / (months.length - 1)) * i;
+        svg.push(`<text x="${x}" y="${height - 10}" fill="#fff" font-size="10" text-anchor="middle">${m}</text>`);
+      });
+
+      topBreweries.forEach((brew, idx) => {
+        const points = monthlyTotal[brew].map((v, i) => {
+          const x = pad.left + (innerW / (months.length - 1)) * i;
+          const y = pad.top + innerH - ((v / maxVal) * innerH);
+          return { x, y };
+        });
+
+        const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+        const areaPath = linePath + ` L ${points[points.length - 1].x} ${pad.top + innerH} L ${points[0].x} ${pad.top + innerH} Z`;
+        const color = palette[brew];
+        const fill = brew === leader ? 'rgba(247,195,47,0.22)' : color + '22';
+
+        svg.push(`<path d="${areaPath}" fill="${fill}" stroke="none"></path>`);
+        svg.push(`<path d="${linePath}" fill="none" stroke="${color}" stroke-width="${brew === leader ? 3 : 1.6}" stroke-linejoin="round" stroke-linecap="round"></path>`);
+      });
+
+      svg.push('</svg>');
+      container.innerHTML = svg.join('');
+    }
+
+    function percentileRank(arr, value) {
+      if (!arr.length) return 0;
+      let lower = 0;
+      arr.forEach(v => { if (v <= value) lower++; });
+      return Math.round((lower / arr.length) * 100);
+    }
+
+    function clamp10(v) {
+      return Math.max(0, Math.min(10, Number(v.toFixed(1))));
+    }
+
+    function computeRadarMetrics(breweryName) {
+      const records = getBreweryRecords(breweryName);
+      if (!records.length) return null;
+
+      const breweryAll = allData.filter(item => normalizeText(item.pais) === 'chile');
+      const breweryMap = {};
+      breweryAll.forEach(item => {
+        const brew = item.cerveceria;
+        if (!brew) return;
+        if (!breweryMap[brew]) breweryMap[brew] = [];
+        breweryMap[brew].push(item);
+      });
+
+      const years = breweryAll.map(getYear).filter(Boolean);
+      const minYear = Math.min(...years);
+      const maxYear = Math.max(...years);
+      const fullSpan = Math.max(1, maxYear - minYear + 1);
+      const brewYears = [...new Set(records.map(getYear).filter(Boolean))];
+
+      const styleCount = new Set(records.map(r => r.estilo_cliente || r.estilo_limpio || r.estilo).filter(Boolean)).size;
+      const maxStyles = Math.max(1, ...Object.values(breweryMap).map(recs => new Set(recs.map(r => r.estilo_cliente || r.estilo_limpio || r.estilo).filter(Boolean)).size));
+
+      const medalScore = records.reduce((acc, r) => acc + getMedalWeight(r.medalla_base), 0);
+      const maxMedalScore = Math.max(1, ...Object.values(breweryMap).map(recs => recs.reduce((a, r) => a + getMedalWeight(r.medalla_base), 0)));
+
+      const difficultyScore = records.reduce((acc, r) => acc + getDifficulty(r), 0);
+      const maxDifficulty = Math.max(1, ...Object.values(breweryMap).map(recs => recs.reduce((a, r) => a + getDifficulty(r), 0)));
+
+      const performance = clamp10((medalScore / maxMedalScore) * 10);
+      const consistencia = clamp10((brewYears.length / fullSpan) * 10);
+      const diversidad = clamp10((styleCount / maxStyles) * 10);
+      const dificultad = clamp10((difficultyScore / maxDifficulty) * 10);
+
+      const certamenes = new Set(records.map(r => r.certamen).filter(Boolean)).size;
+      const posicionamiento = clamp10(((medalScore * certamenes) / Math.max(1, records.length)) / 3);
+
+      const values = [performance, consistencia, diversidad, dificultad, posicionamiento];
+
+      const industryValues = Object.values(breweryMap).map(recs => {
+        const recYears = [...new Set(recs.map(getYear).filter(Boolean))];
+        const styles = new Set(recs.map(r => r.estilo_cliente || r.estilo_limpio || r.estilo).filter(Boolean)).size;
+        const medalScoreLocal = recs.reduce((a, r) => a + getMedalWeight(r.medalla_base), 0);
+        const diffScoreLocal = recs.reduce((a, r) => a + getDifficulty(r), 0);
+        const certs = new Set(recs.map(r => r.certamen).filter(Boolean)).size;
+        return [
+          clamp10((medalScoreLocal / maxMedalScore) * 10),
+          clamp10((recYears.length / fullSpan) * 10),
+          clamp10((styles / maxStyles) * 10),
+          clamp10((diffScoreLocal / maxDifficulty) * 10),
+          clamp10(((medalScoreLocal * certs) / Math.max(1, recs.length)) / 3)
+        ];
+      });
+
+      const industryAvg = [0,0,0,0,0].map((_, idx) => Number((industryValues.reduce((acc, row) => acc + row[idx], 0) / industryValues.length).toFixed(1)));
+
+      let strongest = ['Performance', performance];
+      let weakest = ['Performance', performance];
+      [['Performance',performance],['Consistencia',consistencia],['Diversidad',diversidad],['Dificultad',dificultad],['Posicionamiento',posicionamiento]].forEach(pair => {
+        if (pair[1] > strongest[1]) strongest = pair;
+        if (pair[1] < weakest[1]) weakest = pair;
+      });
+
+      return {
+        labels: ['Performance','Consistencia','Diversidad','Dificultad','Posicionamiento'],
+        values: values,
+        industry: industryAvg,
+        insight: `<strong>Insight:</strong> tu señal más fuerte hoy está en <strong>${strongest[0]}</strong>, mientras que el mayor espacio de mejora está en <strong>${weakest[0]}</strong>.`
+      };
+    }
+
+    function renderRadarChart(breweryName) {
+      const radar = computeRadarMetrics(breweryName);
+      if (!radar) {
+        document.getElementById('radarInsight').innerHTML = 'No encontramos esa cervecería en la BBDD.';
+        return;
+      }
+
+      document.getElementById('radarTitleText').innerText = `Radar comparativo de ${breweryName}: performance, consistencia, diversidad, dificultad y posicionamiento frente al promedio chileno.`;
+      document.getElementById('radarInsight').innerHTML = radar.insight;
+
+      if (legacyIOS12) {
+        renderLegacyRadar(radar);
+        return;
+      }
+
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      if (radarChart) radarChart.destroy();
+
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: radar.labels,
+          datasets: [
+            {
+              label: breweryName,
+              data: radar.values,
+              backgroundColor: 'rgba(227,44,108,0.18)',
+              borderColor: '#e32c6c',
+              borderWidth: 2.2,
+              pointBackgroundColor: '#e32c6c',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 1.4,
+              pointRadius: 4
+            },
+            {
+              label: 'Industria',
+              data: radar.industry,
+              backgroundColor: 'rgba(247,195,47,0.08)',
+              borderColor: '#f7c32f',
+              borderWidth: 1.8,
+              borderDash: [5,5],
+              pointBackgroundColor: '#f7c32f',
+              pointRadius: 2.5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          animation: { duration: 700 },
+          plugins: {
+            legend: {
+              labels: { color: '#fff', font: { size: 11 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  return `${ctx.dataset.label}: ${ctx.raw}/10`;
+                },
+                afterLabel: function(ctx) {
+                  if (ctx.datasetIndex === 0) {
+                    return 'Insight: esta dimensión muestra cuánto destaca tu cervecería frente al ecosistema chileno.';
+                  }
+                  return '';
+                }
+              }
+            }
+          },
+          scales: {
+            r: {
+              min: 0,
+              max: 10,
+              ticks: { display: false },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              angleLines: { color: 'rgba(255,255,255,0.08)' },
+              pointLabels: { color: '#fff', font: { size: 10.5, weight: '600' } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderLegacyRadar(radar) {
+      const container = document.getElementById('radarWrap');
+      const width = container.clientWidth || 760;
+      const height = 330;
+      const cx = width / 2;
+      const cy = 165;
+      const radius = 105;
+      const steps = 5;
+
+      function polygonPoints(data, scale) {
+        return data.map((v, i) => {
+          const angle = (-90 + (360 / data.length) * i) * Math.PI / 180;
+          const r = (v / 10) * scale;
+          return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+        });
+      }
+
+      function toPath(points) {
+        return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ') + ' Z';
+      }
+
+      let svg = [];
+      svg.push(`<svg class="svg-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`);
+      for (let s = 1; s <= steps; s++) {
+        const gridPoints = polygonPoints([s*2,s*2,s*2,s*2,s*2], radius);
+        svg.push(`<path d="${toPath(gridPoints)}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"></path>`);
+      }
+
+      radar.labels.forEach((label, i) => {
+        const angle = (-90 + (360 / radar.labels.length) * i) * Math.PI / 180;
+        const tx = cx + Math.cos(angle) * (radius + 24);
+        const ty = cy + Math.sin(angle) * (radius + 24);
+        svg.push(`<text x="${tx}" y="${ty}" fill="#fff" font-size="10" text-anchor="middle">${escapeHtml(label)}</text>`);
+      });
+
+      const ind = polygonPoints(radar.industry, radius);
+      const own = polygonPoints(radar.values, radius);
+
+      svg.push(`<path d="${toPath(ind)}" fill="rgba(247,195,47,0.08)" stroke="#f7c32f" stroke-width="1.5" stroke-dasharray="5 4"></path>`);
+      svg.push(`<path d="${toPath(own)}" fill="rgba(227,44,108,0.18)" stroke="#e32c6c" stroke-width="2.2"></path>`);
+      svg.push(`</svg>`);
+      container.innerHTML = svg.join('');
+    }
+
+    function computeBubbleData(breweryName) {
+      const records = getBreweryRecords(breweryName);
+      if (!records.length) return null;
+
+      const styleByBrewery = {};
+      allData.forEach(r => {
+        const estilo = r.estilo_cliente || r.estilo_limpio || r.estilo || 'Sin estilo';
+        const brew = r.cerveceria || 'Sin cervecería';
+        if (!styleByBrewery[estilo]) styleByBrewery[estilo] = {};
+        styleByBrewery[estilo][brew] = (styleByBrewery[estilo][brew] || 0) + getMedalWeight(r.medalla_base);
+      });
+
+      const points = records.map(r => {
+        const estilo = r.estilo_cliente || r.estilo_limpio || r.estilo || 'Sin estilo';
+        const breweryScore = (styleByBrewery[estilo] && styleByBrewery[estilo][breweryName]) || 0;
+        const styleScores = styleByBrewery[estilo] ? Object.values(styleByBrewery[estilo]) : [];
+        const percentile = percentileRank(styleScores, breweryScore);
+        const density = allData.filter(d =>
+          normalizeText(d.certamen) === normalizeText(r.certamen) &&
+          normalizeText(d.estilo_limpio || d.estilo_cliente || d.estilo) === normalizeText(estilo) &&
+          (d.anio || '') === (r.anio || '')
+        ).length;
+
+        return {
+          x: Number(getDifficulty(r).toFixed(2)),
+          y: percentile,
+          r: Math.min(20, 6 + density * 1.7),
+          density: density,
+          label: (r.cerveza_ganadora && !esBasura(r.cerveza_ganadora) ? r.cerveza_ganadora : estilo) + ' · ' + (r.certamen || 'Certamen'),
+          certamen: r.certamen || 'Certamen',
+          impacto: getDifficulty(r) * getMedalWeight(r.medalla_base)
+        };
+      }).sort((a,b) => b.impacto - a.impacto).slice(0, 14);
+
+      if (!points.length) return null;
+
+      return {
+        points,
+        insight: `<strong>Insight:</strong> tu medalla con mayor peso relativo hoy viene de <strong>${escapeHtml(points[0].certamen)}</strong> y se ubica en el <strong>${points[0].y}%</strong> del estilo.`
+      };
+    }
+
+    function renderBubbleChart(breweryName) {
+      const bubble = computeBubbleData(breweryName);
+      if (!bubble) {
+        document.getElementById('bubbleInsight').innerHTML = 'No encontramos suficientes medallas de esa cervecería.';
+        return;
+      }
+
+      document.getElementById('bubbleTitleText').innerText = `Burbujas IAC para ${breweryName}: dificultad del certamen vs percentil técnico dentro del estilo.`;
+      document.getElementById('bubbleInsight').innerHTML = bubble.insight;
+      renderBubbleLegend(bubble.points);
+
+      if (legacyIOS12) {
+        renderLegacyBubble(bubble.points);
+        return;
+      }
+
+      const ctx = document.getElementById('bubbleChart').getContext('2d');
+      if (bubbleChart) bubbleChart.destroy();
+
+      const palette = ['#e32c6c','#f7c32f','#1eab9b','#8c52ff','#ff66c4','#33ebd6','#cb6ce6'];
+      bubbleChart = new Chart(ctx, {
+        type: 'bubble',
+        data: {
+          datasets: bubble.points.map((point, idx) => ({
+            label: point.label,
+            data: [{ x: point.x, y: point.y, r: point.r }],
+            backgroundColor: palette[idx % palette.length] + 'AA',
+            borderColor: palette[idx % palette.length],
+            borderWidth: 1.2
+          }))
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          animation: { duration: 700 },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  return ctx.dataset.label;
+                },
+                afterLabel: function(ctx) {
+                  const p = bubble.points[ctx.datasetIndex];
+                  return `Insight: dificultad ${p.x} · percentil ${p.y}% · competidores ${p.density}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 1,
+              max: 5.2,
+              ticks: { color: '#fff' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              title: { display: true, text: 'Dificultad del certamen', color: '#fff' }
+            },
+            y: {
+              min: 0,
+              max: 100,
+              ticks: { color: '#fff', callback: v => v + '%' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              title: { display: true, text: 'Percentil dentro del estilo', color: '#fff' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderBubbleLegend(points) {
+      const palette = ['#e32c6c','#f7c32f','#1eab9b','#8c52ff','#ff66c4','#33ebd6','#cb6ce6'];
+      const legendContainer = document.getElementById('bubbleLegend');
+      legendContainer.innerHTML = '';
+      points.forEach((point, idx) => {
+        const div = document.createElement('div');
+        div.className = 'legend-item';
+        div.innerHTML = `<div class="legend-color" style="background:${palette[idx % palette.length]};"></div><span class="legend-label">${escapeHtml(point.label.length > 34 ? point.label.slice(0,34) + '…' : point.label)}</span>`;
+        legendContainer.appendChild(div);
+      });
+    }
+
+    function renderLegacyBubble(points) {
+      const container = document.getElementById('bubbleWrap');
+      const width = container.clientWidth || 760;
+      const height = 380;
+      const pad = { left: 52, right: 18, top: 18, bottom: 40 };
+      const innerW = width - pad.left - pad.right;
+      const innerH = height - pad.top - pad.bottom;
+      const palette = ['#e32c6c','#f7c32f','#1eab9b','#8c52ff','#ff66c4','#33ebd6','#cb6ce6'];
+
+      let svg = [];
+      svg.push(`<svg class="svg-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`);
+      svg.push(`<line x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}" stroke="rgba(255,255,255,0.15)"></line>`);
+      svg.push(`<line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}" stroke="rgba(255,255,255,0.15)"></line>`);
+
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (innerH / 4) * i;
+        const value = 100 - i * 25;
+        svg.push(`<line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="rgba(255,255,255,0.07)"></line>`);
+        svg.push(`<text x="${pad.left - 8}" y="${y + 4}" fill="#fff" font-size="10" text-anchor="end">${value}%</text>`);
+      }
+
+      points.forEach((point, idx) => {
+        const x = pad.left + ((point.x - 1) / 4.2) * innerW;
+        const y = pad.top + innerH - (point.y / 100) * innerH;
+        svg.push(`<circle cx="${x}" cy="${y}" r="${Math.min(18, point.r)}" fill="${palette[idx % palette.length]}" fill-opacity="0.72" stroke="#fff" stroke-width="1"></circle>`);
+      });
+
+      svg.push(`</svg>`);
+      container.innerHTML = svg.join('');
+    }
+
+    function computeHeatmapData(breweryName) {
+      const records = getBreweryRecords(breweryName);
+      if (!records.length) return null;
+
+      const years = [...new Set(allData.map(getYear).filter(Boolean))].sort((a,b) => a - b).slice(-6);
+      const breweryStyles = {};
+      records.forEach(r => {
+        const estilo = r.estilo_cliente || r.estilo_limpio || r.estilo;
+        if (!estilo) return;
+        breweryStyles[estilo] = (breweryStyles[estilo] || 0) + getMedalWeight(r.medalla_base) * getDifficulty(r);
+      });
+
+      const candidateStyles = Object.keys(breweryStyles).sort((a,b) => breweryStyles[b] - breweryStyles[a]).slice(0, 10);
+      if (!candidateStyles.length) return null;
+
+      const matrix = candidateStyles.map(style => {
+        return years.map(year => {
+          return allData.filter(r =>
+            normalizeText(r.pais) === 'chile' &&
+            getYear(r) === year &&
+            normalizeText(r.estilo_cliente || r.estilo_limpio || r.estilo) === normalizeText(style)
+          ).length;
+        });
+      });
+
+      let maxVal = 1;
+      matrix.forEach(row => row.forEach(v => { if (v > maxVal) maxVal = v; }));
+
+      const opportunityScores = candidateStyles.map((style, idx) => {
+        const density = matrix[idx].reduce((acc, v) => acc + v, 0) / Math.max(1, years.length);
+        const strength = breweryStyles[style];
+        return { style, density, score: Number((strength / Math.max(1, density)).toFixed(2)) };
+      }).sort((a,b) => b.score - a.score);
+
+      return {
+        years,
+        styles: candidateStyles,
+        matrix,
+        maxVal,
+        insight: `<strong>Insight:</strong> entre tus estilos premiados, <strong>${escapeHtml(opportunityScores[0].style)}</strong> combina mejor tracción propia con menor densidad histórica en Chile.`
+      };
+    }
+
+    function renderHeatmap(breweryName) {
+      const heat = computeHeatmapData(breweryName);
+      const wrap = document.getElementById('heatmapWrap');
+
+      if (!heat) {
+        wrap.innerHTML = '<div class="error-message">No encontramos suficiente historial para mapear oportunidades.</div>';
+        document.getElementById('heatmapInsight').innerHTML = 'No encontramos suficiente historial para detectar vacíos de categoría.';
+        return;
+      }
+
+      document.getElementById('heatmapTitleText').innerText = `Heatmap IVC para ${breweryName}: top 10 estilos propios con mejor combinación entre fuerza y vacío competitivo.`;
+      document.getElementById('heatmapInsight').innerHTML = heat.insight;
+
+      const width = wrap.clientWidth || 760;
+      const leftPad = 170;
+      const topPad = 46;
+      const cellW = 72;
+      const cellH = 30;
+      const height = topPad + heat.styles.length * cellH + 14;
+      const totalWidth = leftPad + heat.years.length * cellW + 14;
+
+      let svg = [];
+      svg.push(`<svg class="svg-chart" viewBox="0 0 ${totalWidth} ${height}" preserveAspectRatio="xMinYMin meet">`);
+
+      heat.years.forEach((year, x) => {
+        const px = leftPad + x * cellW + cellW / 2;
+        svg.push(`<text x="${px}" y="22" fill="#fff" font-size="11" text-anchor="middle">${year}</text>`);
+      });
+
+      heat.styles.forEach((style, row) => {
+        const y = topPad + row * cellH;
+        svg.push(`<text x="${leftPad - 10}" y="${y + 19}" fill="#fff" font-size="10.5" text-anchor="end">${escapeHtml(style.length > 18 ? style.slice(0,18) + '…' : style)}</text>`);
+
+        heat.matrix[row].forEach((val, col) => {
+          const x = leftPad + col * cellW;
+          const intensity = val / heat.maxVal;
+          const fill = val <= 1
+            ? `rgba(247,195,47,${(0.18 + intensity * 0.4).toFixed(2)})`
+            : `rgba(227,44,108,${(0.16 + intensity * 0.68).toFixed(2)})`;
+          svg.push(`<rect x="${x}" y="${y}" width="${cellW - 6}" height="${cellH - 6}" rx="7" ry="7" fill="${fill}" stroke="rgba(255,255,255,0.08)"></rect>`);
+          svg.push(`<text x="${x + (cellW - 6)/2}" y="${y + 19}" fill="#fff" font-size="10.5" text-anchor="middle">${val}</text>`);
+        });
+      });
+
+      svg.push(`</svg>`);
+      wrap.innerHTML = svg.join('');
+    }
+
     const sliderThumb = document.getElementById('sliderThumb');
     const sliderFill = document.getElementById('sliderFill');
     const tierExplorer = document.getElementById('tierExplorer');
@@ -447,56 +1398,56 @@
 
     let currentRangeIndex = 3;
     let currentTier = "champion";
-    let allowAutoTier = true;
+    let currentBrewery = "";
     let isDragging = false;
     let wrapperWidth = 0;
     const stepPositions = [0, 0.25, 0.5, 0.75, 1];
 
-    function updateSliderVisual(index) {
-      const percent = stepPositions[index] * 100;
-      sliderFill.style.width = `${percent}%`;
-      const thumbLeft = (percent / 100) * wrapperWidth;
-      sliderThumb.style.left = `${thumbLeft}px`;
+    function calculatePrice() {
+      let base = (salesData[currentSalesIndex] / 1000000) * 0.02;
+      base *= (currentRangeIndex + 1) * 0.8;
+
+      let mult = 1;
+      if (currentTier === "explorer") mult = 0.7;
+      if (currentTier === "podium") mult = 1;
+      if (currentTier === "champion") mult = 1.4;
+
+      return Math.round(base * mult);
     }
 
-    function animateValue(element, startVal, endVal, isCurrency = true, suffix = "") {
-      const duration = 600;
-      const startTime = performance.now();
-      const startNum = parseFloat(String(startVal).replace(/[^0-9.-]+/g, ""));
-      let endNum = parseFloat(String(endVal).replace(/[^0-9.-]+/g, ""));
-      if (isNaN(startNum) || isNaN(endNum)) {
-        element.innerText = endVal;
-        return;
-      }
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        let progress = Math.min(1, elapsed / duration);
-        const easeOut = 1 - Math.pow(1 - progress, 2);
-        let currentNum = startNum + (endNum - startNum) * easeOut;
-        let formatted;
-        if (isCurrency) {
-          formatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(currentNum);
-          formatted = formatted.replace('$', '$ ') + (suffix ? " " + suffix : "");
-        } else {
-          formatted = Math.round(currentNum) + (suffix ? suffix : "");
-        }
-        element.innerText = formatted;
-        if (progress < 1) requestAnimationFrame(update);
-        else element.innerText = endVal;
-      }
-      requestAnimationFrame(update);
+    function getBreweryStrengthFactor() {
+      if (!currentBrewery) return 1;
+      const radar = computeRadarMetrics(currentBrewery);
+      if (!radar) return 1;
+      const avg = radar.values.reduce((acc, v) => acc + v, 0) / radar.values.length;
+      return 0.85 + (avg / 10) * 0.55;
     }
 
-    function getCurrentMetrics() { return metricsTable[currentRangeIndex]; }
-    function updateMetrics() {
-      const newVals = getCurrentMetrics();
-      const oldInversion = inversionEl.innerText;
-      const oldOptim = optimizacionEl.innerText;
-      const oldRoi = roiEl.innerText;
-      animateValue(inversionEl, oldInversion, newVals.inversion, true, "USD");
-      animateValue(optimizacionEl, oldOptim, newVals.optimizacion, true, "USD");
-      animateValue(roiEl, oldRoi, newVals.roi, false, "%");
+    function updatePriceDisplay() {
+      const price = calculatePrice();
+
+      inversionEl.innerText = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+      }).format(price);
+
+      let multiplier = 12;
+      if (currentTier === "podium") multiplier = 18;
+      if (currentTier === "champion") multiplier = 28;
+
+      const recovered = Math.round(price * multiplier * getBreweryStrengthFactor());
+      optimizacionEl.innerText = "$ " + recovered.toLocaleString();
+
+      const baseImpact = currentTier === 'explorer' ? 55 : currentTier === 'podium' ? 78 : 108;
+      const impact = Math.round(baseImpact + currentRangeIndex * 4 - currentSalesIndex * 3 + (getBreweryStrengthFactor() - 1) * 22);
+      roiEl.innerText = impact + '%';
+
+      document.getElementById('resultsNote').innerHTML = currentBrewery
+        ? `<strong>${escapeHtml(currentBrewery)}</strong>: el precio se ajusta por producción, ventas y plan. El impacto suma además señales reales de tu historial de medallas.`
+        : 'El precio se ajusta por producción, ventas y plan. Si ingresas una cervecería, se suman señales reales de tu historial de medallas.';
     }
+
     function updateTierButtonsActive() {
       const btns = { explorer: tierExplorer, podium: tierPodium, champion: tierChampion };
       Object.keys(btns).forEach(tier => {
@@ -504,24 +1455,22 @@
         else btns[tier].classList.remove('active');
       });
     }
-    function autoSelectTierFromRange() {
-      if (allowAutoTier) {
-        const suggested = metricsTable[currentRangeIndex].suggestedTier;
-        if (suggested && suggested !== currentTier) {
-          currentTier = suggested;
-          updateTierButtonsActive();
-        }
-      }
-    }
-    function setRangeByIndex(index, fromUser = true) {
-      if (index === currentRangeIndex && fromUser) return;
+
+    function setRangeByIndex(index) {
       currentRangeIndex = index;
       updateSliderVisual(currentRangeIndex);
-      if (fromUser) {
-        allowAutoTier = true;
-        autoSelectTierFromRange();
-      }
-      updateMetrics();
+      updateSliderColor();
+      document.getElementById('sliderAValue').innerText = prodLabels[currentRangeIndex];
+      updatePriceDisplay();
+    }
+
+    const prodLabels = ['<500 hl', '501 - 1000 hl', '1001 - 5000 hl', '5001 - 10000 hl', '≥20000 hl'];
+
+    function updateSliderVisual(index) {
+      const percent = stepPositions[index] * 100;
+      sliderFill.style.width = `${percent}%`;
+      const thumbLeft = (percent / 100) * wrapperWidth;
+      sliderThumb.style.left = `${thumbLeft}px`;
     }
 
     function getNearestStep(clientX) {
@@ -531,15 +1480,17 @@
       let distances = stepPositions.map(step => Math.abs(step - ratio));
       return distances.indexOf(Math.min(...distances));
     }
+
     function onDragStart(e) {
       isDragging = true;
       e.preventDefault();
       window.addEventListener('mousemove', onDragMove);
       window.addEventListener('mouseup', onDragEnd);
-      window.addEventListener('touchmove', onDragMove);
+      window.addEventListener('touchmove', onDragMove, { passive: false });
       window.addEventListener('touchend', onDragEnd);
       sliderThumb.style.cursor = 'grabbing';
     }
+
     function onDragMove(e) {
       if (!isDragging) return;
       let clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
@@ -550,6 +1501,7 @@
       let thumbX = ratio * wrapperWidth;
       sliderThumb.style.left = `${thumbX}px`;
     }
+
     function onDragEnd(e) {
       if (!isDragging) return;
       isDragging = false;
@@ -559,7 +1511,7 @@
         clientX = rect.left + rect.width / 2;
       }
       const newIndex = getNearestStep(clientX);
-      setRangeByIndex(newIndex, true);
+      setRangeByIndex(newIndex);
       updateSliderVisual(currentRangeIndex);
       sliderThumb.style.cursor = 'grab';
       window.removeEventListener('mousemove', onDragMove);
@@ -567,6 +1519,126 @@
       window.removeEventListener('touchmove', onDragMove);
       window.removeEventListener('touchend', onDragEnd);
     }
+
+    let isDraggingB = false;
+
+    function getNearestStepB(clientX) {
+      const rect = sliderRailB.getBoundingClientRect();
+      let ratio = (clientX - rect.left) / rect.width;
+      ratio = Math.min(Math.max(ratio, 0), 1);
+      let distances = salesSteps.map(step => Math.abs(step - ratio));
+      return distances.indexOf(Math.min(...distances));
+    }
+
+    function onDragStartB(e) {
+      isDraggingB = true;
+      e.preventDefault();
+      window.addEventListener('mousemove', onDragMoveB);
+      window.addEventListener('mouseup', onDragEndB);
+      window.addEventListener('touchmove', onDragMoveB, { passive: false });
+      window.addEventListener('touchend', onDragEndB);
+      sliderThumbB.style.cursor = 'grabbing';
+    }
+
+    function onDragMoveB(e) {
+      if (!isDraggingB) return;
+      let clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+      const rect = sliderRailB.getBoundingClientRect();
+      let ratio = (clientX - rect.left) / rect.width;
+      ratio = Math.min(Math.max(ratio, 0), 1);
+      sliderFillB.style.width = `${ratio * 100}%`;
+      let thumbX = ratio * rect.width;
+      sliderThumbB.style.left = `${thumbX}px`;
+    }
+
+    function onDragEndB(e) {
+      if (!isDraggingB) return;
+      isDraggingB = false;
+      let clientX = e.clientX ?? (e.changedTouches ? e.changedTouches[0].clientX : 0);
+      if (clientX === undefined) {
+        const rect = sliderRailB.getBoundingClientRect();
+        clientX = rect.left + rect.width / 2;
+      }
+      const newIndex = getNearestStepB(clientX);
+      currentSalesIndex = newIndex;
+      updateSliderBVisual(currentSalesIndex);
+      updatePriceDisplay();
+      sliderThumbB.style.cursor = 'grab';
+      window.removeEventListener('mousemove', onDragMoveB);
+      window.removeEventListener('mouseup', onDragEndB);
+      window.removeEventListener('touchmove', onDragMoveB);
+      window.removeEventListener('touchend', onDragEndB);
+    }
+
+    function initSliderB() {
+      sliderThumbB.addEventListener('mousedown', onDragStartB);
+      sliderThumbB.addEventListener('touchstart', onDragStartB, { passive: false });
+      sliderRailB.addEventListener('click', (e) => {
+        if (isDraggingB) return;
+        currentSalesIndex = getNearestStepB(e.clientX);
+        updateSliderBVisual(currentSalesIndex);
+        updatePriceDisplay();
+      });
+      updateSliderBVisual(currentSalesIndex);
+    }
+
+    function applyAnalysis() {
+      const name = document.getElementById('breweryNameInput').value.trim();
+      currentBrewery = name;
+
+      if (!name) {
+        document.getElementById('contextNote').innerText = 'Ingresa tu cervecería para comparar tu posición, el peso real de tus medallas y los vacíos de categoría desde tu BBDD real.';
+        document.getElementById('radarInsight').innerHTML = 'Ingresa una cervecería para activar este radar estratégico.';
+        document.getElementById('bubbleInsight').innerHTML = 'Ingresa una cervecería para revelar qué medalla realmente tiene más valor estratégico.';
+        document.getElementById('heatmapInsight').innerHTML = 'Ingresa una cervecería para detectar oportunidades reales de categoría desde la BBDD.';
+        document.getElementById('bubbleLegend').innerHTML = '';
+        document.getElementById('heatmapWrap').innerHTML = '<div class="error-message">Ingresa una cervecería para activar el heatmap.</div>';
+        updatePriceDisplay();
+        return;
+      }
+
+      if (!getBreweryRecords(name).length) {
+        document.getElementById('contextNote').innerText = 'No encontramos esa cervecería en la BBDD. Prueba con el nombre exacto.';
+        document.getElementById('radarInsight').innerHTML = 'No encontramos esa cervecería en la BBDD.';
+        document.getElementById('bubbleInsight').innerHTML = 'No encontramos esa cervecería en la BBDD.';
+        document.getElementById('heatmapInsight').innerHTML = 'No encontramos esa cervecería en la BBDD.';
+        document.getElementById('bubbleLegend').innerHTML = '';
+        document.getElementById('heatmapWrap').innerHTML = '<div class="error-message">No encontramos esa cervecería en la BBDD.</div>';
+        updatePriceDisplay();
+        return;
+      }
+
+      document.getElementById('contextNote').innerText = `${name}: lectura competitiva construida desde medallas reales, estilos, certámenes y años históricos presentes en tu BBDD.`;
+      renderRadarChart(name);
+      renderBubbleChart(name);
+      renderHeatmap(name);
+      updatePriceDisplay();
+    }
+
+    function bindTierEvents() {
+      tierExplorer.addEventListener('click', () => {
+        currentTier = 'explorer';
+        updateTierButtonsActive();
+        updateSliderColor();
+        updateSliderBColor();
+        updatePriceDisplay();
+      });
+      tierPodium.addEventListener('click', () => {
+        currentTier = 'podium';
+        updateTierButtonsActive();
+        updateSliderColor();
+        updateSliderBColor();
+        updatePriceDisplay();
+      });
+      tierChampion.addEventListener('click', () => {
+        currentTier = 'champion';
+        updateTierButtonsActive();
+        updateSliderColor();
+        updateSliderBColor();
+        updatePriceDisplay();
+      });
+    }
+
     function initSlider() {
       const updateSize = () => {
         wrapperWidth = sliderRail.clientWidth;
@@ -575,48 +1647,45 @@
       updateSize();
       window.addEventListener('resize', updateSize);
       sliderThumb.addEventListener('mousedown', onDragStart);
-      sliderThumb.addEventListener('touchstart', onDragStart);
+      sliderThumb.addEventListener('touchstart', onDragStart, { passive: false });
       sliderRail.addEventListener('click', (e) => {
         if (isDragging) return;
         const idx = getNearestStep(e.clientX);
-        setRangeByIndex(idx, true);
+        setRangeByIndex(idx);
       });
     }
-    function bindTierEvents() {
-      tierExplorer.addEventListener('click', () => {
-        allowAutoTier = false;
-        if (currentTier !== 'explorer') { currentTier = 'explorer'; updateTierButtonsActive(); }
-      });
-      tierPodium.addEventListener('click', () => {
-        allowAutoTier = false;
-        if (currentTier !== 'podium') { currentTier = 'podium'; updateTierButtonsActive(); }
-      });
-      tierChampion.addEventListener('click', () => {
-        allowAutoTier = false;
-        if (currentTier !== 'champion') { currentTier = 'champion'; updateTierButtonsActive(); }
-      });
-    }
-    const ctaBtn = document.getElementById('ctaBtn');
-    ctaBtn.addEventListener('click', () => {
+
+    document.getElementById('analyzeBtn').addEventListener('click', applyAnalysis);
+    document.getElementById('breweryNameInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') applyAnalysis();
+    });
+
+    document.getElementById('ctaBtn').addEventListener('click', () => {
       if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
       alert("📞 Diagnóstico estratégico – Un asesor te contactará para potenciar tu negocio.");
     });
 
     async function init() {
       const data = await cargarCSV();
-      if (data.length) {
-        allData = data;
-        renderBreweryChart(data);
-      }
+      if (!data.length) return;
+
+      allData = data;
+      fillSuggestions();
+      renderExistingChart(data);
+
       initSlider();
+      initSliderB();
       bindTierEvents();
-      currentRangeIndex = 3;
-      currentTier = "champion";
-      allowAutoTier = true;
-      updateSliderVisual(3);
+
       updateTierButtonsActive();
-      updateMetrics();
+      document.getElementById('sliderAValue').innerText = prodLabels[currentRangeIndex];
+      document.getElementById('sliderBValue').innerText = salesLabels[currentSalesIndex];
+      updateSliderColor();
+      updatePriceDisplay();
+
+      document.getElementById('heatmapWrap').innerHTML = '<div class="error-message">Ingresa una cervecería para activar el heatmap.</div>';
     }
+
     init();
   </script>
 </body>
