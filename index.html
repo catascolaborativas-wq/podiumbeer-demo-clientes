@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PodiumBeer - Auditoría de Desempeño Cervecero</title>
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js solo para Bloomberg y Sankey (no para ranking) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient-fill"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- D3 y Sankey -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <style>
+        /* ===== DESIGN TOKENS ===== */
+        :root {
+            --pb-color-primary: #06232e;
+            --pb-color-magenta: #e32c6c;
+            --pb-color-yellow: #f7c32f;
+            --pb-color-white: #FFFFFF;
+            --pb-color-turquoise: #40E0D0;
+            --pb-overlay-opacity: 0.56;
+            --pb-bg-inactive: rgba(255, 255, 255, 0.03);
+            --pb-border-radius-card: 15px;
+            --pb-border-radius-pill: 50px;
+            --pb-transition-default: all 0.3s ease-in-out;
+            --pb-hover-scale: scale(1.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #06232e;
+            color: #fff;
+            position: relative;
+        }
+
+        /* === FONDO CORRECTO (extraído del index original) === */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(6, 35, 46, 0.56), rgba(6, 35, 46, 0.56)), url('assets/bg_cerveceria.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -2;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header con métricas */
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .logo {
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+        }
+        .title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f7c32f;
+            letter-spacing: -0.02em;
+        }
+        .subhead {
+            color: #1eab9b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .stats {
+            display: flex;
+            gap: 2rem;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f7c32f;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ccc;
+        }
+
+        /* Tarjeta de gráficos (para Bloomberg y Sankey) */
+        .card {
+            background: rgba(10, 25, 35, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(30, 171, 155, 0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #f7c32f;
+            border-left: 5px solid #e32c6c;
+            padding-left: 1rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: auto;
+            min-height: 400px;
+        }
+        canvas, svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* === NUEVA CARD DE PASIÓN Y RANKING (GLASSMORPHISM CON BORDE MAGENTA) === */
+        .pb-passion-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(227, 44, 108, 0.6);
+            box-shadow: 0 0 25px rgba(227, 44, 108, 0.2);
+            padding: 30px;
+            margin-bottom: 2rem;
+        }
+        .pb-phrase {
+            color: #FFFFFF;
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Ranking sin librerías externas */
+        .pb-ranking-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .pb-ranking-row {
+            display: grid;
+            grid-template-columns: 30px 150px 1fr auto;
+            align-items: center;
+            gap: 15px;
+        }
+        .pb-rank-num {
+            font-weight: bold;
+            color: #fff;
+        }
+        .pb-brewery-name {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        .pb-bar-container {
+            background: rgba(255, 255, 255, 0.15);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .pb-bar-fill {
+            background: linear-gradient(90deg, #e32c6c, #f7c32f);
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        .pb-metrics {
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .pb-medals {
+            color: #f7c32f;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .pb-label {
+            color: rgba(255,255,255,0.7);
+            margin-right: 5px;
+        }
+        .pb-score {
+            color: #40E0D0;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .pb-ranking-row {
+                grid-template-columns: 25px 120px 1fr auto;
+                gap: 8px;
+            }
+            .pb-brewery-name { font-size: 0.75rem; white-space: normal; }
+            .pb-metrics { font-size: 0.7rem; }
+            .pb-medals { margin-right: 5px; }
+        }
+
+        /* === SIMULADOR DE RENTABILIDAD (calculadora) === */
+        .pb-glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--pb-border-radius-card);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            margin-bottom: 2rem;
+        }
+        .simulator-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--pb-color-yellow);
+            margin-bottom: 1rem;
+        }
+        .simulator-desc {
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.9);
+        }
+        .slider-label {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: block;
+            font-size: 1rem;
+        }
+        .pb-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            margin: 1rem 0;
+        }
+        .pb-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--pb-color-white);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        .slider-ranges {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.3rem;
+            margin-bottom: 1.8rem;
+        }
+        .plan-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .pb-pill-inactive {
+            background: var(--pb-bg-inactive);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--pb-border-radius-pill);
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+        }
+        .pb-pill-active {
+            background: var(--pb-color-magenta);
+            border: none;
+            border-radius: var(--pb-border-radius-pill);
+            color: var(--pb-color-white);
+            box-shadow: 0px 4px 15px rgba(227, 44, 108, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+        .result-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        .result-icon {
+            font-size: 2rem;
+            color: var(--pb-color-yellow);
+            margin-bottom: 0.5rem;
+        }
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--pb-color-white);
+            line-height: 1.2;
+        }
+        .result-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
+        }
+        .disclaimer {
+            font-style: italic;
+            font-size: 0.8rem;
+            text-align: center;
+            margin: 1rem 0;
+            color: rgba(255,255,255,0.8);
+        }
+        .pb-btn-cta {
+            background-color: var(--pb-color-magenta);
+            color: var(--pb-color-white);
+            border-radius: var(--pb-border-radius-pill);
+            border: none;
+            padding: 16px 32px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--pb-transition-default);
+            text-decoration: none;
+            box-shadow: 0px 4px 20px 5px rgba(227, 44, 108, 0.4);
+            margin: 0.5rem auto;
+        }
+        .pb-btn-cta:hover {
+            transform: var(--pb-hover-scale);
+            box-shadow: 0px 4px 25px 8px rgba(227, 44, 108, 0.6);
+        }
+
+        /* Tabla y resto de estilos (originales) */
+        .auditoria-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        .search-box {
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 0.9rem;
+            width: 250px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .medals-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .medals-table th, .medals-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .medals-table th {
+            background: rgba(227,44,108,0.3);
+            color: #f7c32f;
+            font-weight: 600;
+        }
+        .blur-column {
+            filter: blur(5px);
+            transition: filter 0.2s;
+        }
+        .medals-table tr:hover .blur-column {
+            filter: blur(0);
+        }
+        .medal-gold { color: #f7c32f; font-weight: bold; }
+        .medal-silver { color: #c0c0c0; font-weight: bold; }
+        .medal-bronze { color: #cd7f32; font-weight: bold; }
+        .btn-premium {
+            display: inline-block;
+            background: #e32c6c;
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-premium:hover {
+            background: #f7c32f;
+            color: #06232e;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 2rem;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            transition: transform 0.2s;
+        }
+        .social-icon:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header con métricas -->
+    <div class="hero">
+        <div class="logo-area">
+            <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
+            <div>
+                <div class="title">PODIUMBEER</div>
+                <div class="subhead">AUDITORÍA DE DESEMPEÑO CERVECERO</div>
+            </div>
+        </div>
+        <div class="stats" id="stats-placeholder">
+            <div class="stat"><div class="stat-number">--</div><div class="stat-label">Total Medallas</div></div>
+            <div class="stat"><div class="stat-number">--</div><div class="stat-label">Medallas Oro</div></div>
+            <div class="stat"><div class="stat-number">--</div><div class="stat-label">Certámenes</div></div>
+        </div>
+    </div>
+
+    <!-- Gráfico Bloomberg: Evolución Estratégica -->
+    <div class="card">
+        <div class="card-title">📈 Evolución Estratégica</div>
+        <div class="chart-container">
+            <canvas id="bloombergChart" width="800" height="400" style="width:100%; height:auto; max-height:450px"></canvas>
+        </div>
+    </div>
+
+    <!-- Diagrama Sankey -->
+    <div class="card">
+        <div class="card-title">🔗 Trazabilidad de Prestigio (Sankey)</div>
+        <div class="chart-container" id="sankey-container">
+            <svg id="sankey-svg" width="100%" height="500" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+    </div>
+
+    <!-- NUEVA CARD DE PASIÓN Y RANKING (sin librerías externas) -->
+    <div class="pb-passion-card">
+        <div class="pb-phrase">🍻 Tu pasión es producir, nuestra misión es que cada gota rinda</div>
+        <div id="dynamicRanking" class="pb-ranking-container">
+            <!-- Aquí se cargará el ranking dinámico con JavaScript -->
+            <div style="text-align:center; padding:20px;">Cargando ranking...</div>
+        </div>
+    </div>
+
+    <!-- SIMULADOR DE RENTABILIDAD (calculadora) -->
+    <div class="pb-glass-card">
+        <div class="simulator-title">💰 ¿Cuánto puedes optimizar con PodiumBeer?</div>
+        <div class="simulator-desc">Sabemos que en la planta el margen se pelea litro a litro. No queremos que gastes a ciegas en concursos donde el perfil de los jueces no valora tu estilo, ni que inviertas en marketing sin datos reales de mercado. En PodiumBeer somos amantes del rubro y, antes que cualquier dato, somos tus aliados. Queremos que tu inversión en prestigio sea tan precisa como tu receta.</div>
+
+        <label class="slider-label">¿Cuál es tu producción anual?</label>
+        <input type="range" id="produccionSlider" class="pb-slider" min="0" max="4" step="1" value="2">
+        <div class="slider-ranges">
+            <span>≤1000 hl</span><span>1001–5000 hl</span><span>5001–20000 hl</span><span>20001–50000 hl</span><span>>50000 hl</span>
+        </div>
+
+        <div class="plan-buttons">
+            <div class="pb-pill-inactive" data-plan="explorer">🌿 EXPLORER</div>
+            <div class="pb-pill-active" data-plan="podium">🥇 PODIUM</div>
+            <div class="pb-pill-inactive" data-plan="champion">🏆 CHAMPION</div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-item">
+                <div class="result-icon">💰</div>
+                <div class="result-value" id="precioMensual">--</div>
+                <div class="result-label">Inversión mensual</div>
+            </div>
+            <div class="result-item">
+                <div class="result-icon">📈</div>
+                <div class="result-value" id="optimizacionAnual">--</div>
+                <div class="result-label">Optimización anual</div>
+            </div>
+            <div class="result-item">
+                <div class="result-icon">🔄</div>
+                <div class="result-value" id="roi">--</div>
+                <div class="result-label">Retorno colaborativo</div>
+            </div>
+        </div>
+
+        <div class="disclaimer">💡 Crecemos si tú creces: este presupuesto se ajusta a tu realidad. Conversemos sin compromiso.</div>
+
+        <div style="text-align: center;">
+            <a href="https://wa.me/56952184980?text=Quiero%20conversar%20sobre%20mi%20próxima%20temporada%20con%20PodiumBeer" class="pb-btn-cta">📲 Agenda tu diagnóstico gratuito</a>
+        </div>
+    </div>
+
+    <!-- Tabla de auditoría con blur -->
+    <div class="card">
+        <div class="card-title">📋 Auditoría Detallada</div>
+        <div class="auditoria-header">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar por cervecería, estilo...">
+        </div>
+        <div class="table-wrapper">
+            <table class="medals-table" id="auditTable">
+                <thead>
+                    <tr><th>Certamen</th><th>Fecha</th><th>Cervecería</th><th>Cerveza</th><th>Estilo</th><th>Medalla</th><th>País</th></tr>
+                </thead>
+                <tbody id="tableBody"><tr><td colspan="7">Cargando datos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="https://wa.me/56912345678?text=Quiero%20acceso%20completo%20a%20PodiumBeer" class="btn-premium" target="_blank">🔓 DESBLOQUEAR ACCESO COMPLETO</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="social-icons">
+            <a href="#"><img src="assets/icon_instagram.png" class="social-icon" alt="IG"></a>
+            <a href="#"><img src="assets/icon_web.png" class="social-icon" alt="Web"></a>
+            <a href="#"><img src="assets/icon_wpp.png" class="social-icon" alt="WhatsApp"></a>
+        </div>
+        <p style="font-size:0.75rem; opacity:0.6;">PodiumBeer - Desarrollo de Catas Colaborativas</p>
+    </footer>
+</div>
+
+<script>
+    // ==================== CONFIGURACIÓN SUPABASE ====================
+    const SUPABASE_URL = "https://jqinutwfunthyzhklqeig.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxaW51dHdmdW10eWh6a2xxZWpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMTg5MTAsImV4cCI6MjA5MDU5NDkxMH0.GJY8bnuYi556G4mZW1Tx-c7eFeTXSN8TM22bXtiUVMs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allData = [];
+
+    async function loadData() {
+        const { data, error } = await supabase.from('medallas').select('*');
+        if (error) { console.error(error); return []; }
+        allData = data || [];
+        return allData;
+    }
+
+    function updateStats(data) {
+        const total = data.length;
+        const oro = data.filter(d => d.medalla_base === 'Oro').length;
+        const certamenes = new Set(data.map(d => d.certamen)).size;
+        const statsDiv = document.querySelector('#stats-placeholder');
+        if (statsDiv) {
+            statsDiv.children[0].children[0].innerText = total;
+            statsDiv.children[1].children[0].innerText = oro;
+            statsDiv.children[2].children[0].innerText = certamenes;
+        }
+    }
+
+    // Gráfico Bloomberg (Evolución)
+    let bloombergChart;
+    function renderBloomberg(data) {
+        const yearMap = new Map();
+        data.forEach(item => {
+            let year = item.anio || (item.fecha ? item.fecha.split('-')[0] : null);
+            if (!year) return;
+            year = year.toString();
+            yearMap.set(year, (yearMap.get(year) || 0) + 1);
+        });
+        const sorted = Array.from(yearMap.entries()).sort((a,b) => a[0] - b[0]);
+        const labels = sorted.map(y => y[0]);
+        const values = sorted.map(v => v[1]);
+        const ctx = document.getElementById('bloombergChart').getContext('2d');
+        if (bloombergChart) bloombergChart.destroy();
+        const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+        gradient.addColorStop(0, '#1eab9b');
+        gradient.addColorStop(0.5, '#e32c6c');
+        gradient.addColorStop(1, '#f7c32f');
+        bloombergChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Medallas por año',
+                    data: values,
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: '#f7c32f',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#f7c32f',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 2500, ticks: { stepSize: 500, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#fff' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Sankey
+    function renderSankey(data) {
+        const flows = new Map();
+        data.forEach(item => {
+            const cert = item.certamen || 'Otro';
+            const cev = item.cerveceria || 'Desconocida';
+            const est = item.estilo || 'Genérico';
+            const med = item.medalla_base || 'Medalla';
+            const key = `${cert}|${cev}|${est}|${med}`;
+            flows.set(key, (flows.get(key) || 0) + 1);
+        });
+        const nodesSet = new Set();
+        const links = [];
+        for (let [path, val] of flows.entries()) {
+            const parts = path.split('|');
+            for (let p of parts) nodesSet.add(p);
+            links.push({ source: parts[0], target: parts[1], value: val });
+            links.push({ source: parts[1], target: parts[2], value: val });
+            links.push({ source: parts[2], target: parts[3], value: val });
+        }
+        const nodes = Array.from(nodesSet).map(name => ({ name }));
+        const nodeMap = new Map(nodes.map((n,i) => [n.name, i]));
+        const graphLinks = links.map(l => ({ source: nodeMap.get(l.source), target: nodeMap.get(l.target), value: l.value }));
+        const width = document.getElementById('sankey-svg').clientWidth || 1000;
+        const height = 500;
+        const svg = d3.select("#sankey-svg");
+        svg.selectAll("*").remove();
+        const sankeyGenerator = d3.sankey()
+            .nodeWidth(20)
+            .nodePadding(15)
+            .extent([[50, 30], [width-50, height-40]]);
+        const { nodes: sankeyNodes, links: sankeyLinks } = sankeyGenerator({
+            nodes: nodes.map(d => ({...d})),
+            links: graphLinks
+        });
+        svg.append("g")
+            .selectAll("rect")
+            .data(sankeyNodes)
+            .enter()
+            .append("rect")
+            .attr("x", d => d.x0)
+            .attr("y", d => d.y0)
+            .attr("height", d => d.y1 - d.y0)
+            .attr("width", d => d.x1 - d.x0)
+            .attr("fill", "#1eab9b")
+            .attr("stroke", "#f7c32f")
+            .append("title")
+            .text(d => d.name);
+        svg.append("g")
+            .selectAll("text")
+            .data(sankeyNodes)
+            .enter()
+            .append("text")
+            .attr("x", d => d.x0 - 6)
+            .attr("y", d => (d.y0 + d.y1) / 2)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "end")
+            .text(d => d.name.length > 20 ? d.name.slice(0,18)+"…" : d.name)
+            .attr("fill", "white")
+            .attr("font-size", "10px");
+        svg.append("g")
+            .selectAll("path")
+            .data(sankeyLinks)
+            .enter()
+            .append("path")
+            .attr("d", d3.sankeyLinkHorizontal())
+            .attr("stroke-width", d => Math.max(1, d.width))
+            .attr("stroke", "#e32c6c")
+            .attr("fill", "none")
+            .attr("opacity", 0.6)
+            .append("title")
+            .text(d => `${d.source.name} → ${d.target.name}: ${d.value}`);
+    }
+
+    // Tabla con blur
+    function renderTable(data, filter = "") {
+        const tbody = document.getElementById('tableBody');
+        const filtered = data.filter(row => {
+            if (!filter) return true;
+            const search = filter.toLowerCase();
+            return (row.cerveceria || '').toLowerCase().includes(search) ||
+                   (row.estilo || '').toLowerCase().includes(search) ||
+                   (row.cerveza_ganadora || '').toLowerCase().includes(search);
+        });
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7">No hay coincidencias</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.slice(0, 200).map(item => {
+            let medalClass = '';
+            const med = (item.medalla_base || '').toLowerCase();
+            if (med === 'oro') medalClass = 'medal-gold';
+            else if (med === 'plata') medalClass = 'medal-silver';
+            else if (med === 'bronce') medalClass = 'medal-bronze';
+            return `
+                <tr>
+                    <td>${item.certamen || '-'}</td>
+                    <td>${item.fecha || item.anio || '-'}</td>
+                    <td class="blur-column">${item.cerveceria || '-'}</td>
+                    <td class="blur-column">${item.cerveza_ganadora || '-'}</td>
+                    <td class="blur-column">${item.estilo || '-'}</td>
+                    <td class="${medalClass}">${item.medalla_base || '-'}</td>
+                    <td>${item.pais || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // ==================== NUEVO RANKING HTML/CSS PURO ====================
+    function renderRankingHTML(data) {
+        // Contar medallas por cervecería
+        const cervecerias = {};
+        data.forEach(item => {
+            const nombre = item.cerveceria;
+            if (!nombre) return;
+            if (!cervecerias[nombre]) {
+                cervecerias[nombre] = { total: 0 };
+            }
+            cervecerias[nombre].total++;
+        });
+        // Convertir a array, ordenar y tomar top 15
+        let rankingArray = Object.entries(cervecerias).map(([nombre, stats]) => ({
+            nombre,
+            total: stats.total
+        }));
+        rankingArray.sort((a, b) => b.total - a.total);
+        const top15 = rankingArray.slice(0, 15);
+        const maxMedallas = top15.length > 0 ? top15[0].total : 1;
+
+        // Generar HTML
+        const container = document.getElementById('dynamicRanking');
+        if (!container) return;
+        if (top15.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:white;">No hay datos de ranking</div>';
+            return;
+        }
+
+        let html = '';
+        top15.forEach((brewery, idx) => {
+            const porcentaje = (brewery.total / maxMedallas) * 100;
+            html += `
+                <div class="pb-ranking-row">
+                    <span class="pb-rank-num">${idx+1}</span>
+                    <span class="pb-brewery-name">${escapeHtml(brewery.nombre)}</span>
+                    <div class="pb-bar-container">
+                        <div class="pb-bar-fill" style="width: ${porcentaje}%;"></div>
+                    </div>
+                    <div class="pb-metrics">
+                        <span class="pb-medals">${brewery.total} Medallas</span>
+                        <span class="pb-label">PodiumScore</span>
+                        <span class="pb-score">${Math.round(brewery.total * 100 / maxMedallas)}</span>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // Helper para escapar HTML
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ==================== SIMULADOR DE RENTABILIDAD ====================
+    const precios = {
+        "≤1000 hl": { explorer: 49, podium: 149, champion: 399 },
+        "1001–5000 hl": { explorer: 99, podium: 249, champion: 599 },
+        "5001–20000 hl": { explorer: 199, podium: 399, champion: 899 },
+        "20001–50000 hl": { explorer: 349, podium: 649, champion: 1299 },
+        ">50000 hl": { explorer: "Custom", podium: "Custom", champion: "Custom" }
+    };
+    const rangos = ["≤1000 hl", "1001–5000 hl", "5001–20000 hl", "20001–50000 hl", ">50000 hl"];
+    let planActual = "podium";
+    let rangoIndex = 2;
+
+    function actualizarSimulador() {
+        const precio = precios[rangos[rangoIndex]][planActual];
+        const precioNum = typeof precio === 'number' ? precio : 0;
+        const anual = precioNum * 12;
+        const optimizacion = Math.round(anual * 1.8);
+        const roi = precioNum ? Math.round((optimizacion / anual) * 100) : 0;
+        document.getElementById('precioMensual').innerText = precioNum || "Custom";
+        document.getElementById('optimizacionAnual').innerText = optimizacion || "--";
+        document.getElementById('roi').innerText = roi || "--";
+    }
+
+    // Eventos del simulador
+    const slider = document.getElementById('produccionSlider');
+    if (slider) {
+        slider.addEventListener('input', (e) => {
+            rangoIndex = parseInt(e.target.value);
+            actualizarSimulador();
+        });
+    }
+    const pills = document.querySelectorAll('.pb-pill-inactive, .pb-pill-active');
+    pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            pills.forEach(p => {
+                p.classList.remove('pb-pill-active');
+                p.classList.add('pb-pill-inactive');
+            });
+            pill.classList.remove('pb-pill-inactive');
+            pill.classList.add('pb-pill-active');
+            planActual = pill.dataset.plan;
+            actualizarSimulador();
+        });
+    });
+
+    // ==================== INICIALIZACIÓN PRINCIPAL ====================
+    async function init() {
+        const data = await loadData();
+        if (!data.length) return;
+        updateStats(data);
+        renderBloomberg(data);
+        renderSankey(data);
+        renderRankingHTML(data);   // Nuevo ranking HTML/CSS puro
+        renderTable(data);
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderTable(data, e.target.value.toLowerCase());
+        });
+        actualizarSimulador();
+    }
+    init();
+</script>
+</body>
+</html>
