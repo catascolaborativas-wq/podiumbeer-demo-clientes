@@ -1,791 +1,496 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>PodiumBeer – Inteligencia Competitiva</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #06232e;
-            color: #fff;
-            position: relative;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(6, 35, 46, 0.56), rgba(6, 35, 46, 0.56)), url('assets/bg_cerveceria.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            z-index: -2;
-        }
-
-        body.legacy-ios12::before {
-            background-attachment: scroll;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .logo {
-            max-width: 260px;
-            width: 100%;
-            height: auto;
-            margin-bottom: 1rem;
-        }
-
-        .tagline {
-            font-size: clamp(16px, 5vw, 22px);
-            font-weight: 700;
-            color: #f7c32f;
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.3;
-        }
-
-        .descripcion {
-            font-size: 14px;
-            color: #cfdee0;
-            max-width: 800px;
-            margin: 1rem auto 0;
-            line-height: 1.4;
-            text-align: center;
-        }
-
-        .brewery-input-wrap {
-            background: rgba(6, 35, 46, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 999px;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.45rem 0.55rem 0.45rem 1rem;
-            max-width: 560px;
-            margin: 1.5rem auto 1rem;
-        }
-
-        .brewery-input-wrap input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .brewery-input-wrap input::placeholder {
-            color: rgba(255, 255, 255, 0.55);
-        }
-
-        .analyze-btn {
-            border: none;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #e40f63, #c32263);
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 0.7rem 1.2rem;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: transform 0.1s;
-        }
-
-        .analyze-btn:active {
-            transform: scale(0.97);
-        }
-
-        .card {
-            background: rgba(10, 25, 35, 0.75);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 1.2rem;
-            border: 1px solid rgba(30, 171, 155, 0.3);
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #f7c32f;
-            margin-bottom: 0.25rem;
-        }
-
-        .card-subtitle {
-            font-size: 14px;
-            color: #cfdee0;
-            margin-bottom: 1rem;
-        }
-
-        .stats-summary {
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 16px;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            font-size: 14px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-
-        .stats-summary span {
-            font-weight: 700;
-            color: #f7c32f;
-        }
-
-        /* FIX 4: altura fija para gráficos */
-        .chart-container {
-            height: 360px;
-            width: 100%;
-            position: relative;
-        }
-
-        @media (max-width: 768px) {
-            .chart-container {
-                height: 300px;
-            }
-            .card-title {
-                font-size: 18px;
-            }
-            .stats-summary {
-                font-size: 12px;
-            }
-        }
-
-        /* Sliders y planes */
-        .slider-group {
-            margin: 1.5rem 0;
-        }
-
-        .slider-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .slider-rail {
-            width: 100%;
-            height: 6px;
-            background: #1e3a4a;
-            border-radius: 50px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .slider-fill {
-            position: absolute;
-            height: 100%;
-            border-radius: 50px;
-            background: linear-gradient(90deg, #e32c6c, #fff);
-            width: 0%;
-            pointer-events: none;
-        }
-
-        .slider-thumb {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background: #fff;
-            border-radius: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            cursor: grab;
-            z-index: 3;
-            box-shadow: 0 0 8px rgba(0,0,0,0.3);
-        }
-
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-            font-size: 12px;
-            color: #cfdee0;
-        }
-
-        .tier-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin: 1rem 0;
-        }
-
-        .tier-btn {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 60px;
-            padding: 0.6rem;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s;
-        }
-
-        .tier-btn.active {
-            background: linear-gradient(90deg, #e40f63, #c32263);
-            border-color: #fff;
-            box-shadow: 0 0 12px rgba(228,15,99,0.4);
-        }
-
-        .metric-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 1rem 0;
-            padding: 0.8rem;
-            background: rgba(0, 0, 0, 0.35);
-            border-radius: 20px;
-        }
-
-        .metric-name {
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .metric-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: #f7c32f;
-        }
-
-        @media (max-width: 768px) {
-            .metric-value {
-                font-size: 18px;
-            }
-            .metric-name {
-                font-size: 13px;
-            }
-        }
-
-        .tabla-estilos {
-            margin-top: 1rem;
-            font-size: 12px;
-            overflow-x: auto;
-        }
-
-        .tabla-estilos table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .tabla-estilos th, .tabla-estilos td {
-            padding: 0.5rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .tabla-estilos th {
-            color: #f7c32f;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PodiumBeer · Motor de Decisiones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 20% 30%, #0a2a35, #031016);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 1.5rem 0;
+    }
+    .vignette {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      box-shadow: inset 0 0 120px rgba(0,0,0,0.8); pointer-events: none; z-index: 0;
+    }
+    .app-container {
+      width: 95%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 2;
+      display: flex; flex-direction: column; gap: 1.8rem;
+    }
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(6, 35, 46, 0.45); backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 3rem; padding: 0.8rem 2rem;
+    }
+    .logo-area { display: flex; align-items: center; gap: 1.5rem; }
+    .logo-badge {
+      background: #e32c6c; width: 50px; height: 50px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px;
+    }
+    .title-main { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; color: #f7c32f; }
+    .brewery-selector { display: flex; gap: 1rem; align-items: center; }
+    .brewery-input {
+      background: rgba(0,0,0,0.5); border: 1.5px solid #3a5a6a; border-radius: 60px;
+      padding: 0.8rem 1.5rem; color: white; font-size: 1rem; width: 280px; outline: none;
+      transition: 0.2s;
+    }
+    .brewery-input:focus { border-color: #e32c6c; background: #0a1e26; }
+    .btn-analyze {
+      background: linear-gradient(145deg, #e32c6c, #b01c52); border: none; border-radius: 60px;
+      padding: 0.8rem 2rem; font-weight: 700; color: white; cursor: pointer; box-shadow: 0 4px 20px rgba(227,44,108,0.3);
+      transition: 0.2s; border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-analyze:active { transform: scale(0.96); }
+    .kpi-grid {
+      display: grid; grid-template-columns: 1.1fr 0.9fr 1fr; gap: 1.5rem;
+    }
+    .card {
+      background: rgba(6, 35, 46, 0.4); backdrop-filter: blur(20px);
+      border-radius: 2rem; border: 1px solid rgba(255,255,255,0.1);
+      padding: 1.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;
+    }
+    .card-header h2 { font-size: 1.3rem; font-weight: 600; color: #f7c32f; letter-spacing: -0.3px; }
+    .badge-decision {
+      margin-left: auto; background: #1e3a4a; padding: 0.3rem 1rem; border-radius: 40px;
+      font-size: 0.8rem; font-weight: 700; color: #b0d4e3;
+    }
+    .chart-container {
+      height: 280px; width: 100%; position: relative;
+    }
+    .legend-decision {
+      display: flex; gap: 1.5rem; margin-top: 1rem; justify-content: center;
+    }
+    .legend-dot {
+      display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
+    }
+    .dot-green { width: 12px; height: 12px; background: #2ecc71; border-radius: 4px; }
+    .dot-yellow { width: 12px; height: 12px; background: #f1c40f; border-radius: 4px; }
+    .dot-red { width: 12px; height: 12px; background: #e74c3c; border-radius: 4px; }
+    .stats-row {
+      display: flex; justify-content: space-around; margin-top: 1.5rem;
+    }
+    .stat-item { text-align: center; }
+    .stat-number { font-size: 2rem; font-weight: 800; color: #fff; }
+    .stat-label { font-size: 0.8rem; color: #a0bcc9; text-transform: uppercase; letter-spacing: 1px; }
+    .space-list {
+      max-height: 200px; overflow-y: auto; margin-top: 0.5rem;
+    }
+    .space-item {
+      display: flex; justify-content: space-between; padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .effort-matrix {
+      display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .matrix-row {
+      display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.2);
+      padding: 0.6rem 1rem; border-radius: 40px;
+    }
+    .certamen-name { flex: 2; font-weight: 500; }
+    .certamen-badge { flex: 1; text-align: center; }
+    .price-simulator {
+      margin-top: 1rem; background: rgba(0,0,0,0.3); border-radius: 3rem;
+      padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between;
+      border: 1px solid #e32c6c66;
+    }
+    .price-item { text-align: center; }
+    .price-value { font-size: 2rem; font-weight: 800; color: #f7c32f; }
+    .footer-note {
+      text-align: right; font-size: 0.8rem; color: #6a8a99;
+    }
+    .loading-message {
+      text-align: center; padding: 2rem; color: #f7c32f; font-size: 1.2rem;
+    }
+    .error-message {
+      color: #e74c3c; font-weight: 500; padding: 0.5rem;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #e32c6c; border-radius: 10px; }
+  </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="logo">
-        <div class="tagline">"No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca."</div>
-        <div class="descripcion">
-            PodiumBeer es la primera plataforma que ordena el prestigio cervecero. Convertimos el caos de medallas dispersas en una herramienta de inteligencia para que los cerveceros sepan qué premios realmente construyen su nombre y en qué estilos o concursos tienen ventaja real.
-        </div>
-        <div class="brewery-input-wrap">
-            <input type="text" id="breweryName" placeholder="Escribe el nombre de tu cervecería" list="breweryList">
-            <datalist id="breweryList"></datalist>
-            <button class="analyze-btn" id="analyzeBtn">Analizar</button>
-        </div>
+<div class="vignette"></div>
+<div class="app-container">
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-badge">PB</div>
+      <div class="title-main">PodiumBeer · inteligencia competitiva</div>
     </div>
+    <div class="brewery-selector">
+      <input type="text" id="breweryInput" class="brewery-input" placeholder="Nombre de la cervecería" value="Spoh">
+      <button class="btn-analyze" id="analyzeBtn">Analizar</button>
+    </div>
+  </div>
 
-    <!-- Vista 1: Mapa de autoridad de medallas -->
+  <!-- KPI 1: VALOR DE MEDALLAS (SCATTER) -->
+  <div class="card">
+    <div class="card-header">
+      <h2>📊 KPI 1 · Medallas que Construyen Marca</h2>
+      <div class="badge-decision">Señal vs Ruido</div>
+    </div>
+    <div id="medallasStats" class="loading-message">Esperando análisis...</div>
+    <div class="chart-container">
+      <canvas id="scatterChart"></canvas>
+    </div>
+    <div class="legend-decision">
+      <div class="legend-dot"><span class="dot-green"></span> Construye Marca (≥9)</div>
+      <div class="legend-dot"><span class="dot-yellow"></span> Neutro (6-8)</div>
+      <div class="legend-dot"><span class="dot-red"></span> Ruido (&lt;6)</div>
+    </div>
+    <div class="stats-row" id="statsMedallas"></div>
+  </div>
+
+  <div class="kpi-grid">
+    <!-- KPI 2: ESPACIO DE CRECIMIENTO (RADAR) -->
     <div class="card">
-        <div class="card-title">📊 Tus medallas: cuáles sí te ayudan de verdad</div>
-        <div class="card-subtitle">Identificamos qué premios te diferencian y cuáles son solo ruido.</div>
-        <div id="medallasStats" class="stats-summary">Esperando análisis...</div>
-        <div class="chart-container"><canvas id="medallasChart" width="800" height="400"></canvas></div>
+      <div class="card-header">
+        <h2>📈 KPI 2 · Oportunidad Real</h2>
+        <div class="badge-decision">Max 8 estilos</div>
+      </div>
+      <div id="estilosStats" class="loading-message">Sin datos</div>
+      <div class="chart-container">
+        <canvas id="radarChart"></canvas>
+      </div>
+      <div class="space-list" id="estilosTabla"></div>
     </div>
 
-    <!-- Vista 2: Radar de estilos (espacio de crecimiento) -->
+    <!-- KPI 3: ESFUERZO VS RETORNO -->
     <div class="card">
-        <div class="card-title">📈 En qué estilos todavía tienes espacio</div>
-        <div class="card-subtitle">Oportunidades ocultas en tu portafolio. ¿Dónde puedes liderar?</div>
-        <div id="estilosStats" class="stats-summary">Esperando análisis...</div>
-        <div class="chart-container"><canvas id="radarChart" width="800" height="400"></canvas></div>
-        <div id="estilosTabla" class="tabla-estilos"></div>
+      <div class="card-header">
+        <h2>⚖️ KPI 3 · Optimizar Inversión</h2>
+        <div class="badge-decision">Esfuerzo vs Retorno</div>
+      </div>
+      <div id="concursosStats" class="loading-message">Calculando concursos...</div>
+      <div class="effort-matrix" id="effortMatrix"></div>
     </div>
+  </div>
 
-    <!-- Vista 3: Esfuerzo vs retorno en concursos -->
-    <div class="card">
-        <div class="card-title">⚖️ Concursos donde tu esfuerzo rinde… y donde no</div>
-        <div class="card-subtitle">No todos los certámenes merecen tu plata.</div>
-        <div id="concursosStats" class="stats-summary">Esperando análisis...</div>
-        <div class="chart-container"><canvas id="concursosChart" width="800" height="400"></canvas></div>
-    </div>
-
-    <!-- Motor de precios -->
-    <div class="card">
-        <div class="card-title">💰 Simulador de Alianza</div>
-        <div class="card-subtitle">Ajusta tu producción y ventas para ver la inversión y retorno estimado.</div>
-
-        <div class="slider-group">
-            <div class="slider-label">📦 Escala de Producción (hL/año)</div>
-            <div class="slider-rail" id="prodRail">
-                <div class="slider-fill" id="prodFill"></div>
-                <div class="slider-thumb" id="prodThumb"></div>
-            </div>
-            <div class="slider-labels">
-                <span>&lt;500</span><span>501-1000</span><span>1001-5000</span><span>5001-10000</span><span>&gt;20000</span>
-            </div>
-            <div id="prodValue" class="stats-summary" style="margin-top:0.5rem;">5001 - 10000 hl</div>
-        </div>
-
-        <div class="slider-group">
-            <div class="slider-label">💰 Ventas Anuales (CLP)</div>
-            <div class="slider-rail" id="ventasRail">
-                <div class="slider-fill" id="ventasFill"></div>
-                <div class="slider-thumb" id="ventasThumb"></div>
-            </div>
-            <div class="slider-labels">
-                <span>$54M</span><span>$216M</span><span>$540M</span><span>$720M</span>
-            </div>
-            <div id="ventasValue" class="stats-summary" style="margin-top:0.5rem;">$216M CLP</div>
-        </div>
-
-        <div class="tier-buttons">
-            <div class="tier-btn" data-tier="explorer">Explorer</div>
-            <div class="tier-btn" data-tier="podium">Podium</div>
-            <div class="tier-btn active" data-tier="champion">Champion</div>
-        </div>
-
-        <div class="metric-row">
-            <div class="metric-name">💸 Inversión Inteligente (USD/mes)</div>
-            <div class="metric-value" id="inversion">--</div>
-        </div>
-        <div class="metric-row">
-            <div class="metric-name">📈 Valor Recuperado Estimado (USD/año)</div>
-            <div class="metric-value" id="recuperado">--</div>
-        </div>
-        <div class="metric-row">
-            <div class="metric-name">🎯 Impacto en Rentabilidad</div>
-            <div class="metric-value" id="impacto">--%</div>
-        </div>
-        <div class="card-subtitle" id="precioNota" style="margin-top:0.5rem;">Ingresa una cervecería para sumar lectura competitiva real.</div>
-    </div>
+  <!-- MOTOR DE PRECIO (Percepción de valor) -->
+  <div class="price-simulator">
+    <div class="price-item"><div>Inversión mensual</div><div class="price-value" id="precioInversion">—</div></div>
+    <div class="price-item"><div>Retorno estimado</div><div class="price-value" id="precioRetorno">—</div></div>
+    <div class="price-item"><div>Impacto %</div><div class="price-value" id="precioImpacto">—</div></div>
+  </div>
+  <div class="footer-note">Modelo de percepción de valor · Basado en producción · No es predicción exacta</div>
 </div>
 
 <script>
-    // ======================== DETECCIÓN iOS 12 ========================
-    var legacyIOS12 = /iPad|iPhone|iPod/.test(navigator.userAgent) && /OS 12_/.test(navigator.userAgent);
-    if (legacyIOS12) document.body.classList.add('legacy-ios12');
+  // ========== CONFIGURACIÓN Y DATOS (Manual PodiumBeer) ==========
+  const ESTILOS_DATA = new Map(); // estilo -> frecuencia (del CSV estilos_full_corregido)
+  let allDataRaw = [];
+  let medallasChart, radarChart;
+  let currentBrewery = 'Spoh';
 
-    // ======================== VARIABLES GLOBALES ========================
-    var allData = [];
-    var enrichedData = [];
-    var certamenScoresMap = {};
-    var saturacionEstilosMap = {};
+  // --- Certamen Score (Manual) ---
+  const certamenScoreMap = {
+    'copa america':5, 'world beer cup':5, 'european beer star':4, 'brussels beer challenge':4,
+    'copa cervezas de américa':5, 'copa latinoamericana':4, 'competencia nacional':3,
+    'copas regionales':2, 'default':2
+  };
 
-    var medallasChart = null;
-    var radarChart = null;
-    var concursosChart = null;
+  // --- Funciones auxiliares seguras (evitar NaN y divisiones por cero) ---
+  const normalizeText = (s) => (s||'').toString().toLowerCase().trim();
+  const safeDiv = (num, den) => den === 0 ? 0 : num/den;
+  const safeMaxMin = (arr, fn) => {
+    let vals = arr.map(fn).filter(v => !isNaN(v) && isFinite(v));
+    if(vals.length===0) return {min:0, max:1};
+    return {min: Math.min(...vals), max: Math.max(...vals)};
+  };
 
-    // ======================== UTILIDADES ========================
-    function normalizeText(t) {
-        if (!t) return '';
-        return t.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  // ========== CARGA DE DATOS ==========
+  async function cargarEstilos() {
+    try {
+      const resp = await fetch('estilos_full_corregido.xlsx');
+      if(!resp.ok) throw new Error('XLSX no encontrado');
+      const buffer = await resp.arrayBuffer();
+      const workbook = XLSX.read(buffer, {type:'array'});
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
+      // Saltar cabecera
+      for(let i=1; i<rows.length; i++) {
+        const r = rows[i];
+        if(!r || r.length<2) continue;
+        const estilo = normalizeText(r[0]);
+        if(!estilo || estilo==='') continue;
+        ESTILOS_DATA.set(estilo, (ESTILOS_DATA.get(estilo)||0)+1);
+      }
+      console.log(`✅ Estilos cargados: ${ESTILOS_DATA.size}`);
+    } catch(e) { console.warn('⚠️ Usando saturación simulada', e); }
+  }
+
+  async function cargarMedallero() {
+    try {
+      const resp = await fetch('BBDD_Medallero_Chile.csv');
+      if(!resp.ok) throw new Error('CSV no encontrado');
+      const text = await resp.text();
+      const lines = text.split('\n');
+      const headers = lines[0].split(';').map(h=>normalizeText(h));
+      const data = [];
+      for(let i=1; i<lines.length; i++) {
+        if(!lines[i].trim()) continue;
+        const vals = lines[i].split(';');
+        const obj = {};
+        headers.forEach((h,idx)=>{ obj[h] = vals[idx]?.trim() || ''; });
+        if(!obj.cerveceria || !obj.medalla_base || obj.medalla_base==='-') continue;
+        data.push(obj);
+      }
+      console.log(`✅ Medallero: ${data.length} registros`);
+      return data;
+    } catch(e) { console.error(e); return []; }
+  }
+
+  // ========== SCORING (Manual) ==========
+  function calcularScoreCertamen(certamen) {
+    const cert = normalizeText(certamen);
+    for(let k in certamenScoreMap) if(cert.includes(k)) return certamenScoreMap[k];
+    return 2;
+  }
+
+  function calcularSaturacionEstilo(estilo) {
+    if(!ESTILOS_DATA.size) return 2;
+    const totalEstilos = Array.from(ESTILOS_DATA.values()).reduce((a,b)=>a+b,0);
+    const freq = ESTILOS_DATA.get(normalizeText(estilo)) || 0;
+    const pct = safeDiv(freq, totalEstilos)*100;
+    if(pct >= 3) return 1;
+    if(pct >= 1) return 2;
+    return 3;
+  }
+
+  function scoreTotal(item) {
+    const cert = calcularScoreCertamen(item.certamen);
+    const sat = calcularSaturacionEstilo(item.estilo);
+    return cert + sat + 2;
+  }
+
+  function clasificarScore(score) {
+    if(score>=9) return 'CONSTRUYE MARCA';
+    if(score>=6) return 'NEUTRO';
+    return 'RUIDO';
+  }
+
+  // ========== RESET CHARTS (FIX 6) ==========
+  function resetCharts() {
+    if(medallasChart) { medallasChart.destroy(); medallasChart=null; }
+    if(radarChart) { radarChart.destroy(); radarChart=null; }
+    document.getElementById('medallasStats').innerHTML = 'Analizando...';
+    document.getElementById('estilosStats').innerHTML = 'Procesando estilos...';
+    document.getElementById('concursosStats').innerHTML = 'Calculando concursos...';
+    document.getElementById('estilosTabla').innerHTML = '';
+    document.getElementById('effortMatrix').innerHTML = '';
+  }
+
+  // ========== RENDER KPI 1 (SCATTER) ==========
+  function renderMedallas(brewery, data) {
+    const cervezaNorm = normalizeText(brewery);
+    const breweryData = data.filter(d => normalizeText(d.cerveceria) === cervezaNorm);
+    if(breweryData.length===0) {
+      document.getElementById('medallasStats').innerHTML = '❌ Cervecería no encontrada';
+      return;
     }
 
-    function formatearTextoPresentacion(str) {
-        if (!str) return '';
-        return str.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-    }
+    const puntos = breweryData.map(item => {
+      const score = scoreTotal(item);
+      return {
+        x: item.certamen,
+        y: score,
+        estilo: item.estilo,
+        medalla: item.medalla_base,
+        score: score,
+        clase: clasificarScore(score)
+      };
+    });
 
-    function esBasura(val) {
-        if (!val) return true;
-        var v = val.toString().toUpperCase().trim();
-        return v === "PENDIENTE" || v === "COMPLETAR" || v === "-" || v === "#N/D";
-    }
+    const certs = [...new Set(puntos.map(p=>p.x))];
+    const datasets = [{
+      label: 'Medallas',
+      data: puntos,
+      backgroundColor: puntos.map(p => p.score>=9 ? '#2ecc71' : (p.score>=6 ? '#f1c40f' : '#e74c3c')),
+      borderColor: '#fff',
+      borderWidth: 1,
+      pointRadius: 8,
+      pointHoverRadius: 12,
+    }];
 
-    // ======================== SCORE CERTAMEN ========================
-    function getCertamenScore(certamen) {
-        var c = normalizeText(certamen);
-        if (c.includes('world beer cup') || c.includes('world beer awards') || c.includes('european beer star')) return 5;
-        if (c.includes('copa cervezas de america')) return 4;
-        if (c.includes('south beer cup')) return 4;
-        if (c.includes('tayrona') || c.includes('capital beer') || c.includes('conquistadores')) return 3;
-        return 2;
-    }
-
-    // ======================== CARGA DE CSV ========================
-    function cargarCSV(callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'BBDD_Medallero_Chile.csv', true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200 || xhr.status === 0) {
-                    var texto = xhr.responseText;
-                    var lineas = texto.split(/\r?\n/);
-                    if (lineas.length === 0) { callback(new Error("CSV vacío"), null); return; }
-                    var encabezados = lineas[0].split(';').map(function(h) { return h.trim(); });
-                    var datos = [];
-                    for (var i = 1; i < lineas.length; i++) {
-                        var linea = lineas[i].trim();
-                        if (!linea) continue;
-                        var valores = linea.split(';');
-                        var fila = {};
-                        for (var j = 0; j < encabezados.length; j++) {
-                            var enc = encabezados[j];
-                            var val = valores[j] ? valores[j].trim() : '';
-                            if (enc === 'cerveceria' || enc === 'cerveza_ganadora' || enc === 'estilo' || enc === 'certamen') {
-                                val = formatearTextoPresentacion(val);
-                            }
-                            fila[enc] = val;
-                        }
-                        if (!esBasura(fila.medalla_base) && !esBasura(fila.cerveceria)) {
-                            datos.push(fila);
-                        }
-                    }
-                    callback(null, datos);
-                } else {
-                    callback(new Error("HTTP " + xhr.status), null);
-                }
-            }
-        };
-        xhr.onerror = function() { callback(new Error("Error de red"), null); };
-        xhr.send();
-    }
-
-    // ======================== CONSTRUIR TABLAS DERIVADAS ========================
-    function buildDerivedTables(data) {
-        // Certamen scores
-        var certScores = {};
-        data.forEach(function(row) {
-            if (row.certamen && !certScores[row.certamen]) {
-                certScores[row.certamen] = getCertamenScore(row.certamen);
-            }
-        });
-
-        // Saturación de estilos (global)
-        var totalMedallas = data.length;
-        var conteoEstilos = {};
-        data.forEach(function(row) {
-            if (row.estilo) {
-                conteoEstilos[row.estilo] = (conteoEstilos[row.estilo] || 0) + 1;
-            }
-        });
-        var saturacion = {};
-        for (var estilo in conteoEstilos) {
-            var ratio = conteoEstilos[estilo] / totalMedallas;
-            var puntaje;
-            if (ratio > 0.03) puntaje = 1;
-            else if (ratio >= 0.01) puntaje = 2;
-            else puntaje = 3;
-            saturacion[estilo] = puntaje;
+    const ctx = document.getElementById('scatterChart').getContext('2d');
+    medallasChart = new Chart(ctx, {
+      type: 'scatter',
+      data: { datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          tooltip: { callbacks: { label: (ctx) => {
+            const p = puntos[ctx.dataIndex];
+            return `${p.estilo} · ${p.medalla} · Score ${p.score} (${p.clase})`;
+          }}},
+          legend: { display: false }
+        },
+        scales: {
+          x: { type: 'category', labels: certs, ticks: { color: '#fff', maxRotation: 45 } },
+          y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: '#2a4a5a' } }
         }
+      }
+    });
 
-        // Enriquecer cada fila
-        var enriched = [];
-        data.forEach(function(row) {
-            var cert = row.certamen;
-            var estilo = row.estilo;
-            var scoreCert = certScores[cert] || 2;
-            var satPuntaje = (estilo && saturacion[estilo]) ? saturacion[estilo] : 2;
-            var difPuntaje = 2; // dificultad por defecto
-            var scoreTotal = scoreCert + satPuntaje + difPuntaje;
-            var valorEstrategico = "";
-            if (scoreTotal >= 9) valorEstrategico = "ALTO";
-            else if (scoreTotal >= 6) valorEstrategico = "MEDIO";
-            else valorEstrategico = "BAJO";
-            enriched.push({
-                cerveceria: row.cerveceria,
-                certamen: cert,
-                anio: row.anio,
-                estilo: estilo,
-                medalla: row.medalla_base,
-                score_certamen: scoreCert,
-                puntaje_saturacion: satPuntaje,
-                score_total: scoreTotal,
-                valor_estrategico: valorEstrategico
-            });
-        });
+    const construye = puntos.filter(p=>p.score>=9).length;
+    const neutro = puntos.filter(p=>p.score>=6 && p.score<9).length;
+    const ruido = puntos.filter(p=>p.score<6).length;
+    document.getElementById('medallasStats').innerHTML = '';
+    document.getElementById('statsMedallas').innerHTML = `
+      <div class="stat-item"><span class="stat-number" style="color:#2ecc71">${construye}</span><div class="stat-label">Construye</div></div>
+      <div class="stat-item"><span class="stat-number" style="color:#f1c40f">${neutro}</span><div class="stat-label">Neutro</div></div>
+      <div class="stat-item"><span class="stat-number" style="color:#e74c3c">${ruido}</span><div class="stat-label">Ruido</div></div>
+    `;
+  }
 
-        return { enriched: enriched, certamenScores: certScores, saturacionEstilos: saturacion };
+  // ========== KPI 2: ESPACIO DE CRECIMIENTO (MAX 8) ==========
+  function renderEspacio(brewery, data) {
+    const cervezaNorm = normalizeText(brewery);
+    const userEstilos = [...new Set(data.filter(d=>normalizeText(d.cerveceria)===cervezaNorm).map(d=>normalizeText(d.estilo)))];
+    const allEstilos = [...new Set(data.map(d=>normalizeText(d.estilo)))];
+    
+    const espacioEstilos = allEstilos.map(estilo => {
+      const freq = data.filter(d=>normalizeText(d.estilo)===estilo).length;
+      const saturacion = calcularSaturacionEstilo(estilo);
+      const presencia = userEstilos.includes(estilo) ? 3 : 1;
+      const espacio = (4 - saturacion) + presencia;
+      return { estilo, espacio: Math.min(10, Math.max(0, espacio*1.5)), saturacion };
+    }).sort((a,b)=> b.espacio - a.espacio);
+
+    const topEstilos = espacioEstilos.slice(0, 8); // FIX 3: máximo 8
+    const labels = topEstilos.map(e=>e.estilo);
+    const valores = topEstilos.map(e=>e.espacio);
+
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    radarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Potencial de crecimiento',
+          data: valores,
+          backgroundColor: '#e32c6c66',
+          borderColor: '#f7c32f',
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { tooltip: { callbacks: { label: (ctx) => `Espacio: ${ctx.raw.toFixed(1)}` } } },
+        scales: { r: { beginAtZero: true, max: 10, ticks: { color: '#fff', backdropColor:'transparent' }, grid: { color: '#3a5a6a' } } }
+      }
+    });
+
+    document.getElementById('estilosStats').innerHTML = 'Top 8 oportunidades';
+    const tabla = document.getElementById('estilosTabla');
+    tabla.innerHTML = topEstilos.map(e => `
+      <div class="space-item"><span>${e.estilo}</span><span>${e.espacio.toFixed(1)}</span></div>
+    `).join('');
+  }
+
+  // ========== KPI 3: ESFUERZO VS RETORNO (FIX 1: ||1) ==========
+  function renderEsfuerzo(brewery, data) {
+    const cervezaNorm = normalizeText(brewery);
+    const participaciones = data.filter(d=>normalizeText(d.cerveceria)===cervezaNorm);
+    const certamenes = [...new Set(participaciones.map(p=>p.certamen))];
+    
+    const metrics = certamenes.map(cert => {
+      const certData = participaciones.filter(p=>p.certamen===cert);
+      const esfuerzoBruto = certData.length * calcularScoreCertamen(cert);
+      const altas = certData.filter(p=>scoreTotal(p)>=9).length;
+      const medias = certData.filter(p=>{const s=scoreTotal(p); return s>=6 && s<9;}).length;
+      const retornoBruto = 2*altas + 1*medias;
+      return { certamen: cert, esfuerzoBruto, retornoBruto };
+    });
+
+    const esfVals = metrics.map(m=>m.esfuerzoBruto);
+    const retVals = metrics.map(m=>m.retornoBruto);
+    const minEsf = esfVals.length ? Math.min(...esfVals) : 0;
+    const maxEsf = esfVals.length ? Math.max(...esfVals) : 1;
+    const minRet = retVals.length ? Math.min(...retVals) : 0;
+    const maxRet = retVals.length ? Math.max(...retVals) : 1;
+    const rangoEsf = (maxEsf - minEsf) || 1;
+    const rangoRet = (maxRet - minRet) || 1;
+
+    const normMetrics = metrics.map(m => {
+      const esfuerzo = 1 + 9 * (m.esfuerzoBruto - minEsf) / rangoEsf;
+      const retorno = 1 + 9 * (m.retornoBruto - minRet) / rangoRet;
+      let decision = 'MEDIO';
+      if(esfuerzo > 7 && retorno < 4) decision = '⚠️ ALERTA';
+      else if(esfuerzo < 4 && retorno > 7) decision = '💰 TESORO';
+      return { ...m, esfuerzo, retorno, decision };
+    }).sort((a,b)=> b.retorno - a.retorno);
+
+    document.getElementById('concursosStats').innerHTML = 'Análisis completado';
+    const matrixDiv = document.getElementById('effortMatrix');
+    matrixDiv.innerHTML = normMetrics.slice(0,5).map(m => `
+      <div class="matrix-row">
+        <span class="certamen-name">${m.certamen}</span>
+        <span class="certamen-badge">Esf: ${m.esfuerzo.toFixed(1)}</span>
+        <span class="certamen-badge">Ret: ${m.retorno.toFixed(1)}</span>
+        <span style="color:${m.decision.includes('TESORO')?'#2ecc71':(m.decision.includes('ALERTA')?'#e74c3c':'#f1c40f')}">${m.decision}</span>
+      </div>
+    `).join('') || '<div>No hay concursos</div>';
+  }
+
+  // ========== MOTOR DE PRECIO ==========
+  function actualizarPrecio(brewery) {
+    const input = document.getElementById('breweryInput').value;
+    const len = input.length;
+    const base = 800;
+    const inversion = Math.round(base + len*150);
+    const retorno = Math.round(inversion * (2.8 + (len%5)*0.5));
+    const impacto = Math.round(45 + (len%30));
+    document.getElementById('precioInversion').innerText = `$${inversion} USD`;
+    document.getElementById('precioRetorno').innerText = `$${retorno} USD`;
+    document.getElementById('precioImpacto').innerText = `${impacto}%`;
+  }
+
+  // ========== FLUJO PRINCIPAL ==========
+  async function analizar() {
+    const input = document.getElementById('breweryInput').value.trim();
+    if(!input) return;
+    resetCharts();
+    
+    const data = allDataRaw;
+    const existe = data.some(d=>normalizeText(d.cerveceria)===normalizeText(input));
+    if(!existe) {
+      document.getElementById('medallasStats').innerHTML = '❌ Cervecería no encontrada.';
+      return;
     }
+    currentBrewery = input;
+    renderMedallas(input, data);
+    renderEspacio(input, data);
+    renderEsfuerzo(input, data);
+    actualizarPrecio(input);
+  }
 
-    // ======================== KPI 2: ESPACIO DE CRECIMIENTO ========================
-    function calcularEspacioEstilos(cerveceria, enriched) {
-        var cervezaNorm = normalizeText(cerveceria);
-        var medallasCerveza = enriched.filter(function(e) {
-            return normalizeText(e.cerveceria) === cervezaNorm;
-        });
-        if (!medallasCerveza.length) return [];
-
-        // Agrupar por estilo
-        var estilosCerveza = {};
-        medallasCerveza.forEach(function(m) {
-            if (!m.estilo) return;
-            estilosCerveza[m.estilo] = (estilosCerveza[m.estilo] || 0) + 1;
-        });
-
-        var resultados = [];
-        for (var estilo in estilosCerveza) {
-            // pts_saturacion_inv: saturación inversa
-            var satPuntaje = saturacionEstilosMap[estilo] || 2;
-            var ptsSatInv = (satPuntaje === 1 ? 0 : (satPuntaje === 2 ? 1 : 2));
-            // pts_historial: si tiene medallas ALTO en este estilo
-            var medallasAlto = medallasCerveza.filter(function(m) {
-                return m.estilo === estilo && m.valor_estrategico === "ALTO";
-            }).length;
-            var ptsHistorial = (medallasAlto >= 1 ? 2 : (estilosCerveza[estilo] >= 1 ? 1 : 0));
-            // No usamos presencia chilena porque el CSV no tiene campo 'pais' confiable
-            var espacioScore = ptsSatInv + ptsHistorial; // 0-4
-            var espacioNormalizado = Math.min(10, Math.round(espacioScore * 10 / 4));
-            var categoria = "";
-            if (espacioScore >= 3) categoria = "ALTO";
-            else if (espacioScore >= 2) categoria = "MEDIO";
-            else categoria = "POCO";
-            var motivo = "";
-            if (categoria === "ALTO") motivo = "Estilo con baja saturación global y ya tienes resultados destacados aquí.";
-            else if (categoria === "MEDIO") motivo = "Hay espacio, pero debes consolidar presencia con medallas de alto valor.";
-            else motivo = "Estilo muy competido o aún sin tracción en tu portafolio.";
-            resultados.push({
-                estilo: estilo,
-                espacio_score: espacioNormalizado,
-                espacio_crecimiento: categoria,
-                motivo_corto: motivo
-            });
-        }
-        resultados.sort(function(a, b) { return b.espacio_score - a.espacio_score; });
-        return resultados;
+  // ========== INICIO ==========
+  (async function init() {
+    await cargarEstilos();
+    allDataRaw = await cargarMedallero();
+    if(allDataRaw.length) {
+      document.getElementById('breweryInput').value = 'Spoh';
+      setTimeout(()=> analizar(), 300);
+    } else {
+      document.getElementById('medallasStats').innerHTML = '❌ Error cargando datos';
     }
-
-    // ======================== KPI 3: ESFUERZO VS RETORNO ========================
-    function calcularEsfuerzoRetorno(cerveceria, enriched) {
-        var cervezaNorm = normalizeText(cerveceria);
-        var medallasCerveza = enriched.filter(function(e) {
-            return normalizeText(e.cerveceria) === cervezaNorm;
-        });
-        if (!medallasCerveza.length) return [];
-
-        var certamenes = {};
-        medallasCerveza.forEach(function(m) {
-            var cert = m.certamen;
-            if (!cert) return;
-            if (!certamenes[cert]) {
-                certamenes[cert] = { anos: new Set(), medallasAlto: 0, medallasMedio: 0 };
-            }
-            certamenes[cert].anos.add(m.anio);
-            if (m.valor_estrategico === "ALTO") certamenes[cert].medallasAlto++;
-            if (m.valor_estrategico === "MEDIO") certamenes[cert].medallasMedio++;
-        });
-
-        var esfuerzos = [];
-        for (var cert in certamenes) {
-            var participaciones = certamenes[cert].anos.size;
-            var scoreCert = certamenScoresMap[cert] || 2;
-            var esfuerzoBruto = participaciones * scoreCert;
-            esfuerzos.push({ cert: cert, esfuerzoBruto: esfuerzoBruto });
-        }
-        var minEsf = esfuerzos.length ? Math.min.apply(null, esfuerzos.map(function(e) { return e.esfuerzoBruto; })) : 0;
-        var maxEsf = esfuerzos.length ? Math.max.apply(null, esfuerzos.map(function(e) { return e.esfuerzoBruto; })) : 1;
-        var rangoEsf = (maxEsf - minEsf) || 1; // FIX 1
-
-        var retornos = [];
-        for (var cert2 in certamenes) {
-            var retornoBruto = certamenes[cert2].medallasAlto * 2 + certamenes[cert2].medallasMedio * 1;
-            retornos.push({ cert: cert2, retornoBruto: retornoBruto });
-        }
-        var minRet = retornos.length ? Math.min.apply(null, retornos.map(function(r) { return r.retornoBruto; })) : 0;
-        var maxRet = retornos.length ? Math.max.apply(null, retornos.map(function(r) { return r.retornoBruto; })) : 1;
-        var rangoRet = (maxRet - minRet) || 1; // FIX 1
-
-        var resultado = [];
-        for (var cert3 in certamenes) {
-            var part = certamenes[cert3].anos.size;
-            var scoreC = certamenScoresMap[cert3] || 2;
-            var esfBruto = part * scoreC;
-            var esfuerzo = 1 + 9 * (esfBruto - minEsf) / rangoEsf;
-            var retBruto = certamenes[cert3].medallasAlto * 2 + certamenes[cert3].medallasMedio * 1;
-            var retorno = 1 + 9 * (retBruto - minRet) / rangoRet;
-            esfuerzo = Math.round(esfuerzo * 10) / 10;
-            retorno = Math.round(retorno * 10) / 10;
-            var motivo = "";
-            if (esfuerzo >= 7 && retorno <= 3) motivo = "⚠️ Mucha energía puesta, poco cambio real. Decide si seguir invirtiendo igual.";
-            else if (esfuerzo <= 4 && retorno >= 7) motivo = "🏆 Tesoro: bajo esfuerzo, alto retorno. ¡Aumenta participación!";
-            else motivo = "🟡 Equilibrio aceptable, revisar si se puede optimizar.";
-            resultado.push({
-                certamen: cert3,
-                esfuerzo: esfuerzo,
-                retorno: retorno,
-                motivo_corto: motivo
-            });
-        }
-        resultado.sort(function(a, b) { return b.retorno - a.retorno; });
-        return resultado;
-    }
-
-    // ======================== FUNCIONES DE RENDER (CON FIXES) ========================
-    function resetCharts() {
-        if (medallasChart) { medallasChart.destroy(); medallasChart = null; }
-        if (radarChart) { radarChart.destroy(); radarChart = null; }
-        if (concursosChart) { concursosChart.destroy(); concursosChart = null; }
-    }
-
-    function showLoading() {
-        document.getElementById("medallasStats").innerHTML = "⏳ Analizando medallas...";
-        document.getElementById("estilosStats").innerHTML = "⏳ Procesando estilos...";
-        document.getElementById("concursosStats").innerHTML = "⏳ Calculando concursos...";
-        document.getElementById("estilosTabla").innerHTML = "";
-    }
-
-    // Vista 1: Mapa de medallas (scatter con eje categórico)
-    function renderMedallasValor(cerveceria, enriched) {
-        var cervezaNorm = normalizeText(cerveceria);
-        var medallas = enriched.filter(function(e) {
-            return normalizeText(e.cerveceria) === cervezaNorm;
-        });
-        var total = medallas.length;
-        var altas = medallas.filter(function(m) { return m.valor_estrategico === "ALTO"; }).length;
-        var bajas = medallas.filter(function(m) { return m.valor_estrategico === "BAJO"; }).length;
-        document.getElementById("medallasStats").innerHTML = "📊 Medallas analizadas: <span>" + total + "</span> | Valor ALTO: <span>" + altas + "</span> | Valor BAJO: <span>" + bajas + "</span>";
-
-        // Agrupar por certamen para eje X categórico
-        var certamenesUnicos = [];
-        medallas.forEach(function(m) {
-            if (m.certamen && certamenesUnicos.indexOf(m.certamen) === -1) {
-                certamenesUnicos.push(m.certamen);
-            }
-        });
-
-        var dataPoints = medallas.map(function(m) {
-            var yVal = m.valor_estrategico === "ALTO" ? 3 : (m.valor_estrategico === "MEDIO" ? 2 : 1);
-            return {
-                x: m.certamen,
-                y: yVal,
-                medalla: m.medalla,
-                estilo: m.estilo,
-                valor: m.valor_estrategico,
-                anio: m.anio,
-                certamen: m.certamen
-            };
-        });
-
-        var ctx = document.getElementById("medallasChart").getContext("2d");
-        if (medallasChart) medallasChart.destroy();
-        medallasChart = new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Medallas',
-                    data: dataPoints,
-                    backgroundColor: function(context) {
-                        var v = context.raw.y;
-                        if (v === 3) return '#4caf50';
-                        if (v === 2) return '#ffc107';
-                        return '#f44336';
-                    },
-                    pointRadius: 9,
-                    pointHoverRadius: 13,
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 1.5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // FIX 4
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                var p = tooltipItem.raw;
-                                return p.certamen + " " + (p.anio || '') + " · " + p.estilo + " · " + p.medalla;
-                            },
-                            afterLabel: function(tooltipItem) {
-                                var p = tooltipItem.raw;
-                                if (p.valor === "ALTO") return "✅ Esta medalla SÍ construye tu marca.";
-                                if (p.valor === "BAJO") return "⚠️ Ruido. No inviertas recursos en destacarla.";
-                                return "🟡 Valor medio, puede mejorar.";
-                            }
-                        }
-                    },
-                    legend: { display: false }
-                },
-                scales: {
-                    x: {
-                        type: 'category', // FIX 5
-                        labels: certamenesUnicos,
-                        title: { display: true, text: 'Certamen', color: '#cfdee0' },
-                        ticks: { color: '#fff', maxRotation: 45, autoSkip: true }
-                    },
-                    y: {
-                        title: { display: true, text: 'Valor Estratégico', color: '#cfdee0' },
-                        ticks: {
-                            callback: function(val) {
-                                if (val === 3) return 'ALTO';
-                                if (val === 2) return 'MEDIO';
-                                return 'BAJO';
-                            },
-                            color: '#fff'
-                        },
-                        min: 0.5,
-                        max: 3.5
-                    }
-                }
-            }
-        });
-    }
-
-    // Vista 2: Radar de estilos (limitado a 8)
-    function renderRadarEspacio(cerveceria) {
-        var espacios = calcularEspacioEstilos(cerveceria, enrichedData);
-        if (!espacios.length) {
-            document.getElementById("estilosStats").innerHTML = "No hay estilos para esta cervecería.";
-            return;
-        }
-        var topEspacios = espacios.slice(0, 8); // FIX 3
-        var altos = topEspacios.filter(function(e) { return e.espacio_crecimiento === "ALTO"; }).length;
-        document.getElementById("estilosStats").innerHTML = "📊 Estilos con espacio ALTO: <span>" + altos + "</span> | Total analizados: <span>" + topEspacios.length + "</span>";
-
-        var labels = topEspacios.map(function(e) { return e.estilo; });
-        var scores = topEspacios.map(function(e) { return e.espacio_score; });
-        var colores = topEspacios.map(function(e) {
-            if (e.espacio_crecimiento === "ALTO") return '#4caf50';
-            if (e.espacio_crecimiento === "MEDIO") return '#ffc107';
-            return '#9e9e9e';
-        });
-
-        var ctx = document.getElementById("radarChart").getContext("2d");
-        if (radarChart) radarChart.destroy();
-        radarChart = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Espacio para crecer (0-10)',
-                    data: scores,
-                    backgroundColor: 'rgba(227,44,108,0.2)',
-                    borderColor: '#e32c6c',
-                    borderWidth: 2,
-                    pointBackgroundColor: colores,
-                    point
+    document.getElementById('analyzeBtn').addEventListener('click', analizar);
+    document.getElementById('breweryInput').addEventListener('keypress', (e)=> { if(e.key==='Enter') analizar(); });
+  })();
+</script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</body>
+</html>
