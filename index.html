@@ -11,54 +11,56 @@
     body { font-family:'Inter',sans-serif; background:#000; min-height:100vh; display:flex; align-items:center; justify-content:center; }
     .hero-bg { position:fixed; inset:0; z-index:-2; }
     .hero-bg img { width:100%; height:100%; object-fit:cover; }
-    .overlay-color { position:fixed; inset:0; background:#06232E; opacity:0.65; z-index:-1; }
+    .overlay-color { position:fixed; inset:0; background:#06232E; opacity:0.7; z-index:-1; }
     .vignette { position:fixed; inset:0; box-shadow:inset 0 0 120px rgba(0,0,0,0.6); pointer-events:none; z-index:0; }
-    .app-container { width:94%; max-width:1200px; margin:1.2rem auto 2rem; padding:0 0.25rem 1rem; position:relative; z-index:2; display:flex; flex-direction:column; gap:1.5rem; height:90vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    .app-container { width:94%; max-width:1200px; margin:1rem auto; padding:0 0.25rem 1.5rem; position:relative; z-index:2; display:flex; flex-direction:column; gap:1.2rem; height:85vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     .header { text-align:center; }
-    .logo-header { width:60%; max-width:220px; margin:0 auto 0.8rem; display:block; }
-    .main-slogan { font-size:clamp(16px,4.5vw,22px); font-weight:700; color:#f7c32f; background:rgba(6,35,46,0.8); padding:0.8rem 1rem; border-radius:40px; margin:1rem 0; line-height:1.3; backdrop-filter:blur(8px); border:1px solid rgba(247,195,47,0.35); text-align:center; }
-    .brewery-search { display:flex; gap:0.5rem; background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); padding:0.5rem; border-radius:60px; border:1px solid rgba(255,255,255,0.15); margin-top:0.8rem; }
-    .brewery-search input { flex:1; background:transparent; border:none; padding:0.8rem 1rem; color:#fff; font-size:16px; outline:none; min-width:0; }
+    .logo-header { width:60%; max-width:220px; margin:0 auto 0.5rem; display:block; }
+    .main-slogan { font-size:clamp(15px,4vw,20px); font-weight:700; color:#f7c32f; background:rgba(6,35,46,0.8); padding:0.7rem 1rem; border-radius:40px; margin:0.8rem 0; line-height:1.3; backdrop-filter:blur(8px); border:1px solid rgba(247,195,47,0.35); }
+    .brewery-search { display:flex; gap:0.5rem; background:rgba(0,0,0,0.4); backdrop-filter:blur(8px); padding:0.5rem; border-radius:60px; border:1px solid rgba(255,255,255,0.2); margin:0.5rem 0; }
+    .brewery-search input { flex:1; background:transparent; border:none; padding:0.8rem 1rem; color:#fff; font-size:16px; outline:none; }
     .brewery-search input::placeholder { color:#b0c8d0; }
-    .brewery-search button { background:#e32c6c; border:none; border-radius:40px; padding:0 1.8rem; font-weight:700; color:#fff; font-size:15px; cursor:pointer; box-shadow:0 4px 14px rgba(227,44,108,0.4); white-space:nowrap; }
-    .glass-card { background:rgba(6,35,46,0.4); backdrop-filter:blur(16px); border-radius:2rem; border:1px solid rgba(255,255,255,0.15); padding:1.5rem 1rem; box-shadow:0 8px 24px rgba(0,0,0,0.25); }
-    .section-title { font-size:1.1rem; font-weight:700; letter-spacing:1px; color:#f7c32f; text-transform:uppercase; margin-bottom:0.5rem; }
-    .chart-title { font-size:1.3rem; font-weight:800; color:#f7c32f; margin-bottom:0.2rem; }
-    .chart-subtitle { font-size:1rem; font-weight:600; color:#cfdee0; margin-bottom:0.3rem; }
-    .chart-explanation { font-size:0.85rem; color:#a0b8c0; margin-bottom:1.2rem; border-left:4px solid #e32c6c; padding-left:0.8rem; line-height:1.4; }
-    .kpi-badge-container { display:flex; flex-wrap:wrap; gap:0.6rem; margin-bottom:1rem; justify-content:center; }
-    .kpi-badge { background:rgba(0,0,0,0.5); border-radius:24px; padding:0.6rem 1.2rem; border:1px solid rgba(255,255,255,0.15); font-weight:600; text-align:center; font-size:0.8rem; color:#fff; }
-    .kpi-badge strong { font-size:1.5rem; display:block; color:#f7c32f; }
-    .chart-container { width:100%; min-height:340px; position:relative; margin:0.5rem 0; }
-    canvas { display:block; width:100%; height:auto; touch-action:none; }
-    .insight-box { background:rgba(0,0,0,0.3); border-radius:18px; padding:0.8rem 1.2rem; margin-top:1.2rem; font-size:0.9rem; border-left:6px solid #f7c32f; }
-    .slider-block { margin:1.5rem 0; }
-    .slider-header { display:flex; justify-content:space-between; color:#cfdee0; margin-bottom:0.5rem; }
-    .slider-rail { width:100%; height:6px; background:#1e3a4a; border-radius:20px; position:relative; cursor:pointer; margin:1rem 0; }
+    .brewery-search button { background:#e32c6c; border:none; border-radius:40px; padding:0 1.5rem; font-weight:700; color:#fff; font-size:15px; cursor:pointer; box-shadow:0 4px 12px rgba(227,44,108,0.5); }
+    .glass-card { background:rgba(6,35,46,0.45); backdrop-filter:blur(16px); border-radius:1.8rem; border:1px solid rgba(255,255,255,0.15); padding:1.2rem 1rem; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+    .section-title { font-size:1rem; font-weight:700; letter-spacing:1px; color:#f7c32f; text-transform:uppercase; margin-bottom:0.5rem; }
+    .chart-title { font-size:1.2rem; font-weight:800; color:#f7c32f; margin-bottom:0.2rem; }
+    .chart-subtitle { font-size:0.95rem; font-weight:600; color:#cfdee0; margin-bottom:0.3rem; }
+    .chart-explanation { font-size:0.8rem; color:#a0b8c0; margin-bottom:1rem; border-left:4px solid #e32c6c; padding-left:0.8rem; }
+    .kpi-badge-container { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.8rem; justify-content:center; }
+    .kpi-badge { background:rgba(0,0,0,0.5); border-radius:20px; padding:0.5rem 1rem; border:1px solid rgba(255,255,255,0.15); font-weight:600; text-align:center; font-size:0.75rem; color:#fff; }
+    .kpi-badge strong { font-size:1.3rem; display:block; color:#f7c32f; }
+    .chart-container { width:100%; min-height:300px; position:relative; margin:0.5rem 0; }
+    canvas { display:block; width:100% !important; height:auto !important; touch-action:none; }
+    .insight-box { background:rgba(0,0,0,0.3); border-radius:16px; padding:0.7rem 1rem; margin-top:1rem; font-size:0.85rem; border-left:5px solid #f7c32f; color:#eef2f3; }
+    .slider-block { margin:1.2rem 0; }
+    .slider-header { display:flex; justify-content:space-between; color:#cfdee0; margin-bottom:0.3rem; font-size:0.9rem; }
+    .slider-rail { width:100%; height:5px; background:#1e3a4a; border-radius:20px; position:relative; cursor:pointer; margin:0.8rem 0; }
     .slider-fill { height:100%; border-radius:20px; background:linear-gradient(90deg,#e32c6c,#f7c32f); width:0%; pointer-events:none; }
-    .slider-thumb { position:absolute; width:26px; height:26px; background:#fff; border-radius:50%; top:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 4px rgba(227,44,108,0.4); cursor:grab; z-index:5; border:2px solid #06232E; }
-    .slider-labels { display:flex; justify-content:space-between; font-size:12px; color:#b0c8d0; margin-top:0.25rem; flex-wrap:wrap; }
-    .slider-current { text-align:center; margin-top:0.5rem; font-weight:700; color:#f7c32f; }
-    .plan-selector { display:flex; gap:0.8rem; justify-content:center; margin:1.2rem 0; }
-    .plan-btn { flex:1; max-width:150px; background:rgba(0,0,0,0.5); border:1.5px solid rgba(255,255,255,0.25); border-radius:60px; padding:0.8rem 0.2rem; cursor:pointer; text-align:center; }
+    .slider-thumb { position:absolute; width:24px; height:24px; background:#fff; border-radius:50%; top:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 4px rgba(227,44,108,0.4); cursor:grab; z-index:5; border:2px solid #06232E; }
+    .slider-labels { display:flex; justify-content:space-between; font-size:11px; color:#b0c8d0; margin-top:0.2rem; }
+    .plan-selector { display:flex; gap:0.6rem; justify-content:center; margin:1rem 0; }
+    .plan-btn { flex:1; max-width:140px; background:rgba(0,0,0,0.5); border:1.5px solid rgba(255,255,255,0.2); border-radius:50px; padding:0.7rem 0.2rem; cursor:pointer; text-align:center; }
     .plan-btn.active { background:linear-gradient(135deg,#e32c6c,#b81a5c); border-color:#f7c32f; }
-    .plan-name { font-weight:800; font-size:1rem; color:#fff; }
-    .plan-desc { font-size:0.7rem; color:#cfdee0; }
-    .metric-row { display:flex; align-items:center; gap:1rem; margin-bottom:1.2rem; }
-    .metric-icon img { width:44px; }
+    .plan-name { font-weight:800; font-size:0.9rem; color:#fff; }
+    .plan-desc { font-size:0.65rem; color:#cfdee0; }
+    .metric-row { display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem; }
+    .metric-icon img { width:40px; }
     .metric-info { flex:1; }
-    .metric-label { font-weight:800; }
-    .metric-value { font-size:1.6rem; font-weight:800; color:#f7c32f; white-space:nowrap; }
-    .cta-button { background:linear-gradient(90deg,#e32c6c,#b81a5c); border:none; border-radius:60px; padding:1rem 2rem; font-weight:800; color:#fff; font-size:1.1rem; width:100%; }
-    .credits { text-align:center; color:#f7c32f; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:40px; margin-top:0.5rem; }
-    .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:1rem; }
-    .rec-table { width:100%; border-collapse:collapse; font-size:13px; color:#fff; }
-    .rec-table th { border-bottom:1px solid #f7c32f; padding:0.5rem; color:#f7c32f; }
-    .rec-table td { padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .metric-label { font-weight:800; font-size:0.95rem; }
+    .metric-hint { font-size:0.65rem; color:#cfdee0; }
+    .metric-value { font-size:1.4rem; font-weight:800; color:#f7c32f; white-space:nowrap; }
+    .cta-button { background:linear-gradient(90deg,#e32c6c,#b81a5c); border:none; border-radius:60px; padding:1rem; font-weight:800; color:#fff; font-size:1rem; width:100%; cursor:pointer; }
+    .credits { text-align:center; color:#f7c32f; background:rgba(0,0,0,0.4); padding:0.6rem; border-radius:40px; margin-top:0.5rem; font-size:0.9rem; }
+    .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:0.8rem; }
+    .rec-table { width:100%; border-collapse:collapse; font-size:12px; color:#fff; }
+    .rec-table th { border-bottom:1px solid #f7c32f; padding:0.4rem; color:#f7c32f; text-align:left; }
+    .rec-table td { padding:0.4rem; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .loading-indicator { color:#fff; text-align:center; padding:1rem; font-style:italic; }
+    .error-message { background:#e32c6c; color:#fff; padding:0.8rem; border-radius:20px; margin:0.5rem 0; text-align:center; }
   </style>
 </head>
 <body>
-<div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="bg" onerror="this.style.display='none'"></div>
+<div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="bg" onerror="this.style.background='#06232E'"></div>
 <div class="overlay-color"></div>
 <div class="vignette"></div>
 
@@ -71,6 +73,7 @@
       <datalist id="breweryList"></datalist>
       <button id="analyzeBtn">Analizar</button>
     </div>
+    <div style="font-size:0.75rem; color:#a0b8c0;" id="searchHint"></div>
   </div>
 
   <!-- GRÁFICO 1: MEDALLAS -->
@@ -79,8 +82,11 @@
     <div class="chart-subtitle">¿Cuáles de tus medallas realmente venden?</div>
     <div class="chart-explanation">Identificamos qué premios te diferencian de verdad y cuáles son solo ruido.</div>
     <div class="kpi-badge-container" id="medalSummary"></div>
-    <div class="chart-container"><canvas id="medalChart"></canvas></div>
-    <div class="insight-box" id="medalInsight">Ingresa una cervecería para revelar el valor real de sus medallas.</div>
+    <div class="chart-container" id="medalChartContainer">
+      <canvas id="medalChart" width="400" height="300"></canvas>
+      <div class="loading-indicator" id="medalLoading">Cargando datos...</div>
+    </div>
+    <div class="insight-box" id="medalInsight"></div>
   </div>
 
   <!-- GRÁFICO 2: RADAR -->
@@ -89,8 +95,11 @@
     <div class="chart-subtitle">Oportunidades ocultas en tu portafolio</div>
     <div class="chart-explanation">Más grande = más espacio sin ocupación competitiva. ¿Dónde puedes liderar?</div>
     <div class="kpi-badge-container" id="radarSummary"></div>
-    <div class="chart-container"><canvas id="radarChart"></canvas></div>
-    <div class="insight-box" id="radarInsight">Descubre en qué estilos tienes ventaja real para crecer.</div>
+    <div class="chart-container" id="radarChartContainer">
+      <canvas id="radarChart" width="400" height="300"></canvas>
+      <div class="loading-indicator" id="radarLoading">Cargando datos...</div>
+    </div>
+    <div class="insight-box" id="radarInsight"></div>
     <div class="table-responsive" id="radarTableWrapper"></div>
   </div>
 
@@ -100,8 +109,11 @@
     <div class="chart-subtitle">Inversión vs. Resultado: los números no mienten</div>
     <div class="chart-explanation">Tesoro (Verde): Máximo retorno con mínimo desgaste. Alerta (Rojo): Estás pagando por no ganar visibilidad.</div>
     <div class="kpi-badge-container" id="effortSummary"></div>
-    <div class="chart-container"><canvas id="effortChart"></canvas></div>
-    <div class="insight-box" id="effortInsight">Evalúa dónde tu esfuerzo realmente paga.</div>
+    <div class="chart-container" id="effortChartContainer">
+      <canvas id="effortChart" width="400" height="300"></canvas>
+      <div class="loading-indicator" id="effortLoading">Cargando datos...</div>
+    </div>
+    <div class="insight-box" id="effortInsight"></div>
   </div>
 
   <!-- SLIDER A: PRODUCCIÓN -->
@@ -121,7 +133,7 @@
       <div class="slider-header"><span>Ventas en CLP</span> <span id="salesValueLabel">$216M</span></div>
       <div class="slider-rail" id="salesRail"><div class="slider-fill" id="salesFill"></div><div class="slider-thumb" id="salesThumb"></div></div>
       <div class="slider-labels"><span>$54M</span><span>$216M</span><span>$540M</span><span>$720M</span></div>
-      <div class="slider-current">A mayor ventas, menor costo por litro</div>
+      <div class="slider-current" style="font-size:0.8rem;">A mayor ventas, menor costo por litro</div>
     </div>
   </div>
 
@@ -150,16 +162,11 @@
 <script>
   (function(){
     "use strict";
-    // Polyfill para requestAnimationFrame en iOS 12
-    if (!window.requestAnimationFrame) window.requestAnimationFrame = function(cb){ return setTimeout(cb,16); };
-    
-    // ---------- ESTADO GLOBAL ----------
+    // ---------- CONFIGURACIÓN INICIAL ----------
     var allData = [];
     var currentBrewery = '';
     var prodIndex = 3, salesIndex = 1, currentTier = 'podium';
-    var medalChart = null, radarChart = null, effortChart = null;
-
-    // Constantes
+    var charts = { medal: null, radar: null, effort: null };
     var PROD_LABELS = ['<500 hl','501-1000 hl','1001-5000 hl','5001-10000 hl','≥20000 hl'];
     var SALES_VALUES = [54000000,216000000,540000000,720000000];
     var SALES_LABELS = ['$54M','$216M','$540M','$720M'];
@@ -169,13 +176,14 @@
     // ---------- UTILIDADES ----------
     function normalizeStr(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
     function getStyle(r){ return r.estilo_cliente||r.estilo_limpio||r.estilo_corregido||r.estilo||'Sin estilo'; }
-    function getMedalWeight(m){ var w=normalizeStr(m); if(w.indexOf('oro')>-1)return 3; if(w.indexOf('plata')>-1)return 2; return 1; }
-    function getBorderColor(medal){ var w=getMedalWeight(medal); return w===3?'#FFD700':(w===2?'#C0C0C0':'#CD7F32'); }
+    function getMedalWeight(m){ var w=normalizeStr(m); return w.indexOf('oro')>-1?3:(w.indexOf('plata')>-1?2:1); }
 
-    // ---------- CARGA CSV (separador TAB, como en tu original) ----------
-    function loadCSV(){
-      return fetch('BBDD_Medallero_Chile.csv')
-        .then(function(r){ if(!r.ok) throw new Error('CSV no encontrado'); return r.text(); })
+    // ---------- CARGA DE CSV (con indicador visual) ----------
+    function loadCSV(callback){
+      var hint = document.getElementById('searchHint');
+      hint.innerText = 'Cargando base de datos...';
+      fetch('BBDD_Medallero_Chile.csv')
+        .then(function(r){ if(!r.ok) throw new Error('Archivo no encontrado'); return r.text(); })
         .then(function(t){
           var lines = t.split('\n');
           var headers = lines[0].replace(/\r/g,'').split('\t').map(function(h){return h.trim();});
@@ -187,12 +195,18 @@
             headers.forEach(function(h,idx){ var v=vals[idx]?vals[idx].trim():''; if(h==='cerveceria'||h==='certamen') v=v.replace(/\b\w/g,function(l){return l.toUpperCase();}); obj[h]=v; });
             if(obj.cerveceria && obj.medalla_base!=='PENDIENTE') rows.push(obj);
           }
-          console.log('CSV OK:',rows.length);
-          return rows;
-        }).catch(function(e){ console.warn(e); alert('No se pudo cargar BBDD_Medallero_Chile.csv'); return []; });
+          allData = rows;
+          hint.innerText = 'Base de datos cargada ('+rows.length+' registros).';
+          if(callback) callback();
+        })
+        .catch(function(e){
+          console.warn(e);
+          hint.innerText = 'Error al cargar CSV. Verifica la conexión.';
+          document.getElementById('medalLoading').innerHTML = '<span class="error-message">⚠️ No se pudo cargar BBDD_Medallero_Chile.csv</span>';
+        });
     }
 
-    // ---------- TABLAS DERIVADAS ----------
+    // ---------- MAPAS DERIVADOS ----------
     function buildMaps(){
       var certScore = {}; allData.forEach(function(r){ if(r.certamen && !certScore[r.certamen]){ var n=normalizeStr(r.certamen); var s=2.5; if(n.includes('world beer cup')) s=5; else if(n.includes('copa cervezas de america')) s=4; else if(n.includes('nacional')) s=3; certScore[r.certamen]=s; }});
       var satMap = {}; var total=allData.length; var count={}; allData.forEach(function(r){ var s=getStyle(r); count[s]=(count[s]||0)+1; }); Object.keys(count).forEach(function(s){ var sat=count[s]/total; satMap[s]=sat>0.03?1:(sat>=0.01?2:3); });
@@ -266,58 +280,75 @@
       });
     }
 
-    // ---------- RENDER GRÁFICOS ----------
-    function renderMedalChart(){
-      var data=getMedallasValor(currentBrewery);
-      var ctx=document.getElementById('medalChart').getContext('2d');
-      if(medalChart) medalChart.destroy();
+    // ---------- RENDER SEGURO (espera a que el contenedor tenga tamaño) ----------
+    function safeRenderChart(chartId, renderFn){
+      var container = document.getElementById(chartId+'Container');
+      var loading = document.getElementById(chartId+'Loading');
+      if(!container) return;
+      var canvas = document.getElementById(chartId);
+      function tryRender(){
+        if(container.clientWidth > 0 && container.clientHeight > 0){
+          if(loading) loading.style.display = 'none';
+          renderFn(canvas);
+        } else {
+          setTimeout(tryRender, 100);
+        }
+      }
+      tryRender();
+    }
+
+    function renderMedalChart(canvas){
+      if(charts.medal) charts.medal.destroy();
+      var data = getMedallasValor(currentBrewery);
+      if(!data.length){ document.getElementById('medalInsight').innerText = 'No hay medallas registradas para esta cervecería.'; return; }
       var alto=0,medio=0,bajo=0;
       var dsALTO=[], dsMEDIO=[], dsBAJO=[];
       data.forEach(function(m){
         var y=m.valor==='ALTO'?3:(m.valor==='MEDIO'?2:1);
-        var r=12+getMedalWeight(m.medalla)*3;
-        var bord=getBorderColor(m.medalla);
-        var obj={x:m.certamen,y:y,r:r};
+        var r=14+getMedalWeight(m.medalla)*2;
+        var obj={x:m.certamen, y:y, r:r};
         if(m.valor==='ALTO'){ dsALTO.push(obj); alto++; }
         else if(m.valor==='MEDIO'){ dsMEDIO.push(obj); medio++; }
         else { dsBAJO.push(obj); bajo++; }
       });
       document.getElementById('medalSummary').innerHTML='<div class="kpi-badge"><strong>'+data.length+'</strong>Total</div><div class="kpi-badge" style="border-color:#1eab9b;"><strong>'+alto+'</strong>ALTO</div><div class="kpi-badge" style="border-color:#f7c32f;"><strong>'+medio+'</strong>MEDIO</div><div class="kpi-badge" style="border-color:#e32c6c;"><strong>'+bajo+'</strong>BAJO</div>';
-      medalChart=new Chart(ctx,{type:'bubble',data:{datasets:[
+      charts.medal = new Chart(canvas, {type:'bubble', data:{datasets:[
         {label:'ALTO',data:dsALTO,backgroundColor:'#1eab9b',borderColor:'#FFD700',borderWidth:2},
         {label:'MEDIO',data:dsMEDIO,backgroundColor:'#f7c32f',borderColor:'#C0C0C0',borderWidth:2},
         {label:'BAJO',data:dsBAJO,backgroundColor:'#e32c6c',borderColor:'#CD7F32',borderWidth:2}
-      ]},options:{
-        responsive:true, maintainAspectRatio:false,
+      ]}, options:{
+        responsive:true, maintainAspectRatio:true,
         plugins:{tooltip:{bodyFont:{size:16},callbacks:{label:function(ctx){var d=data[ctx.dataIndex];return d.certamen+' · '+d.estilo+' · '+d.medalla+' | '+d.valor+' | '+d.motivo;}}}},
         scales:{x:{ticks:{color:'#fff',maxRotation:45}},y:{min:0,max:4,ticks:{color:'#fff',callback:function(v){return['','BAJO','MEDIO','ALTO'][v]||'';}}}}
       }});
+      document.getElementById('medalInsight').innerHTML = alto>0 ? '✅ Tienes '+alto+' medalla(s) de ALTO valor. ¡Construyen tu marca!' : '🔍 Apunta a certámenes de mayor prestigio para obtener medallas de alto valor.';
     }
 
-    function renderRadarChart(){
-      var estilos=getEstilosEspacio(currentBrewery);
-      var ctx=document.getElementById('radarChart').getContext('2d');
-      if(radarChart) radarChart.destroy();
+    function renderRadarChart(canvas){
+      if(charts.radar) charts.radar.destroy();
+      var estilos = getEstilosEspacio(currentBrewery);
+      if(!estilos.length){ document.getElementById('radarInsight').innerText = 'No hay estilos para analizar.'; return; }
       var alto=0,medio=0,poco=0;
       estilos.forEach(function(e){ if(e.clasif==='ALTO')alto++; else if(e.clasif==='MEDIO')medio++; else poco++; });
       document.getElementById('radarSummary').innerHTML='<div class="kpi-badge"><strong>'+estilos.length+'</strong>Estilos</div><div class="kpi-badge" style="border-color:#1eab9b;"><strong>'+alto+'</strong>ALTO</div><div class="kpi-badge" style="border-color:#f7c32f;"><strong>'+medio+'</strong>MEDIO</div><div class="kpi-badge" style="border-color:#999;"><strong>'+poco+'</strong>POCO</div>';
       var labels=estilos.map(function(e){return e.estilo;});
       var scores=estilos.map(function(e){return e.score;});
       var colors=estilos.map(function(e){return e.clasif==='ALTO'?'#1eab9b':(e.clasif==='MEDIO'?'#f7c32f':'#999');});
-      radarChart=new Chart(ctx,{type:'radar',data:{labels:labels,datasets:[{data:scores,backgroundColor:'rgba(30,171,155,0.2)',borderColor:'#1eab9b',pointBackgroundColor:colors,pointBorderColor:'#fff',borderWidth:3}]},options:{
-        responsive:true, maintainAspectRatio:false,
+      charts.radar = new Chart(canvas, {type:'radar', data:{labels:labels, datasets:[{data:scores,backgroundColor:'rgba(30,171,155,0.2)',borderColor:'#1eab9b',pointBackgroundColor:colors,pointBorderColor:'#fff',borderWidth:3}]}, options:{
+        responsive:true, maintainAspectRatio:true,
         plugins:{tooltip:{bodyFont:{size:16},callbacks:{label:function(ctx){var e=estilos[ctx.dataIndex];return e.estilo+': '+e.clasif+' ('+e.score+'/6) | '+e.motivo;}}}},
         scales:{r:{min:0,max:6,ticks:{color:'#fff'}}}
       }});
       var html='<table class="rec-table"><tr><th>Estilo</th><th>Espacio</th><th>Recomendación</th></tr>';
       estilos.sort(function(a,b){return b.score-a.score;}).forEach(function(e){ var rec=e.clasif==='ALTO'?'Afinar y mostrar':(e.clasif==='MEDIO'?'Evaluar':'Quizás no es tu foco'); html+='<tr><td>'+e.estilo+'</td><td>'+e.clasif+'</td><td>'+rec+'</td></tr>'; });
       document.getElementById('radarTableWrapper').innerHTML=html+'</table>';
+      document.getElementById('radarInsight').innerHTML = alto>0 ? '✅ '+alto+' estilo(s) con espacio ALTO. ¡Oportunidad de liderar!' : '🔍 Revisa los estilos con espacio MEDIO para crecer.';
     }
 
-    function renderEffortChart(){
-      var concursos=getConcursosEsfuerzo(currentBrewery);
-      var ctx=document.getElementById('effortChart').getContext('2d');
-      if(effortChart) effortChart.destroy();
+    function renderEffortChart(canvas){
+      if(charts.effort) charts.effort.destroy();
+      var concursos = getConcursosEsfuerzo(currentBrewery);
+      if(!concursos.length){ document.getElementById('effortInsight').innerText = 'No hay datos de concursos.'; return; }
       var tesoro=0,alerta=0;
       var datasets=concursos.map(function(c){
         var bg='#a0b8c0';
@@ -326,14 +357,20 @@
         return {label:c.certamen,data:[{x:c.esfuerzo,y:c.retorno,r:14}],backgroundColor:bg,borderColor:'#fff',borderWidth:2};
       });
       document.getElementById('effortSummary').innerHTML='<div class="kpi-badge"><strong>'+concursos.length+'</strong>Certámenes</div><div class="kpi-badge" style="border-color:#1eab9b;"><strong>'+tesoro+'</strong>Tesoro</div><div class="kpi-badge" style="border-color:#e32c6c;"><strong>'+alerta+'</strong>Alerta</div>';
-      effortChart=new Chart(ctx,{type:'bubble',data:{datasets:datasets},options:{
-        responsive:true, maintainAspectRatio:false,
+      charts.effort = new Chart(canvas, {type:'bubble', data:{datasets:datasets}, options:{
+        responsive:true, maintainAspectRatio:true,
         plugins:{tooltip:{bodyFont:{size:16},callbacks:{label:function(ctx){var c=concursos[ctx.datasetIndex];return c.certamen+' | Esfuerzo: '+c.esfuerzo+' | Retorno: '+c.retorno+' | '+c.motivo;}}}},
         scales:{x:{min:1,max:10,ticks:{color:'#fff'}},y:{min:1,max:10,ticks:{color:'#fff'}}}
       }});
+      document.getElementById('effortInsight').innerHTML = alerta>0 ? '⚠️ '+alerta+' certamen(es) con alto esfuerzo y bajo retorno. Revisa tu estrategia.' : (tesoro>0 ? '✅ '+tesoro+' certamen(es) de alta eficiencia. ¡Invierte ahí!' : '📊 Distribución equilibrada.');
     }
 
-    function renderAll(){ if(currentBrewery){ renderMedalChart(); renderRadarChart(); renderEffortChart(); } }
+    function renderAllCharts(){
+      if(!currentBrewery) return;
+      safeRenderChart('medalChart', renderMedalChart);
+      safeRenderChart('radarChart', renderRadarChart);
+      safeRenderChart('effortChart', renderEffortChart);
+    }
 
     // ---------- PRECIO ----------
     function updatePrice(){
@@ -361,27 +398,27 @@
       pThumb.addEventListener('touchstart',function(e){ e.preventDefault(); dragging=true; }); sThumb.addEventListener('touchstart',function(e){ e.preventDefault(); dragging=true; });
       window.addEventListener('touchmove',function(e){ if(dragging&&e.touches[0]){ if(e.target===pThumb) handleProd(e.touches[0].clientX); else if(e.target===sThumb) handleSales(e.touches[0].clientX); }});
       window.addEventListener('touchend',function(){ dragging=false; });
-      setTimeout(function(){ updateProdVisual(); updateSalesVisual(); },80);
+      setTimeout(function(){ updateProdVisual(); updateSalesVisual(); },100);
     }
 
     // ---------- INICIO ----------
     function init(){
-      loadCSV().then(function(data){
-        allData=data;
+      loadCSV(function(){
         if(!allData.length) return;
         var breweries=[]; allData.forEach(function(r){ if(breweries.indexOf(r.cerveceria)===-1)breweries.push(r.cerveceria); });
         var list=document.getElementById('breweryList'); breweries.sort().forEach(function(b){ list.innerHTML+='<option value="'+b+'">'; });
-        document.getElementById('breweryInput').value=breweries[0]||'';
-        currentBrewery=breweries[0]||'';
-        renderAll();
+        var first = breweries[0]||'';
+        document.getElementById('breweryInput').value = first;
+        currentBrewery = first;
+        renderAllCharts();
         updatePrice();
       });
       initSliders();
       document.getElementById('analyzeBtn').addEventListener('click',function(){
         var v=document.getElementById('breweryInput').value.trim();
-        if(v){ currentBrewery=v; renderAll(); }
+        if(v){ currentBrewery=v; renderAllCharts(); }
       });
-      document.getElementById('ctaBtn').addEventListener('click',function(){ alert('📞 Un asesor te contactará.'); });
+      document.getElementById('ctaBtn').addEventListener('click',function(){ alert('📞 Un asesor te contactará para tu diagnóstico estratégico.'); });
       var btns=document.querySelectorAll('.plan-btn');
       btns.forEach(function(b){ b.addEventListener('click',function(){ btns.forEach(function(bb){ bb.classList.remove('active'); }); b.classList.add('active'); currentTier=b.dataset.tier; updatePrice(); }); });
     }
