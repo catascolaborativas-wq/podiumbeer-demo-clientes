@@ -2,495 +2,507 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>PodiumBeer · Motor de Decisiones</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>PodiumBeer · Simulador de Alianza</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 20% 30%, #0a2a35, #031016);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      padding: 1.5rem 0;
+    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
+    .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+    .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
+    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
+    .app-container { width: 90%; max-width: 1400px; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
+    .header { text-align: center; }
+    .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
+    .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .h1-sim::-webkit-scrollbar { display: none; }
+    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
+    .bajada-header { font-size: clamp(16px, 5vw, 20px); font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.7); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
+    .glass-card, .metrics-card, .plan-selector-card, .chart-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
+    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
+    .shift-content { margin-left: 2.5%; width: 97.5%; }
+    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
+    .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
+    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
+    .chart-title { font-size: 1.3rem; font-weight: 700; border-left: 5px solid #e32c6c; padding-left: 1rem; color: #f7c32f; text-transform: none; letter-spacing: normal; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .chart-title img { height: 24px; vertical-align: middle; }
+    .slider-container { width: 100%; padding: 0 0.5rem; }
+    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
+    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
+    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
+    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
+    .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
+    .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
+    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
+    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
+    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
+    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
+    .tier-icon img { width: 24px; height: auto; display: block; }
+    .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
+    .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
+    .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
+    .metric-row:last-child { margin-bottom: 0; }
+    .metric-icon-col { flex: 0 0 70px; text-align: center; }
+    .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
+    .metric-text-col { flex: 2; text-align: center; }
+    .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
+    .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
+    .metric-value-col { flex: 1; text-align: right; }
+    .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
+    .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
+    .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
+    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
+    .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
+    .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
+    .chart-card { padding: 1rem; }
+    .chart-container { width: 100%; min-height: 450px; margin-top: 0; position: relative; }
+    canvas { touch-action: none; }
+    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 2rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
+    @media (min-width: 992px) {
+      .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
+      .legend-item { flex-shrink: 0; }
     }
-    .vignette {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      box-shadow: inset 0 0 120px rgba(0,0,0,0.8); pointer-events: none; z-index: 0;
-    }
-    .app-container {
-      width: 95%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 2;
-      display: flex; flex-direction: column; gap: 1.8rem;
-    }
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(6, 35, 46, 0.45); backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 3rem; padding: 0.8rem 2rem;
-    }
-    .logo-area { display: flex; align-items: center; gap: 1.5rem; }
-    .logo-badge {
-      background: #e32c6c; width: 50px; height: 50px; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px;
-    }
-    .title-main { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; color: #f7c32f; }
-    .brewery-selector { display: flex; gap: 1rem; align-items: center; }
-    .brewery-input {
-      background: rgba(0,0,0,0.5); border: 1.5px solid #3a5a6a; border-radius: 60px;
-      padding: 0.8rem 1.5rem; color: white; font-size: 1rem; width: 280px; outline: none;
-      transition: 0.2s;
-    }
-    .brewery-input:focus { border-color: #e32c6c; background: #0a1e26; }
-    .btn-analyze {
-      background: linear-gradient(145deg, #e32c6c, #b01c52); border: none; border-radius: 60px;
-      padding: 0.8rem 2rem; font-weight: 700; color: white; cursor: pointer; box-shadow: 0 4px 20px rgba(227,44,108,0.3);
-      transition: 0.2s; border: 1px solid rgba(255,255,255,0.2);
-    }
-    .btn-analyze:active { transform: scale(0.96); }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 20px; transition: 0.2s; }
+    .legend-item:hover { background: rgba(0,0,0,0.8); }
+    .legend-color { width: 12px; height: 12px; border-radius: 2px; }
+    .legend-label { color: #fff; white-space: nowrap; }
+    .legend-item.hidden .legend-label { text-decoration: line-through; opacity: 0.5; }
+    .error-message { background: #e32c6c; color: white; padding: 0.5rem; border-radius: 1rem; text-align: center; font-size: 0.8rem; }
+
+    /* === FIX RESPONSIVE (A) === */
     .kpi-grid {
-      display: grid; grid-template-columns: 1.1fr 0.9fr 1fr; gap: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
     }
-    .card {
-      background: rgba(6, 35, 46, 0.4); backdrop-filter: blur(20px);
-      border-radius: 2rem; border: 1px solid rgba(255,255,255,0.1);
-      padding: 1.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    .kpi-grid .chart-card {
+      flex: 1 1 100%;
     }
-    .card-header {
-      display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem;
-      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;
+    @media (min-width: 768px) {
+      .kpi-grid .chart-card {
+        flex: 1 1 calc(50% - 0.75rem);
+      }
     }
-    .card-header h2 { font-size: 1.3rem; font-weight: 600; color: #f7c32f; letter-spacing: -0.3px; }
-    .badge-decision {
-      margin-left: auto; background: #1e3a4a; padding: 0.3rem 1rem; border-radius: 40px;
-      font-size: 0.8rem; font-weight: 700; color: #b0d4e3;
+
+    @media (max-width: 991px) {
+      .app-container { gap: 1.8rem; }
+      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
+      .metric-value { font-size: 18px; }
+      .h1-sim { white-space: normal; font-size: 28px; }
+      .credits { font-size: 16px; }
     }
-    .chart-container {
-      height: 280px; width: 100%; position: relative;
-    }
-    .legend-decision {
-      display: flex; gap: 1.5rem; margin-top: 1rem; justify-content: center;
-    }
-    .legend-dot {
-      display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
-    }
-    .dot-green { width: 12px; height: 12px; background: #2ecc71; border-radius: 4px; }
-    .dot-yellow { width: 12px; height: 12px; background: #f1c40f; border-radius: 4px; }
-    .dot-red { width: 12px; height: 12px; background: #e74c3c; border-radius: 4px; }
-    .stats-row {
-      display: flex; justify-content: space-around; margin-top: 1.5rem;
-    }
-    .stat-item { text-align: center; }
-    .stat-number { font-size: 2rem; font-weight: 800; color: #fff; }
-    .stat-label { font-size: 0.8rem; color: #a0bcc9; text-transform: uppercase; letter-spacing: 1px; }
-    .space-list {
-      max-height: 200px; overflow-y: auto; margin-top: 0.5rem;
-    }
-    .space-item {
-      display: flex; justify-content: space-between; padding: 0.4rem 0.6rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .effort-matrix {
-      display: flex; flex-direction: column; gap: 0.8rem;
-    }
-    .matrix-row {
-      display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.2);
-      padding: 0.6rem 1rem; border-radius: 40px;
-    }
-    .certamen-name { flex: 2; font-weight: 500; }
-    .certamen-badge { flex: 1; text-align: center; }
-    .price-simulator {
-      margin-top: 1rem; background: rgba(0,0,0,0.3); border-radius: 3rem;
-      padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between;
-      border: 1px solid #e32c6c66;
-    }
-    .price-item { text-align: center; }
-    .price-value { font-size: 2rem; font-weight: 800; color: #f7c32f; }
-    .footer-note {
-      text-align: right; font-size: 0.8rem; color: #6a8a99;
-    }
-    .loading-message {
-      text-align: center; padding: 2rem; color: #f7c32f; font-size: 1.2rem;
-    }
-    .error-message {
-      color: #e74c3c; font-weight: 500; padding: 0.5rem;
-    }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: #e32c6c; border-radius: 10px; }
   </style>
 </head>
 <body>
-<div class="vignette"></div>
-<div class="app-container">
-  <div class="header">
-    <div class="logo-area">
-      <div class="logo-badge">PB</div>
-      <div class="title-main">PodiumBeer · inteligencia competitiva</div>
-    </div>
-    <div class="brewery-selector">
-      <input type="text" id="breweryInput" class="brewery-input" placeholder="Nombre de la cervecería" value="Spoh">
-      <button class="btn-analyze" id="analyzeBtn">Analizar</button>
-    </div>
-  </div>
+  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Cervecería fondo"></div>
+  <div class="overlay-color"></div>
+  <div class="vignette"></div>
 
-  <!-- KPI 1: VALOR DE MEDALLAS (SCATTER) -->
-  <div class="card">
-    <div class="card-header">
-      <h2>📊 KPI 1 · Medallas que Construyen Marca</h2>
-      <div class="badge-decision">Señal vs Ruido</div>
+  <div class="app-container">
+    <div class="header">
+      <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
+      <div class="h1-sim">Simulador de Alianza</div>
+      <div class="h2-sim">¿Cuál es tu producción anual?</div>
+      <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </div>
-    <div id="medallasStats" class="loading-message">Esperando análisis...</div>
-    <div class="chart-container">
-      <canvas id="scatterChart"></canvas>
-    </div>
-    <div class="legend-decision">
-      <div class="legend-dot"><span class="dot-green"></span> Construye Marca (≥9)</div>
-      <div class="legend-dot"><span class="dot-yellow"></span> Neutro (6-8)</div>
-      <div class="legend-dot"><span class="dot-red"></span> Ruido (&lt;6)</div>
-    </div>
-    <div class="stats-row" id="statsMedallas"></div>
-  </div>
 
-  <div class="kpi-grid">
-    <!-- KPI 2: ESPACIO DE CRECIMIENTO (RADAR) -->
-    <div class="card">
-      <div class="card-header">
-        <h2>📈 KPI 2 · Oportunidad Real</h2>
-        <div class="badge-decision">Max 8 estilos</div>
+    <!-- SLIDER PRODUCCIÓN (D) -->
+    <div class="glass-card animate-item">
+      <div class="shift-content">
+        <div class="section-title">SLIDER</div>
+        <div class="section-subtitle">Escala de Producción</div>
+        <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
       </div>
-      <div id="estilosStats" class="loading-message">Sin datos</div>
-      <div class="chart-container">
-        <canvas id="radarChart"></canvas>
+      <div class="slider-container shift-content">
+        <div class="slider-track-wrapper" id="sliderWrapper">
+          <div class="slider-rail" id="sliderRail"><div class="slider-fill" id="sliderFill"></div></div>
+          <div class="slider-thumb" id="sliderThumb"></div>
+        </div>
+        <div class="slider-labels">
+          <span>&lt;500 hl</span>
+          <span>501 - 1000 hl</span>
+          <span>1001 - 5000 hl</span>
+          <span>5001 - 10000 hl</span>
+          <span>≥20000 hl</span>
+        </div>
       </div>
-      <div class="space-list" id="estilosTabla"></div>
     </div>
 
-    <!-- KPI 3: ESFUERZO VS RETORNO -->
-    <div class="card">
-      <div class="card-header">
-        <h2>⚖️ KPI 3 · Optimizar Inversión</h2>
-        <div class="badge-decision">Esfuerzo vs Retorno</div>
+    <!-- GRÁFICO Chilean Competition Wings - 2025 (B) -->
+    <div class="chart-card animate-item" id="chartCard">
+      <div class="shift-content">
+        <div class="chart-title">
+          <img src="assets/bandera.png" alt="Bandera"> Chilean Competition Wings - 2025
+        </div>
       </div>
-      <div id="concursosStats" class="loading-message">Calculando concursos...</div>
-      <div class="effort-matrix" id="effortMatrix"></div>
+      <div class="chart-container shift-content">
+        <canvas id="breweryChart" width="800" height="400"></canvas>
+      </div>
+      <div class="legend-container shift-content" id="legendContainer"></div>
+    </div>
+
+    <!-- KPI 1 y 2 en GRID (A) -->
+    <div class="kpi-grid">
+      <!-- KPI 1 -->
+      <div class="chart-card animate-item">
+        <div class="shift-content">
+          <div class="section-title">KPI 1</div>
+          <div class="section-subtitle">Medallas que Construyen Marca</div>
+          <div class="section-desc" id="kpi1Stats">Separando señal del ruido</div>
+        </div>
+        <div class="chart-container shift-content">
+          <canvas id="scatterChart"></canvas>
+        </div>
+        <div class="legend-decision" style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem;">
+          <span style="color:#2ecc71;">● Construye</span>
+          <span style="color:#f1c40f;">● Neutro</span>
+          <span style="color:#e74c3c;">● Ruido</span>
+        </div>
+      </div>
+
+      <!-- KPI 2 / KPI 3 en columna -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- KPI 2 -->
+        <div class="chart-card animate-item">
+          <div class="shift-content">
+            <div class="section-title">KPI 2</div>
+            <div class="section-subtitle">Oportunidad Real</div>
+          </div>
+          <div class="chart-container shift-content">
+            <canvas id="radarChart"></canvas>
+          </div>
+          <div class="space-list shift-content" id="estilosTabla" style="max-height:150px;"></div>
+        </div>
+        <!-- KPI 3 -->
+        <div class="chart-card animate-item">
+          <div class="shift-content">
+            <div class="section-title">KPI 3</div>
+            <div class="section-subtitle">Optimizar Inversión</div>
+          </div>
+          <div class="effort-matrix shift-content" id="effortMatrix" style="max-height:200px; overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELECTOR DE PLANES (D) -->
+    <div class="plan-selector-card animate-item">
+      <div class="shift-content">
+        <div class="section-title">SELECTOR DE PLANES</div>
+        <div class="section-subtitle">Nivel de Alianza Estratégica</div>
+        <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
+      </div>
+      <div class="tier-buttons-container shift-content" id="tierButtonsContainer">
+        <div class="tier-item">
+          <div class="tier-btn" data-tier="explorer" id="tierExplorer">
+            <div class="tier-icon"><img src="assets/explorer.png" alt="Explorer"></div>
+            <div class="tier-label">Explorer</div>
+          </div>
+          <div class="tier-bajada">1° Nivel de Visibilidad<br>basada en datos reales</div>
+        </div>
+        <div class="tier-item">
+          <div class="tier-btn" data-tier="podium" id="tierPodium">
+            <div class="tier-icon"><img src="assets/podium.png" alt="Podium"></div>
+            <div class="tier-label">Podium</div>
+          </div>
+          <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja.</div>
+        </div>
+        <div class="tier-item">
+          <div class="tier-btn active" data-tier="champion" id="tierChampion">
+            <div class="tier-icon"><img src="assets/champion.png" alt="Champion"></div>
+            <div class="tier-label">Champion</div>
+          </div>
+          <div class="tier-bajada">Dominio de mercado con<br>respaldo técnico y autoridad</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE DE RESULTADOS (D) -->
+    <div class="metrics-card animate-item">
+      <div class="shift-content">
+        <div class="section-title">BLOQUE DE RESULTADOS</div>
+        <div class="section-subtitle">Impacto en tu negocio</div>
+        <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables.</div>
+      </div>
+      <div class="shift-content">
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
+          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Una inversión diseñada para generar retorno, no gasto.</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
+          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Lo que hoy pierdes en decisiones sin data.</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
+          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">El retorno proyectado al transformar tus medallas en ventas.</div></div>
+          <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-wrapper animate-item">
+      <button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button>
+    </div>
+
+    <div class="credits animate-item">
+      Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
     </div>
   </div>
 
-  <!-- MOTOR DE PRECIO (Percepción de valor) -->
-  <div class="price-simulator">
-    <div class="price-item"><div>Inversión mensual</div><div class="price-value" id="precioInversion">—</div></div>
-    <div class="price-item"><div>Retorno estimado</div><div class="price-value" id="precioRetorno">—</div></div>
-    <div class="price-item"><div>Impacto %</div><div class="price-value" id="precioImpacto">—</div></div>
-  </div>
-  <div class="footer-note">Modelo de percepción de valor · Basado en producción · No es predicción exacta</div>
-</div>
+  <script>
+    // ======================== CONFIGURACIÓN GLOBAL ========================
+    let allData = [];
+    let breweryChart, medallasChart, radarChart;
+    const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+    const colorPalette = ['#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f', '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4', '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'];
 
-<script>
-  // ========== CONFIGURACIÓN Y DATOS (Manual PodiumBeer) ==========
-  const ESTILOS_DATA = new Map(); // estilo -> frecuencia (del CSV estilos_full_corregido)
-  let allDataRaw = [];
-  let medallasChart, radarChart;
-  let currentBrewery = 'Spoh';
+    // Slider y precios
+    let currentRangeIndex = 3;
+    const metricsTable = [
+      { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
+      { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
+      { inversion: "$600 USD", optimizacion: "$7,200 USD", roi: "55%", suggestedTier: "podium" },
+      { inversion: "$1,200 USD", optimizacion: "$14,500 USD", roi: "65%", suggestedTier: "champion" },
+      { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion" }
+    ];
 
-  // --- Certamen Score (Manual) ---
-  const certamenScoreMap = {
-    'copa america':5, 'world beer cup':5, 'european beer star':4, 'brussels beer challenge':4,
-    'copa cervezas de américa':5, 'copa latinoamericana':4, 'competencia nacional':3,
-    'copas regionales':2, 'default':2
-  };
+    // ======================== SCORING (MODELO CORREGIDO C) ========================
+    const certamenScore = {
+      'world beer awards': 4, 'copa tayrona': 3, 'copa capital cervecera': 3, 'mitad del mundo': 3,
+      'aro rojo': 3, 'copa aci': 3, 'copa guarani': 3, 'brasil cup': 3, 'default': 2
+    };
+    const ESTILOS_SATURACION = new Map(); // Se llena con estilos_full_corregido.xlsx
 
-  // --- Funciones auxiliares seguras (evitar NaN y divisiones por cero) ---
-  const normalizeText = (s) => (s||'').toString().toLowerCase().trim();
-  const safeDiv = (num, den) => den === 0 ? 0 : num/den;
-  const safeMaxMin = (arr, fn) => {
-    let vals = arr.map(fn).filter(v => !isNaN(v) && isFinite(v));
-    if(vals.length===0) return {min:0, max:1};
-    return {min: Math.min(...vals), max: Math.max(...vals)};
-  };
-
-  // ========== CARGA DE DATOS ==========
-  async function cargarEstilos() {
-    try {
-      const resp = await fetch('estilos_full_corregido.xlsx');
-      if(!resp.ok) throw new Error('XLSX no encontrado');
-      const buffer = await resp.arrayBuffer();
-      const workbook = XLSX.read(buffer, {type:'array'});
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
-      // Saltar cabecera
-      for(let i=1; i<rows.length; i++) {
-        const r = rows[i];
-        if(!r || r.length<2) continue;
-        const estilo = normalizeText(r[0]);
-        if(!estilo || estilo==='') continue;
-        ESTILOS_DATA.set(estilo, (ESTILOS_DATA.get(estilo)||0)+1);
+    function calcularScore(item) {
+      const cert = item.certamen?.toLowerCase() || '';
+      let certScore = 2;
+      for (let k in certamenScore) if (cert.includes(k)) { certScore = certamenScore[k]; break; }
+      
+      const estilo = item.estilo?.toLowerCase() || '';
+      let satScore = 2;
+      if (ESTILOS_SATURACION.size) {
+        const freq = ESTILOS_SATURACION.get(estilo) || 0;
+        const total = Array.from(ESTILOS_SATURACION.values()).reduce((a,b)=>a+b,0);
+        const pct = (freq / total) * 100;
+        if (pct >= 3) satScore = 1;
+        else if (pct >= 1) satScore = 2;
+        else satScore = 3;
       }
-      console.log(`✅ Estilos cargados: ${ESTILOS_DATA.size}`);
-    } catch(e) { console.warn('⚠️ Usando saturación simulada', e); }
-  }
-
-  async function cargarMedallero() {
-    try {
-      const resp = await fetch('BBDD_Medallero_Chile.csv');
-      if(!resp.ok) throw new Error('CSV no encontrado');
-      const text = await resp.text();
-      const lines = text.split('\n');
-      const headers = lines[0].split(';').map(h=>normalizeText(h));
-      const data = [];
-      for(let i=1; i<lines.length; i++) {
-        if(!lines[i].trim()) continue;
-        const vals = lines[i].split(';');
-        const obj = {};
-        headers.forEach((h,idx)=>{ obj[h] = vals[idx]?.trim() || ''; });
-        if(!obj.cerveceria || !obj.medalla_base || obj.medalla_base==='-') continue;
-        data.push(obj);
-      }
-      console.log(`✅ Medallero: ${data.length} registros`);
-      return data;
-    } catch(e) { console.error(e); return []; }
-  }
-
-  // ========== SCORING (Manual) ==========
-  function calcularScoreCertamen(certamen) {
-    const cert = normalizeText(certamen);
-    for(let k in certamenScoreMap) if(cert.includes(k)) return certamenScoreMap[k];
-    return 2;
-  }
-
-  function calcularSaturacionEstilo(estilo) {
-    if(!ESTILOS_DATA.size) return 2;
-    const totalEstilos = Array.from(ESTILOS_DATA.values()).reduce((a,b)=>a+b,0);
-    const freq = ESTILOS_DATA.get(normalizeText(estilo)) || 0;
-    const pct = safeDiv(freq, totalEstilos)*100;
-    if(pct >= 3) return 1;
-    if(pct >= 1) return 2;
-    return 3;
-  }
-
-  function scoreTotal(item) {
-    const cert = calcularScoreCertamen(item.certamen);
-    const sat = calcularSaturacionEstilo(item.estilo);
-    return cert + sat + 2;
-  }
-
-  function clasificarScore(score) {
-    if(score>=9) return 'CONSTRUYE MARCA';
-    if(score>=6) return 'NEUTRO';
-    return 'RUIDO';
-  }
-
-  // ========== RESET CHARTS (FIX 6) ==========
-  function resetCharts() {
-    if(medallasChart) { medallasChart.destroy(); medallasChart=null; }
-    if(radarChart) { radarChart.destroy(); radarChart=null; }
-    document.getElementById('medallasStats').innerHTML = 'Analizando...';
-    document.getElementById('estilosStats').innerHTML = 'Procesando estilos...';
-    document.getElementById('concursosStats').innerHTML = 'Calculando concursos...';
-    document.getElementById('estilosTabla').innerHTML = '';
-    document.getElementById('effortMatrix').innerHTML = '';
-  }
-
-  // ========== RENDER KPI 1 (SCATTER) ==========
-  function renderMedallas(brewery, data) {
-    const cervezaNorm = normalizeText(brewery);
-    const breweryData = data.filter(d => normalizeText(d.cerveceria) === cervezaNorm);
-    if(breweryData.length===0) {
-      document.getElementById('medallasStats').innerHTML = '❌ Cervecería no encontrada';
-      return;
+      return certScore + satScore + 2;
     }
 
-    const puntos = breweryData.map(item => {
-      const score = scoreTotal(item);
-      return {
-        x: item.certamen,
-        y: score,
-        estilo: item.estilo,
-        medalla: item.medalla_base,
-        score: score,
-        clase: clasificarScore(score)
-      };
-    });
+    function clasificar(score) {
+      if (score >= 9) return 'CONSTRUYE';
+      if (score >= 6) return 'NEUTRO';
+      return 'RUIDO';
+    }
 
-    const certs = [...new Set(puntos.map(p=>p.x))];
-    const datasets = [{
-      label: 'Medallas',
-      data: puntos,
-      backgroundColor: puntos.map(p => p.score>=9 ? '#2ecc71' : (p.score>=6 ? '#f1c40f' : '#e74c3c')),
-      borderColor: '#fff',
-      borderWidth: 1,
-      pointRadius: 8,
-      pointHoverRadius: 12,
-    }];
-
-    const ctx = document.getElementById('scatterChart').getContext('2d');
-    medallasChart = new Chart(ctx, {
-      type: 'scatter',
-      data: { datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          tooltip: { callbacks: { label: (ctx) => {
-            const p = puntos[ctx.dataIndex];
-            return `${p.estilo} · ${p.medalla} · Score ${p.score} (${p.clase})`;
-          }}},
-          legend: { display: false }
-        },
-        scales: {
-          x: { type: 'category', labels: certs, ticks: { color: '#fff', maxRotation: 45 } },
-          y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: '#2a4a5a' } }
+    // ======================== CARGA DE DATOS ========================
+    async function cargarEstilos() {
+      try {
+        const resp = await fetch('estilos_full_corregido.xlsx');
+        const buffer = await resp.arrayBuffer();
+        const wb = XLSX.read(buffer, {type:'array'});
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
+        for (let i=1; i<rows.length; i++) {
+          const estilo = rows[i][0]?.toString().toLowerCase().trim();
+          if (estilo) ESTILOS_SATURACION.set(estilo, (ESTILOS_SATURACION.get(estilo)||0)+1);
         }
-      }
-    });
-
-    const construye = puntos.filter(p=>p.score>=9).length;
-    const neutro = puntos.filter(p=>p.score>=6 && p.score<9).length;
-    const ruido = puntos.filter(p=>p.score<6).length;
-    document.getElementById('medallasStats').innerHTML = '';
-    document.getElementById('statsMedallas').innerHTML = `
-      <div class="stat-item"><span class="stat-number" style="color:#2ecc71">${construye}</span><div class="stat-label">Construye</div></div>
-      <div class="stat-item"><span class="stat-number" style="color:#f1c40f">${neutro}</span><div class="stat-label">Neutro</div></div>
-      <div class="stat-item"><span class="stat-number" style="color:#e74c3c">${ruido}</span><div class="stat-label">Ruido</div></div>
-    `;
-  }
-
-  // ========== KPI 2: ESPACIO DE CRECIMIENTO (MAX 8) ==========
-  function renderEspacio(brewery, data) {
-    const cervezaNorm = normalizeText(brewery);
-    const userEstilos = [...new Set(data.filter(d=>normalizeText(d.cerveceria)===cervezaNorm).map(d=>normalizeText(d.estilo)))];
-    const allEstilos = [...new Set(data.map(d=>normalizeText(d.estilo)))];
-    
-    const espacioEstilos = allEstilos.map(estilo => {
-      const freq = data.filter(d=>normalizeText(d.estilo)===estilo).length;
-      const saturacion = calcularSaturacionEstilo(estilo);
-      const presencia = userEstilos.includes(estilo) ? 3 : 1;
-      const espacio = (4 - saturacion) + presencia;
-      return { estilo, espacio: Math.min(10, Math.max(0, espacio*1.5)), saturacion };
-    }).sort((a,b)=> b.espacio - a.espacio);
-
-    const topEstilos = espacioEstilos.slice(0, 8); // FIX 3: máximo 8
-    const labels = topEstilos.map(e=>e.estilo);
-    const valores = topEstilos.map(e=>e.espacio);
-
-    const ctx = document.getElementById('radarChart').getContext('2d');
-    radarChart = new Chart(ctx, {
-      type: 'radar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Potencial de crecimiento',
-          data: valores,
-          backgroundColor: '#e32c6c66',
-          borderColor: '#f7c32f',
-          borderWidth: 2,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { tooltip: { callbacks: { label: (ctx) => `Espacio: ${ctx.raw.toFixed(1)}` } } },
-        scales: { r: { beginAtZero: true, max: 10, ticks: { color: '#fff', backdropColor:'transparent' }, grid: { color: '#3a5a6a' } } }
-      }
-    });
-
-    document.getElementById('estilosStats').innerHTML = 'Top 8 oportunidades';
-    const tabla = document.getElementById('estilosTabla');
-    tabla.innerHTML = topEstilos.map(e => `
-      <div class="space-item"><span>${e.estilo}</span><span>${e.espacio.toFixed(1)}</span></div>
-    `).join('');
-  }
-
-  // ========== KPI 3: ESFUERZO VS RETORNO (FIX 1: ||1) ==========
-  function renderEsfuerzo(brewery, data) {
-    const cervezaNorm = normalizeText(brewery);
-    const participaciones = data.filter(d=>normalizeText(d.cerveceria)===cervezaNorm);
-    const certamenes = [...new Set(participaciones.map(p=>p.certamen))];
-    
-    const metrics = certamenes.map(cert => {
-      const certData = participaciones.filter(p=>p.certamen===cert);
-      const esfuerzoBruto = certData.length * calcularScoreCertamen(cert);
-      const altas = certData.filter(p=>scoreTotal(p)>=9).length;
-      const medias = certData.filter(p=>{const s=scoreTotal(p); return s>=6 && s<9;}).length;
-      const retornoBruto = 2*altas + 1*medias;
-      return { certamen: cert, esfuerzoBruto, retornoBruto };
-    });
-
-    const esfVals = metrics.map(m=>m.esfuerzoBruto);
-    const retVals = metrics.map(m=>m.retornoBruto);
-    const minEsf = esfVals.length ? Math.min(...esfVals) : 0;
-    const maxEsf = esfVals.length ? Math.max(...esfVals) : 1;
-    const minRet = retVals.length ? Math.min(...retVals) : 0;
-    const maxRet = retVals.length ? Math.max(...retVals) : 1;
-    const rangoEsf = (maxEsf - minEsf) || 1;
-    const rangoRet = (maxRet - minRet) || 1;
-
-    const normMetrics = metrics.map(m => {
-      const esfuerzo = 1 + 9 * (m.esfuerzoBruto - minEsf) / rangoEsf;
-      const retorno = 1 + 9 * (m.retornoBruto - minRet) / rangoRet;
-      let decision = 'MEDIO';
-      if(esfuerzo > 7 && retorno < 4) decision = '⚠️ ALERTA';
-      else if(esfuerzo < 4 && retorno > 7) decision = '💰 TESORO';
-      return { ...m, esfuerzo, retorno, decision };
-    }).sort((a,b)=> b.retorno - a.retorno);
-
-    document.getElementById('concursosStats').innerHTML = 'Análisis completado';
-    const matrixDiv = document.getElementById('effortMatrix');
-    matrixDiv.innerHTML = normMetrics.slice(0,5).map(m => `
-      <div class="matrix-row">
-        <span class="certamen-name">${m.certamen}</span>
-        <span class="certamen-badge">Esf: ${m.esfuerzo.toFixed(1)}</span>
-        <span class="certamen-badge">Ret: ${m.retorno.toFixed(1)}</span>
-        <span style="color:${m.decision.includes('TESORO')?'#2ecc71':(m.decision.includes('ALERTA')?'#e74c3c':'#f1c40f')}">${m.decision}</span>
-      </div>
-    `).join('') || '<div>No hay concursos</div>';
-  }
-
-  // ========== MOTOR DE PRECIO ==========
-  function actualizarPrecio(brewery) {
-    const input = document.getElementById('breweryInput').value;
-    const len = input.length;
-    const base = 800;
-    const inversion = Math.round(base + len*150);
-    const retorno = Math.round(inversion * (2.8 + (len%5)*0.5));
-    const impacto = Math.round(45 + (len%30));
-    document.getElementById('precioInversion').innerText = `$${inversion} USD`;
-    document.getElementById('precioRetorno').innerText = `$${retorno} USD`;
-    document.getElementById('precioImpacto').innerText = `${impacto}%`;
-  }
-
-  // ========== FLUJO PRINCIPAL ==========
-  async function analizar() {
-    const input = document.getElementById('breweryInput').value.trim();
-    if(!input) return;
-    resetCharts();
-    
-    const data = allDataRaw;
-    const existe = data.some(d=>normalizeText(d.cerveceria)===normalizeText(input));
-    if(!existe) {
-      document.getElementById('medallasStats').innerHTML = '❌ Cervecería no encontrada.';
-      return;
+      } catch(e) { console.warn('Estilos no cargados'); }
     }
-    currentBrewery = input;
-    renderMedallas(input, data);
-    renderEspacio(input, data);
-    renderEsfuerzo(input, data);
-    actualizarPrecio(input);
-  }
 
-  // ========== INICIO ==========
-  (async function init() {
-    await cargarEstilos();
-    allDataRaw = await cargarMedallero();
-    if(allDataRaw.length) {
-      document.getElementById('breweryInput').value = 'Spoh';
-      setTimeout(()=> analizar(), 300);
-    } else {
-      document.getElementById('medallasStats').innerHTML = '❌ Error cargando datos';
+    async function cargarCSV() {
+      try {
+        const resp = await fetch('BBDD_Medallero_Chile.csv');
+        const text = await resp.text();
+        const lines = text.split('\n');
+        const headers = lines[0].split(';').map(h=>h.trim().toLowerCase());
+        const data = [];
+        for (let i=1; i<lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          const vals = lines[i].split(';');
+          const obj = {};
+          headers.forEach((h,idx)=> obj[h] = vals[idx]?.trim() || '');
+          if (obj.medalla_base === '-' || !obj.cerveceria) continue;
+          data.push(obj);
+        }
+        return data;
+      } catch(e) { return []; }
     }
-    document.getElementById('analyzeBtn').addEventListener('click', analizar);
-    document.getElementById('breweryInput').addEventListener('keypress', (e)=> { if(e.key==='Enter') analizar(); });
-  })();
-</script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    // ======================== GRÁFICO CHILEAN WINGS ========================
+    function renderWingsChart(data) {
+      const chileData = data.filter(d => d.pais === 'Chile' || true); // sin pais
+      const data2025 = chileData.filter(d => d.anio === '2025');
+      const breweryTotal = {};
+      data2025.forEach(d => { const b = d.cerveceria?.trim(); if(b) breweryTotal[b] = (breweryTotal[b]||0)+1; });
+      const top15 = Object.entries(breweryTotal).sort((a,b)=>b[1]-a[1]).slice(0,15).map(e=>e[0]);
+      const monthly = {};
+      top15.forEach(b => monthly[b] = Array(10).fill(0));
+      data2025.forEach(d => {
+        const b = d.cerveceria?.trim();
+        if (!top15.includes(b)) return;
+        const fecha = d.fecha;
+        if (!fecha) return;
+        const mes = parseInt(fecha.split('-')[1]);
+        if (mes>=3 && mes<=12) monthly[b][mes-3]++;
+      });
+      const datasets = top15.map((b,i) => ({
+        label: b, data: monthly[b], borderColor: colorPalette[i%colorPalette.length],
+        backgroundColor: colorPalette[i%colorPalette.length]+'33', tension:0.4, fill:true
+      }));
+      const ctx = document.getElementById('breweryChart').getContext('2d');
+      if (breweryChart) breweryChart.destroy();
+      breweryChart = new Chart(ctx, { type:'line', data:{labels:monthNames, datasets},
+        options:{ responsive:true, maintainAspectRatio:true, plugins:{legend:{display:false}} }
+      });
+      const legend = document.getElementById('legendContainer');
+      legend.innerHTML = datasets.map((ds,i)=> `<div class="legend-item"><div class="legend-color" style="background:${ds.borderColor};"></div><span class="legend-label">${ds.label}</span></div>`).join('');
+    }
+
+    // ======================== KPI 1 SCATTER ========================
+    function renderKPI1(brewery, data) {
+      const cervezaNorm = brewery.toLowerCase().trim();
+      const breweryData = data.filter(d => d.cerveceria?.toLowerCase().trim() === cervezaNorm);
+      const puntos = breweryData.map(d => ({ x: d.certamen, y: calcularScore(d), clase: clasificar(calcularScore(d)), estilo: d.estilo, medalla: d.medalla_base }));
+      const construye = puntos.filter(p=>p.y>=9).length;
+      const neutro = puntos.filter(p=>p.y>=6 && p.y<9).length;
+      const ruido = puntos.filter(p=>p.y<6).length;
+      document.getElementById('kpi1Stats').innerHTML = `Construye ${construye} · Neutro ${neutro} · Ruido ${ruido}`;
+      const ctx = document.getElementById('scatterChart').getContext('2d');
+      if (medallasChart) medallasChart.destroy();
+      medallasChart = new Chart(ctx, {
+        type: 'scatter', data: { datasets: [{
+          label: 'Medallas', data: puntos,
+          backgroundColor: puntos.map(p => p.y>=9 ? '#2ecc71' : (p.y>=6 ? '#f1c40f' : '#e74c3c')),
+          pointRadius: 8
+        }]},
+        options: { scales: { x: { type:'category', labels:[...new Set(puntos.map(p=>p.x))] }, y: { beginAtZero:true } } }
+      });
+    }
+
+    // ======================== KPI 2 RADAR ========================
+    function renderKPI2(brewery, data) {
+      const cervezaNorm = brewery.toLowerCase().trim();
+      const userEstilos = [...new Set(data.filter(d=>d.cerveceria?.toLowerCase().trim()===cervezaNorm).map(d=>d.estilo?.toLowerCase()))];
+      const allEstilos = [...new Set(data.map(d=>d.estilo?.toLowerCase()))];
+      const espacios = allEstilos.map(e => {
+        const sat = calcularSaturacion(e);
+        const presencia = userEstilos.includes(e) ? 3 : 1;
+        const espacio = (4 - sat) + presencia;
+        return { estilo:e, espacio: Math.min(10, espacio*1.5) };
+      }).sort((a,b)=>b.espacio-a.espacio).slice(0,8);
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      if (radarChart) radarChart.destroy();
+      radarChart = new Chart(ctx, {
+        type: 'radar', data: { labels: espacios.map(e=>e.estilo), datasets: [{
+          label: 'Potencial', data: espacios.map(e=>e.espacio), backgroundColor: '#e32c6c66', borderColor: '#f7c32f'
+        }]},
+        options: { scales: { r: { beginAtZero:true, max:10 } } }
+      });
+      document.getElementById('estilosTabla').innerHTML = espacios.map(e=>`<div class="space-item"><span>${e.estilo}</span><span>${e.espacio.toFixed(1)}</span></div>`).join('');
+    }
+
+    function calcularSaturacion(estilo) {
+      if (!ESTILOS_SATURACION.size) return 2;
+      const freq = ESTILOS_SATURACION.get(estilo) || 0;
+      const total = Array.from(ESTILOS_SATURACION.values()).reduce((a,b)=>a+b,0);
+      const pct = (freq/total)*100;
+      if (pct>=3) return 1; else if (pct>=1) return 2; else return 3;
+    }
+
+    // ======================== KPI 3 ESFUERZO ========================
+    function renderKPI3(brewery, data) {
+      const cervezaNorm = brewery.toLowerCase().trim();
+      const parts = data.filter(d=>d.cerveceria?.toLowerCase().trim()===cervezaNorm);
+      const certs = [...new Set(parts.map(p=>p.certamen))];
+      const metrics = certs.map(c => {
+        const certData = parts.filter(p=>p.certamen===c);
+        const esf = certData.length * (certamenScore[c.toLowerCase()] || 2);
+        const altas = certData.filter(p=>calcularScore(p)>=9).length;
+        const medias = certData.filter(p=>{const s=calcularScore(p); return s>=6 && s<9;}).length;
+        const ret = 2*altas + medias;
+        return { certamen:c, esf, ret };
+      });
+      const esfVals = metrics.map(m=>m.esf), retVals = metrics.map(m=>m.ret);
+      const minEsf = Math.min(...esfVals,0), maxEsf = Math.max(...esfVals,1);
+      const minRet = Math.min(...retVals,0), maxRet = Math.max(...retVals,1);
+      const rangoEsf = (maxEsf-minEsf)||1, rangoRet = (maxRet-minRet)||1;
+      const norm = metrics.map(m => {
+        const e = 1 + 9*(m.esf-minEsf)/rangoEsf;
+        const r = 1 + 9*(m.ret-minRet)/rangoRet;
+        return { ...m, esfuerzo:e, retorno:r };
+      }).sort((a,b)=>b.retorno-a.retorno);
+      document.getElementById('effortMatrix').innerHTML = norm.slice(0,5).map(m=>`
+        <div class="matrix-row"><span>${m.certamen}</span><span>Esf:${m.esfuerzo.toFixed(1)}</span><span>Ret:${m.retorno.toFixed(1)}</span></div>
+      `).join('');
+    }
+
+    // ======================== ACTUALIZAR TODO ========================
+    async function analizarCerveceria() {
+      const input = document.getElementById('breweryInput')?.value.trim() || 'Tamango';
+      if (!allData.length) return;
+      const existe = allData.some(d=>d.cerveceria?.toLowerCase().trim()===input.toLowerCase());
+      if (!existe) { alert('Cervecería no encontrada'); return; }
+      
+      renderWingsChart(allData);
+      renderKPI1(input, allData);
+      renderKPI2(input, allData);
+      renderKPI3(input, allData);
+      
+      // Actualizar precios slider
+      const m = metricsTable[currentRangeIndex];
+      document.getElementById('inversionValue').innerText = m.inversion;
+      document.getElementById('optimizacionValue').innerText = m.optimizacion;
+      document.getElementById('roiValue').innerText = m.roi;
+    }
+
+    // ======================== SLIDER ========================
+    function initSlider() {
+      const rail = document.getElementById('sliderRail'), thumb = document.getElementById('sliderThumb'), fill = document.getElementById('sliderFill');
+      const steps = [0, 0.25, 0.5, 0.75, 1];
+      function update(pos) {
+        const idx = steps.reduce((a,b,i)=> Math.abs(b-pos) < Math.abs(steps[a]-pos) ? i : a, 0);
+        currentRangeIndex = idx;
+        fill.style.width = `${steps[idx]*100}%`;
+        thumb.style.left = `${steps[idx]*rail.clientWidth}px`;
+        const m = metricsTable[idx];
+        document.getElementById('inversionValue').innerText = m.inversion;
+        document.getElementById('optimizacionValue').innerText = m.optimizacion;
+        document.getElementById('roiValue').innerText = m.roi;
+      }
+      let dragging = false;
+      thumb.addEventListener('mousedown', (e)=>{ dragging=true; e.preventDefault(); });
+      window.addEventListener('mousemove', (e)=> { if(!dragging) return; const rect = rail.getBoundingClientRect(); let pos = (e.clientX-rect.left)/rect.width; pos = Math.min(1,Math.max(0,pos)); update(pos); });
+      window.addEventListener('mouseup', ()=>{ dragging=false; });
+      rail.addEventListener('click', (e)=> { const rect = rail.getBoundingClientRect(); let pos = (e.clientX-rect.left)/rect.width; pos = Math.min(1,Math.max(0,pos)); update(pos); });
+      update(0.5);
+    }
+
+    // ======================== INICIO ========================
+    (async function init() {
+      await cargarEstilos();
+      allData = await cargarCSV();
+      if (allData.length) {
+        // Agregar input de búsqueda
+        const header = document.querySelector('.header');
+        const div = document.createElement('div');
+        div.className = 'brewery-selector';
+        div.innerHTML = `<input type="text" id="breweryInput" class="brewery-input" placeholder="Nombre cervecería" value="Tamango">
+                         <button class="btn-analyze" id="analyzeBtn">Analizar</button>`;
+        header.appendChild(div);
+        document.getElementById('analyzeBtn').addEventListener('click', analizarCerveceria);
+        analizarCerveceria();
+      }
+      initSlider();
+    })();
+  </script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </body>
 </html>
