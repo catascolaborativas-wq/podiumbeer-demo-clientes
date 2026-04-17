@@ -2,69 +2,67 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>PodiumBeer · Demo Clientes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .hero-bg { position: fixed; inset: 0; z-index: -2; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
-    .overlay-color { position: fixed; inset: 0; background: #06232E; opacity: 0.62; z-index: -1; }
-    .vignette { position: fixed; inset: 0; box-shadow: inset 0 0 120px rgba(0,0,0,0.6); pointer-events: none; z-index: 0; }
-    .app-container { width: 94%; max-width: 1200px; margin: 1.2rem auto 2rem; padding: 0 0.25rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.5rem; }
-    .header { text-align: center; }
-    .logo-header { width: 60%; max-width: 220px; margin: 0 auto 0.8rem; display: block; }
-    .main-slogan { font-size: clamp(18px, 5vw, 24px); font-weight: 700; color: #f7c32f; background: rgba(6,35,46,0.8); padding: 0.8rem 1rem; border-radius: 40px; margin: 1rem 0; line-height: 1.3; backdrop-filter: blur(8px); border: 1px solid rgba(247,195,47,0.35); text-align: center; }
-    .brewery-search { display: flex; gap: 0.5rem; background: rgba(0,0,0,0.35); backdrop-filter: blur(8px); padding: 0.5rem; border-radius: 60px; border: 1px solid rgba(255,255,255,0.15); margin-top: 0.8rem; }
-    .brewery-search input { flex: 1; background: transparent; border: none; padding: 0.8rem 1rem; color: #fff; font-size: 16px; outline: none; min-width: 0; }
-    .brewery-search input::placeholder { color: #b0c8d0; }
-    .brewery-search button { background: #e32c6c; border: none; border-radius: 40px; padding: 0 1.8rem; font-weight: 700; color: #fff; font-size: 15px; cursor: pointer; box-shadow: 0 4px 14px rgba(227,44,108,0.4); white-space: nowrap; }
-    .glass-card { background: rgba(6,35,46,0.38); backdrop-filter: blur(16px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.12); padding: 1.5rem 1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
-    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .chart-title { font-size: 1.4rem; font-weight: 800; color: #f7c32f; margin-bottom: 0.2rem; }
-    .chart-subtitle { font-size: 1rem; font-weight: 600; color: #cfdee0; margin-bottom: 0.3rem; }
-    .chart-explanation { font-size: 0.9rem; color: #a0b8c0; margin-bottom: 1.2rem; border-left: 4px solid #e32c6c; padding-left: 0.8rem; line-height: 1.4; }
-    .kpi-badge-container { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; justify-content: center; }
-    .kpi-badge { background: rgba(0,0,0,0.45); border-radius: 24px; padding: 0.6rem 1.2rem; border: 1px solid rgba(255,255,255,0.12); font-weight: 600; text-align: center; font-size: 0.9rem; color: #fff; }
-    .kpi-badge strong { font-size: 1.6rem; display: block; color: #f7c32f; line-height: 1.2; }
-    .chart-container { width: 100%; min-height: 380px; position: relative; margin: 0.5rem 0; }
-    canvas { display: block; width: 100%; height: auto; touch-action: none; }
-    .insight-box { background: rgba(0,0,0,0.25); border-radius: 18px; padding: 0.8rem 1.2rem; margin-top: 1.2rem; font-size: 0.95rem; line-height: 1.4; border-left: 6px solid #f7c32f; color: #eef2f3; }
-    .slider-block { margin: 1.5rem 0; }
-    .slider-header { display: flex; justify-content: space-between; color: #cfdee0; margin-bottom: 0.5rem; font-weight: 500; }
-    .slider-rail { width: 100%; height: 6px; background: #1e3a4a; border-radius: 20px; position: relative; cursor: pointer; margin: 1rem 0; }
-    .slider-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #e32c6c, #f7c32f); width: 0%; pointer-events: none; transition: width 0.05s; }
-    .slider-thumb { position: absolute; width: 26px; height: 26px; background: #fff; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 0 4px rgba(227,44,108,0.35); cursor: grab; z-index: 5; border: 2px solid #06232E; }
-    .slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: #b0c8d0; margin-top: 0.25rem; flex-wrap: wrap; }
-    .slider-current { text-align: center; margin-top: 0.5rem; font-weight: 700; color: #f7c32f; }
-    .plan-selector { display: flex; gap: 0.8rem; justify-content: center; margin: 1.2rem 0; }
-    .plan-btn { flex: 1; max-width: 150px; background: rgba(0,0,0,0.5); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 60px; padding: 0.8rem 0.2rem; cursor: pointer; transition: all 0.2s; text-align: center; backdrop-filter: blur(4px); }
-    .plan-btn.active { background: linear-gradient(135deg, #e32c6c, #b81a5c); border-color: #f7c32f; box-shadow: 0 0 18px rgba(227,44,108,0.5); transform: scale(1.02); }
-    .plan-name { font-weight: 800; font-size: 1rem; color: #fff; }
-    .plan-desc { font-size: 0.7rem; color: #cfdee0; margin-top: 0.2rem; }
-    .metric-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
-    .metric-icon img { width: 44px; height: auto; }
-    .metric-info { flex: 1; }
-    .metric-label { font-weight: 800; font-size: 1rem; }
-    .metric-hint { font-size: 0.7rem; color: #cfdee0; }
-    .metric-value { font-size: 1.6rem; font-weight: 800; color: #f7c32f; white-space: nowrap; }
-    .cta-button { background: linear-gradient(90deg, #e32c6c, #b81a5c); border: none; border-radius: 60px; padding: 1rem 2rem; font-weight: 800; color: #fff; font-size: 1.1rem; cursor: pointer; box-shadow: 0 6px 20px rgba(227,44,108,0.5); width: 100%; }
-    .credits { text-align: center; color: #f7c32f; font-weight: 600; background: rgba(0,0,0,0.4); padding: 0.8rem; border-radius: 40px; backdrop-filter: blur(4px); margin-top: 0.5rem; }
-    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 1rem; }
-    .rec-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #fff; }
-    .rec-table th { text-align: left; padding: 0.5rem; border-bottom: 1px solid #f7c32f; color: #f7c32f; }
-    .rec-table td { padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    @media (max-width: 600px) { .app-container { width: 96%; } .glass-card { padding: 1.2rem 0.8rem; } .chart-title { font-size: 1.2rem; } .metric-value { font-size: 1.3rem; } }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { font-family:'Inter',sans-serif; background:#000; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    .hero-bg { position:fixed; inset:0; z-index:-2; }
+    .hero-bg img { width:100%; height:100%; object-fit:cover; }
+    .overlay-color { position:fixed; inset:0; background:#06232E; opacity:0.65; z-index:-1; }
+    .vignette { position:fixed; inset:0; box-shadow:inset 0 0 120px rgba(0,0,0,0.6); pointer-events:none; z-index:0; }
+    .app-container { width:94%; max-width:1200px; margin:1.2rem auto 2rem; padding:0 0.25rem 1rem; position:relative; z-index:2; display:flex; flex-direction:column; gap:1.5rem; height:90vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    .header { text-align:center; }
+    .logo-header { width:60%; max-width:220px; margin:0 auto 0.8rem; display:block; }
+    .main-slogan { font-size:clamp(16px,4.5vw,22px); font-weight:700; color:#f7c32f; background:rgba(6,35,46,0.8); padding:0.8rem 1rem; border-radius:40px; margin:1rem 0; line-height:1.3; backdrop-filter:blur(8px); border:1px solid rgba(247,195,47,0.35); text-align:center; }
+    .brewery-search { display:flex; gap:0.5rem; background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); padding:0.5rem; border-radius:60px; border:1px solid rgba(255,255,255,0.15); margin-top:0.8rem; }
+    .brewery-search input { flex:1; background:transparent; border:none; padding:0.8rem 1rem; color:#fff; font-size:16px; outline:none; min-width:0; }
+    .brewery-search input::placeholder { color:#b0c8d0; }
+    .brewery-search button { background:#e32c6c; border:none; border-radius:40px; padding:0 1.8rem; font-weight:700; color:#fff; font-size:15px; cursor:pointer; box-shadow:0 4px 14px rgba(227,44,108,0.4); white-space:nowrap; }
+    .glass-card { background:rgba(6,35,46,0.4); backdrop-filter:blur(16px); border-radius:2rem; border:1px solid rgba(255,255,255,0.15); padding:1.5rem 1rem; box-shadow:0 8px 24px rgba(0,0,0,0.25); }
+    .section-title { font-size:1.1rem; font-weight:700; letter-spacing:1px; color:#f7c32f; text-transform:uppercase; margin-bottom:0.5rem; }
+    .chart-title { font-size:1.3rem; font-weight:800; color:#f7c32f; margin-bottom:0.2rem; }
+    .chart-subtitle { font-size:1rem; font-weight:600; color:#cfdee0; margin-bottom:0.3rem; }
+    .chart-explanation { font-size:0.85rem; color:#a0b8c0; margin-bottom:1.2rem; border-left:4px solid #e32c6c; padding-left:0.8rem; line-height:1.4; }
+    .kpi-badge-container { display:flex; flex-wrap:wrap; gap:0.6rem; margin-bottom:1rem; justify-content:center; }
+    .kpi-badge { background:rgba(0,0,0,0.5); border-radius:24px; padding:0.6rem 1.2rem; border:1px solid rgba(255,255,255,0.15); font-weight:600; text-align:center; font-size:0.8rem; color:#fff; }
+    .kpi-badge strong { font-size:1.5rem; display:block; color:#f7c32f; }
+    .chart-container { width:100%; min-height:340px; position:relative; margin:0.5rem 0; }
+    canvas { display:block; width:100%; height:auto; touch-action:none; }
+    .insight-box { background:rgba(0,0,0,0.3); border-radius:18px; padding:0.8rem 1.2rem; margin-top:1.2rem; font-size:0.9rem; border-left:6px solid #f7c32f; }
+    .slider-block { margin:1.5rem 0; }
+    .slider-header { display:flex; justify-content:space-between; color:#cfdee0; margin-bottom:0.5rem; }
+    .slider-rail { width:100%; height:6px; background:#1e3a4a; border-radius:20px; position:relative; cursor:pointer; margin:1rem 0; }
+    .slider-fill { height:100%; border-radius:20px; background:linear-gradient(90deg,#e32c6c,#f7c32f); width:0%; pointer-events:none; }
+    .slider-thumb { position:absolute; width:26px; height:26px; background:#fff; border-radius:50%; top:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 4px rgba(227,44,108,0.4); cursor:grab; z-index:5; border:2px solid #06232E; }
+    .slider-labels { display:flex; justify-content:space-between; font-size:12px; color:#b0c8d0; margin-top:0.25rem; flex-wrap:wrap; }
+    .slider-current { text-align:center; margin-top:0.5rem; font-weight:700; color:#f7c32f; }
+    .plan-selector { display:flex; gap:0.8rem; justify-content:center; margin:1.2rem 0; }
+    .plan-btn { flex:1; max-width:150px; background:rgba(0,0,0,0.5); border:1.5px solid rgba(255,255,255,0.25); border-radius:60px; padding:0.8rem 0.2rem; cursor:pointer; text-align:center; }
+    .plan-btn.active { background:linear-gradient(135deg,#e32c6c,#b81a5c); border-color:#f7c32f; }
+    .plan-name { font-weight:800; font-size:1rem; color:#fff; }
+    .plan-desc { font-size:0.7rem; color:#cfdee0; }
+    .metric-row { display:flex; align-items:center; gap:1rem; margin-bottom:1.2rem; }
+    .metric-icon img { width:44px; }
+    .metric-info { flex:1; }
+    .metric-label { font-weight:800; }
+    .metric-value { font-size:1.6rem; font-weight:800; color:#f7c32f; white-space:nowrap; }
+    .cta-button { background:linear-gradient(90deg,#e32c6c,#b81a5c); border:none; border-radius:60px; padding:1rem 2rem; font-weight:800; color:#fff; font-size:1.1rem; width:100%; }
+    .credits { text-align:center; color:#f7c32f; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:40px; margin-top:0.5rem; }
+    .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:1rem; }
+    .rec-table { width:100%; border-collapse:collapse; font-size:13px; color:#fff; }
+    .rec-table th { border-bottom:1px solid #f7c32f; padding:0.5rem; color:#f7c32f; }
+    .rec-table td { padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
-<div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Fondo" onerror="this.style.display='none'"></div>
+<div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="bg" onerror="this.style.display='none'"></div>
 <div class="overlay-color"></div>
 <div class="vignette"></div>
 
-<div class="app-container">
+<div class="app-container" id="appContainer">
   <div class="header">
     <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\'%3E%3Crect width=\'200\' height=\'60\' fill=\'%2306232E\'/%3E%3Ctext x=\'20\' y=\'40\' fill=\'%23f7c32f\' font-size=\'20\' font-weight=\'bold\'%3EPodiumBeer%3C/text%3E%3C/svg%3E'">
     <div class="main-slogan">⚡ “No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca.”</div>
@@ -73,10 +71,9 @@
       <datalist id="breweryList"></datalist>
       <button id="analyzeBtn">Analizar</button>
     </div>
-    <div style="font-size:0.8rem; color:#a0b8c0; margin-top:0.4rem;">Ej: Kunstmann, Guayacan, Tamango...</div>
   </div>
 
-  <!-- VISTA 1: MEDALLAS -->
+  <!-- GRÁFICO 1: MEDALLAS -->
   <div class="glass-card">
     <div class="chart-title">Tus medallas: las que suman... y las que solo adornan</div>
     <div class="chart-subtitle">¿Cuáles de tus medallas realmente venden?</div>
@@ -86,7 +83,7 @@
     <div class="insight-box" id="medalInsight">Ingresa una cervecería para revelar el valor real de sus medallas.</div>
   </div>
 
-  <!-- VISTA 2: RADAR -->
+  <!-- GRÁFICO 2: RADAR -->
   <div class="glass-card">
     <div class="chart-title">Estilos donde puedes ser el referente (antes que otro)</div>
     <div class="chart-subtitle">Oportunidades ocultas en tu portafolio</div>
@@ -97,7 +94,7 @@
     <div class="table-responsive" id="radarTableWrapper"></div>
   </div>
 
-  <!-- VISTA 3: ESFUERZO VS RETORNO -->
+  <!-- GRÁFICO 3: ESFUERZO VS RETORNO -->
   <div class="glass-card">
     <div class="chart-title">¿En qué concursos estás perdiendo plata y energía?</div>
     <div class="chart-subtitle">Inversión vs. Resultado: los números no mienten</div>
@@ -117,9 +114,9 @@
     </div>
   </div>
 
-  <!-- SLIDER B: VENTAS ANUALES -->
+  <!-- SLIDER B: VENTAS -->
   <div class="glass-card">
-    <div class="section-title">VENTAS ANUALES (TRAMO)</div>
+    <div class="section-title">VENTAS ANUALES</div>
     <div class="slider-block">
       <div class="slider-header"><span>Ventas en CLP</span> <span id="salesValueLabel">$216M</span></div>
       <div class="slider-rail" id="salesRail"><div class="slider-fill" id="salesFill"></div><div class="slider-thumb" id="salesThumb"></div></div>
@@ -128,7 +125,7 @@
     </div>
   </div>
 
-  <!-- SELECTOR DE PLANES -->
+  <!-- PLANES -->
   <div class="glass-card">
     <div class="section-title">NIVEL DE ALIANZA</div>
     <div class="plan-selector" id="planSelector">
@@ -141,26 +138,28 @@
   <!-- MÉTRICAS -->
   <div class="glass-card">
     <div class="section-title">IMPACTO EN TU NEGOCIO</div>
-    <div class="metric-row"><div class="metric-icon"><img src="assets/icono_inversion.png" alt="Inv" onerror="this.style.display='none'"></div><div class="metric-info"><div class="metric-label">Inversión Inteligente</div><div class="metric-hint">Valor mensual ajustado a tu escala</div></div><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
-    <div class="metric-row"><div class="metric-icon"><img src="assets/icono_valor.png" alt="Val" onerror="this.style.display='none'"></div><div class="metric-info"><div class="metric-label">Valor Recuperado Estimado</div><div class="metric-hint">Retorno anual proyectado</div></div><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
-    <div class="metric-row"><div class="metric-icon"><img src="assets/icono_impacto.png" alt="Imp" onerror="this.style.display='none'"></div><div class="metric-info"><div class="metric-label">Impacto en Rentabilidad</div><div class="metric-hint">% de mejora estimada</div></div><div class="metric-value" id="roiValue">65%</div></div>
+    <div class="metric-row"><div class="metric-icon"><img src="assets/icono_inversion.png" alt="inv" onerror="this.style.display='none'"></div><div class="metric-info"><div class="metric-label">Inversión Inteligente</div><div class="metric-hint">Valor mensual ajustado</div></div><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
+    <div class="metric-row"><div class="metric-icon"><img src="assets/icono_valor.png" alt="val" onerror="this.style.display='none'"></div><div class="metric-info"><div class="metric-label">Valor Recuperado Estimado</div><div class="metric-hint">Retorno anual proyectado</div></div><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
+    <div class="metric-row"><div class="metric-icon"><img src="assets/icono_impacto.png" alt="imp" onerror="this.style.display='none'"></div><div class="metric-info"><div class="metric-label">Impacto en Rentabilidad</div><div class="metric-hint">% de mejora estimada</div></div><div class="metric-value" id="roiValue">65%</div></div>
   </div>
 
-  <div class="cta-wrapper"><button class="cta-button" id="ctaBtn">Agenda tu Diagnóstico Estratégico</button></div>
+  <button class="cta-button" id="ctaBtn">Agenda tu Diagnóstico Estratégico</button>
   <div class="credits">Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015</div>
 </div>
 
 <script>
   (function(){
     "use strict";
-    // Polyfill básico
+    // Polyfill para requestAnimationFrame en iOS 12
     if (!window.requestAnimationFrame) window.requestAnimationFrame = function(cb){ return setTimeout(cb,16); };
-
-    // ---------- DATOS GLOBALES ----------
+    
+    // ---------- ESTADO GLOBAL ----------
     var allData = [];
-    var medalChart = null, radarChart = null, effortChart = null;
     var currentBrewery = '';
     var prodIndex = 3, salesIndex = 1, currentTier = 'podium';
+    var medalChart = null, radarChart = null, effortChart = null;
+
+    // Constantes
     var PROD_LABELS = ['<500 hl','501-1000 hl','1001-5000 hl','5001-10000 hl','≥20000 hl'];
     var SALES_VALUES = [54000000,216000000,540000000,720000000];
     var SALES_LABELS = ['$54M','$216M','$540M','$720M'];
@@ -169,121 +168,101 @@
 
     // ---------- UTILIDADES ----------
     function normalizeStr(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
-    function getYear(r){ var y=r.anio||(r.fecha?r.fecha.split('-')[0]:''); return y?parseInt(y,10):null; }
     function getStyle(r){ return r.estilo_cliente||r.estilo_limpio||r.estilo_corregido||r.estilo||'Sin estilo'; }
-    function getMedalWeight(m){ var w=normalizeStr(m); if(w.indexOf('oro')>-1)return 3; if(w.indexOf('plata')>-1)return 2; if(w.indexOf('bronce')>-1)return 1; return 1; }
-    function getBorderColor(medal){ var w=getMedalWeight(medal); if(w===3)return '#FFD700'; if(w===2)return '#C0C0C0'; return '#CD7F32'; }
+    function getMedalWeight(m){ var w=normalizeStr(m); if(w.indexOf('oro')>-1)return 3; if(w.indexOf('plata')>-1)return 2; return 1; }
+    function getBorderColor(medal){ var w=getMedalWeight(medal); return w===3?'#FFD700':(w===2?'#C0C0C0':'#CD7F32'); }
 
-    // ---------- CARGA DE CSV ----------
+    // ---------- CARGA CSV (separador TAB, como en tu original) ----------
     function loadCSV(){
       return fetch('BBDD_Medallero_Chile.csv')
         .then(function(r){ if(!r.ok) throw new Error('CSV no encontrado'); return r.text(); })
         .then(function(t){
-          var lines=t.split('\n');
-          var headers=lines[0].replace(/\r/g,'').split('\t').map(function(h){return h.trim();});
-          var rows=[];
-          for(var i=1;i<lines.length;i++){
-            var line=lines[i].trim(); if(!line) continue;
-            var vals=line.replace(/\r/g,'').split('\t');
-            var obj={};
-            headers.forEach(function(h,idx){ var v=vals[idx]?vals[idx].trim():''; if(h==='cerveceria'||h==='certamen'||h==='estilo') v=v.replace(/\b\w/g,function(l){return l.toUpperCase();}); obj[h]=v; });
-            if(!obj.cerveceria||obj.medalla_base==='PENDIENTE') continue;
-            rows.push(obj);
+          var lines = t.split('\n');
+          var headers = lines[0].replace(/\r/g,'').split('\t').map(function(h){return h.trim();});
+          var rows = [];
+          for(var i=1; i<lines.length; i++){
+            var line = lines[i].trim(); if(!line) continue;
+            var vals = line.replace(/\r/g,'').split('\t');
+            var obj = {};
+            headers.forEach(function(h,idx){ var v=vals[idx]?vals[idx].trim():''; if(h==='cerveceria'||h==='certamen') v=v.replace(/\b\w/g,function(l){return l.toUpperCase();}); obj[h]=v; });
+            if(obj.cerveceria && obj.medalla_base!=='PENDIENTE') rows.push(obj);
           }
-          console.log('CSV cargado:',rows.length);
+          console.log('CSV OK:',rows.length);
           return rows;
         }).catch(function(e){ console.warn(e); alert('No se pudo cargar BBDD_Medallero_Chile.csv'); return []; });
     }
 
     // ---------- TABLAS DERIVADAS ----------
-    function certScoreMap(){
-      var map={};
-      allData.forEach(function(r){ if(r.certamen&&!map[r.certamen]){ var n=normalizeStr(r.certamen); var s=2.5; if(n.includes('world beer cup')||n.includes('world beer awards')||n.includes('european beer star')) s=5; else if(n.includes('copa cervezas de america')) s=4; else if(n.includes('tayrona')||n.includes('south beer cup')) s=3.8; else if(n.includes('nacional')&&n.includes('chile')) s=3; map[r.certamen]=s; } });
-      return map;
-    }
-    function satMap(){
-      var total=allData.length, count={};
-      allData.forEach(function(r){ var s=getStyle(r); count[s]=(count[s]||0)+1; });
-      var map={};
-      Object.keys(count).forEach(function(s){ var sat=count[s]/total; map[s]=sat>0.03?1:(sat>=0.01?2:3); });
-      return map;
-    }
-    function difMap(){
-      var map={};
-      allData.forEach(function(r){ if(!r.certamen)return; if(r.entries&&!isNaN(parseFloat(r.entries))){ var e=parseFloat(r.entries); var dif=1-(1/e); map[r.certamen]=dif>=0.95?3:(dif>=0.90?2:1); }else if(!map[r.certamen]){ map[r.certamen]=2; } });
-      return map;
-    }
-    function valorEstrategico(row, certM, satM, difM){
-      var cs=certM[row.certamen]||2.5, ss=satM[getStyle(row)]||2, ds=difM[row.certamen]||2;
-      var tot=cs+ss+ds;
-      if(tot>=9) return 'ALTO'; if(tot>=6) return 'MEDIO'; return 'BAJO';
+    function buildMaps(){
+      var certScore = {}; allData.forEach(function(r){ if(r.certamen && !certScore[r.certamen]){ var n=normalizeStr(r.certamen); var s=2.5; if(n.includes('world beer cup')) s=5; else if(n.includes('copa cervezas de america')) s=4; else if(n.includes('nacional')) s=3; certScore[r.certamen]=s; }});
+      var satMap = {}; var total=allData.length; var count={}; allData.forEach(function(r){ var s=getStyle(r); count[s]=(count[s]||0)+1; }); Object.keys(count).forEach(function(s){ var sat=count[s]/total; satMap[s]=sat>0.03?1:(sat>=0.01?2:3); });
+      var difMap = {}; allData.forEach(function(r){ if(!r.certamen)return; if(r.entries&&!isNaN(parseFloat(r.entries))){ var e=parseFloat(r.entries); var dif=1-(1/e); difMap[r.certamen]=dif>=0.95?3:(dif>=0.90?2:1); }else if(!difMap[r.certamen]){ difMap[r.certamen]=2; }});
+      return {certScore:certScore, satMap:satMap, difMap:difMap};
     }
 
-    // ---------- ENDPOINTS (con motivo_corto) ----------
+    function valorEstrategico(row, maps){
+      var cs=maps.certScore[row.certamen]||2.5, ss=maps.satMap[getStyle(row)]||2, ds=maps.difMap[row.certamen]||2;
+      var tot=cs+ss+ds; return tot>=9?'ALTO':(tot>=6?'MEDIO':'BAJO');
+    }
+
+    // ---------- ENDPOINTS ----------
     function getMedallasValor(brewery){
-      var certM=certScoreMap(), satM=satMap(), difM=difMap();
-      var target=normalizeStr(brewery);
+      var maps=buildMaps(); var target=normalizeStr(brewery);
       return allData.filter(function(r){ return normalizeStr(r.cerveceria)===target; }).map(function(r){
-        var val=valorEstrategico(r,certM,satM,difM);
-        var motivo='';
-        if(val==='ALTO') motivo='Concurso de alto prestigio, estilo poco saturado.';
-        else if(val==='MEDIO') motivo='Buen certamen, pero estilo con competencia moderada.';
-        else motivo='Certamen de menor exigencia o estilo muy competido.';
-        return { certamen:r.certamen, anio:r.anio||(r.fecha?r.fecha.split('-')[0]:''), estilo:getStyle(r), pais_certamen:r.pais_certamen||'', medalla:r.medalla_base, valor_estrategico:val, motivo_corto:motivo };
+        var val=valorEstrategico(r,maps);
+        var motivo=val==='ALTO'?'Concurso exigente, estilo poco saturado.':(val==='MEDIO'?'Buen certamen, competencia moderada.':'Menor exigencia o estilo saturado.');
+        return {certamen:r.certamen,anio:r.anio||'',estilo:getStyle(r),medalla:r.medalla_base,valor:val,motivo:motivo};
       });
     }
+
     function getEstilosEspacio(brewery){
-      var target=normalizeStr(brewery);
+      var maps=buildMaps(); var target=normalizeStr(brewery);
       var brewRows=allData.filter(function(r){ return normalizeStr(r.cerveceria)===target; });
       var estilos=[]; brewRows.forEach(function(r){ var s=getStyle(r); if(estilos.indexOf(s)===-1)estilos.push(s); });
-      var satM=satMap(), certM=certScoreMap(), difM=difMap();
       var allChile=allData.filter(function(r){ return normalizeStr(r.pais)==='chile'; });
       return estilos.map(function(e){
-        var satInv=satM[e]===1?0:(satM[e]===2?1:2);
+        var satInv=maps.satMap[e]===1?0:(maps.satMap[e]===2?1:2);
         var totalE=allData.filter(function(r){ return getStyle(r)===e; }).length;
         var chileE=allChile.filter(function(r){ return getStyle(r)===e; }).length;
         var prop=totalE?chileE/totalE:0;
-        var ptsPres=prop<0.10?2:(prop<=0.30?1:0);
+        var ptsPres=prop<0.1?2:(prop<=0.3?1:0);
         var brewE=brewRows.filter(function(r){ return getStyle(r)===e; });
         var altas=0,medias=0;
-        brewE.forEach(function(r){ var v=valorEstrategico(r,certM,satM,difM); if(v==='ALTO')altas++; else if(v==='MEDIO')medias++; });
+        brewE.forEach(function(r){ var v=valorEstrategico(r,maps); if(v==='ALTO')altas++; else if(v==='MEDIO')medias++; });
         var ptsHist=altas>=1?2:(medias>=1?1:0);
         var espacio=satInv+ptsPres+ptsHist;
         var clasif=espacio>=5?'ALTO':(espacio>=3?'MEDIO':'POCO');
-        var motivo='';
-        if(clasif==='ALTO') motivo='Pocas medallas globales, casi sin Chile y ya tienes resultados aquí.';
-        else if(clasif==='MEDIO') motivo='Hay competencia pero tu desempeño te da opción.';
-        else motivo='Mercado muy competido, quizás no sea tu foco.';
-        return { estilo:e, espacio_score:espacio, espacio_crecimiento:clasif, motivo_corto:motivo };
+        var motivo=clasif==='ALTO'?'Pocas medallas globales, casi sin Chile y tienes resultados.':(clasif==='MEDIO'?'Hay competencia pero tu desempeño te da opción.':'Mercado competido.');
+        return {estilo:e,score:espacio,clasif:clasif,motivo:motivo};
       });
     }
-    function getConcursosEsfuerzoRetorno(brewery){
-      var target=normalizeStr(brewery);
+
+    function getConcursosEsfuerzo(brewery){
+      var maps=buildMaps(); var target=normalizeStr(brewery);
       var rows=allData.filter(function(r){ return normalizeStr(r.cerveceria)===target; });
       var certs=[]; rows.forEach(function(r){ if(certs.indexOf(r.certamen)===-1)certs.push(r.certamen); });
-      var certM=certScoreMap(), satM=satMap(), difM=difMap();
       var datos=certs.map(function(c){
         var cRows=rows.filter(function(r){ return r.certamen===c; });
-        var years=[]; cRows.forEach(function(r){ var y=getYear(r); if(y&&years.indexOf(y)===-1)years.push(y); });
-        var effRaw=years.length*(certM[c]||2.5);
+        var years=[]; cRows.forEach(function(r){ var y=r.anio||(r.fecha?r.fecha.split('-')[0]:''); if(y&&years.indexOf(y)===-1)years.push(y); });
+        var effRaw=years.length*(maps.certScore[c]||2.5);
         var altas=0,medias=0;
-        cRows.forEach(function(r){ var v=valorEstrategico(r,certM,satM,difM); if(v==='ALTO')altas++; else if(v==='MEDIO')medias++; });
+        cRows.forEach(function(r){ var v=valorEstrategico(r,maps); if(v==='ALTO')altas++; else if(v==='MEDIO')medias++; });
         var retRaw=altas*2+medias*1;
-        return { certamen:c, effortRaw:effRaw, returnRaw:retRaw };
+        return {certamen:c,effRaw:effRaw,retRaw:retRaw};
       });
       if(!datos.length) return [];
-      var minEf=Math.min.apply(null,datos.map(function(d){return d.effortRaw;}));
-      var maxEf=Math.max.apply(null,datos.map(function(d){return d.effortRaw;}));
-      var minRt=Math.min.apply(null,datos.map(function(d){return d.returnRaw;}));
-      var maxRt=Math.max.apply(null,datos.map(function(d){return d.returnRaw;}));
+      var minEf=Math.min.apply(null,datos.map(function(d){return d.effRaw;}));
+      var maxEf=Math.max.apply(null,datos.map(function(d){return d.effRaw;}));
+      var minRt=Math.min.apply(null,datos.map(function(d){return d.retRaw;}));
+      var maxRt=Math.max.apply(null,datos.map(function(d){return d.retRaw;}));
       return datos.map(function(d){
-        var esf=1+9*(d.effortRaw-minEf)/(maxEf-minEf||1);
-        var ret=1+9*(d.returnRaw-minRt)/(maxRt-minRt||1);
+        var esf=1+9*(d.effRaw-minEf)/(maxEf-minEf||1);
+        var ret=1+9*(d.retRaw-minRt)/(maxRt-minRt||1);
         var motivo='';
-        if(esf>=7&&ret<=3) motivo='Mucha energía puesta, poco cambio real. Decide si seguir invirtiendo igual.';
-        else if(esf<=4&&ret>=7) motivo='Máximo retorno con mínimo desgaste. Este certamen es un tesoro.';
-        else motivo='Rendimiento equilibrado, sin extremos.';
-        return { certamen:d.certamen, esfuerzo:Number(esf.toFixed(1)), retorno:Number(ret.toFixed(1)), motivo_corto:motivo };
+        if(esf>=7&&ret<=3) motivo='Mucha energía puesta, poco cambio real.';
+        else if(esf<=4&&ret>=7) motivo='Máximo retorno con mínimo desgaste.';
+        else motivo='Rendimiento equilibrado.';
+        return {certamen:d.certamen,esfuerzo:Number(esf.toFixed(1)),retorno:Number(ret.toFixed(1)),motivo:motivo};
       });
     }
 
@@ -293,23 +272,26 @@
       var ctx=document.getElementById('medalChart').getContext('2d');
       if(medalChart) medalChart.destroy();
       var alto=0,medio=0,bajo=0;
-      var datasets=[{label:'ALTO',data:[],backgroundColor:'#1eab9b',borderWidth:2},{label:'MEDIO',data:[],backgroundColor:'#f7c32f',borderWidth:2},{label:'BAJO',data:[],backgroundColor:'#e32c6c',borderWidth:2}];
+      var dsALTO=[], dsMEDIO=[], dsBAJO=[];
       data.forEach(function(m){
-        var y=m.valor_estrategico==='ALTO'?3:(m.valor_estrategico==='MEDIO'?2:1);
-        var r=12+getMedalWeight(m.medalla)*3;  // Burbujas más grandes
+        var y=m.valor==='ALTO'?3:(m.valor==='MEDIO'?2:1);
+        var r=12+getMedalWeight(m.medalla)*3;
         var bord=getBorderColor(m.medalla);
-        var ds=m.valor_estrategico==='ALTO'?0:(m.valor_estrategico==='MEDIO'?1:2);
-        datasets[ds].data.push({x:m.certamen,y:y,r:r});
-        datasets[ds].borderColor=bord;
-        if(m.valor_estrategico==='ALTO')alto++; else if(m.valor_estrategico==='MEDIO')medio++; else bajo++;
+        var obj={x:m.certamen,y:y,r:r};
+        if(m.valor==='ALTO'){ dsALTO.push(obj); alto++; }
+        else if(m.valor==='MEDIO'){ dsMEDIO.push(obj); medio++; }
+        else { dsBAJO.push(obj); bajo++; }
       });
       document.getElementById('medalSummary').innerHTML='<div class="kpi-badge"><strong>'+data.length+'</strong>Total</div><div class="kpi-badge" style="border-color:#1eab9b;"><strong>'+alto+'</strong>ALTO</div><div class="kpi-badge" style="border-color:#f7c32f;"><strong>'+medio+'</strong>MEDIO</div><div class="kpi-badge" style="border-color:#e32c6c;"><strong>'+bajo+'</strong>BAJO</div>';
-      medalChart=new Chart(ctx,{type:'bubble',data:{datasets:datasets},options:{
+      medalChart=new Chart(ctx,{type:'bubble',data:{datasets:[
+        {label:'ALTO',data:dsALTO,backgroundColor:'#1eab9b',borderColor:'#FFD700',borderWidth:2},
+        {label:'MEDIO',data:dsMEDIO,backgroundColor:'#f7c32f',borderColor:'#C0C0C0',borderWidth:2},
+        {label:'BAJO',data:dsBAJO,backgroundColor:'#e32c6c',borderColor:'#CD7F32',borderWidth:2}
+      ]},options:{
         responsive:true, maintainAspectRatio:false,
-        plugins:{ tooltip:{ bodyFont:{size:18}, padding:16, callbacks:{ label:function(ctx){ var d=data[ctx.dataIndex]; return d.certamen+' · '+d.estilo+' · '+d.medalla+' | Valor: '+d.valor_estrategico+' | '+d.motivo_corto; } } } },
-        scales:{ x:{ ticks:{color:'#fff',maxRotation:45,font:{size:13}}, grid:{display:false} }, y:{ min:0,max:4, ticks:{color:'#fff',callback:function(v){return['','BAJO','MEDIO','ALTO'][v]||'';},font:{size:15}}, grid:{color:'rgba(255,255,255,0.15)'} } }
+        plugins:{tooltip:{bodyFont:{size:16},callbacks:{label:function(ctx){var d=data[ctx.dataIndex];return d.certamen+' · '+d.estilo+' · '+d.medalla+' | '+d.valor+' | '+d.motivo;}}}},
+        scales:{x:{ticks:{color:'#fff',maxRotation:45}},y:{min:0,max:4,ticks:{color:'#fff',callback:function(v){return['','BAJO','MEDIO','ALTO'][v]||'';}}}}
       }});
-      document.getElementById('medalInsight').innerHTML=alto>0?'<strong>✓ Fortaleza:</strong> Tienes '+alto+' medalla(s) de ALTO valor. Construyen tu marca.':'<strong>⚠️ Oportunidad:</strong> Apunta a certámenes de mayor prestigio.';
     }
 
     function renderRadarChart(){
@@ -317,24 +299,23 @@
       var ctx=document.getElementById('radarChart').getContext('2d');
       if(radarChart) radarChart.destroy();
       var alto=0,medio=0,poco=0;
-      estilos.forEach(function(e){ if(e.espacio_crecimiento==='ALTO')alto++; else if(e.espacio_crecimiento==='MEDIO')medio++; else poco++; });
+      estilos.forEach(function(e){ if(e.clasif==='ALTO')alto++; else if(e.clasif==='MEDIO')medio++; else poco++; });
       document.getElementById('radarSummary').innerHTML='<div class="kpi-badge"><strong>'+estilos.length+'</strong>Estilos</div><div class="kpi-badge" style="border-color:#1eab9b;"><strong>'+alto+'</strong>ALTO</div><div class="kpi-badge" style="border-color:#f7c32f;"><strong>'+medio+'</strong>MEDIO</div><div class="kpi-badge" style="border-color:#999;"><strong>'+poco+'</strong>POCO</div>';
       var labels=estilos.map(function(e){return e.estilo;});
-      var scores=estilos.map(function(e){return e.espacio_score;});
-      var colors=estilos.map(function(e){return e.espacio_crecimiento==='ALTO'?'#1eab9b':(e.espacio_crecimiento==='MEDIO'?'#f7c32f':'#999');});
-      radarChart=new Chart(ctx,{type:'radar',data:{labels:labels,datasets:[{label:'Espacio (0-10)',data:scores,backgroundColor:'rgba(30,171,155,0.2)',borderColor:'#1eab9b',pointBackgroundColor:colors,pointBorderColor:'#fff',borderWidth:3,pointRadius:6,pointHoverRadius:9}]},options:{
+      var scores=estilos.map(function(e){return e.score;});
+      var colors=estilos.map(function(e){return e.clasif==='ALTO'?'#1eab9b':(e.clasif==='MEDIO'?'#f7c32f':'#999');});
+      radarChart=new Chart(ctx,{type:'radar',data:{labels:labels,datasets:[{data:scores,backgroundColor:'rgba(30,171,155,0.2)',borderColor:'#1eab9b',pointBackgroundColor:colors,pointBorderColor:'#fff',borderWidth:3}]},options:{
         responsive:true, maintainAspectRatio:false,
-        plugins:{ tooltip:{ bodyFont:{size:18}, padding:16, callbacks:{ label:function(ctx){ var e=estilos[ctx.dataIndex]; return e.estilo+': '+e.espacio_crecimiento+' ('+e.espacio_score+'/10) | '+e.motivo_corto; } } } },
-        scales:{ r:{ min:0,max:10, ticks:{color:'#fff',font:{size:14}}, grid:{color:'rgba(255,255,255,0.15)'} } }
+        plugins:{tooltip:{bodyFont:{size:16},callbacks:{label:function(ctx){var e=estilos[ctx.dataIndex];return e.estilo+': '+e.clasif+' ('+e.score+'/6) | '+e.motivo;}}}},
+        scales:{r:{min:0,max:6,ticks:{color:'#fff'}}}
       }});
       var html='<table class="rec-table"><tr><th>Estilo</th><th>Espacio</th><th>Recomendación</th></tr>';
-      estilos.sort(function(a,b){return b.espacio_score-a.espacio_score;}).forEach(function(e){ var rec=e.espacio_crecimiento==='ALTO'?'Afinar y mostrar en concursos':(e.espacio_crecimiento==='MEDIO'?'Evaluar competencia':'Quizás no es tu foco'); html+='<tr><td>'+e.estilo+'</td><td>'+e.espacio_crecimiento+'</td><td>'+rec+'</td></tr>'; });
-      html+='</table>'; document.getElementById('radarTableWrapper').innerHTML=html;
-      document.getElementById('radarInsight').innerHTML=alto>0?'<strong>✓ Oportunidad:</strong> '+alto+' estilo(s) con espacio ALTO para ser referente.':'<strong>⊙</strong> Revisa los estilos con espacio MEDIO.';
+      estilos.sort(function(a,b){return b.score-a.score;}).forEach(function(e){ var rec=e.clasif==='ALTO'?'Afinar y mostrar':(e.clasif==='MEDIO'?'Evaluar':'Quizás no es tu foco'); html+='<tr><td>'+e.estilo+'</td><td>'+e.clasif+'</td><td>'+rec+'</td></tr>'; });
+      document.getElementById('radarTableWrapper').innerHTML=html+'</table>';
     }
 
     function renderEffortChart(){
-      var concursos=getConcursosEsfuerzoRetorno(currentBrewery);
+      var concursos=getConcursosEsfuerzo(currentBrewery);
       var ctx=document.getElementById('effortChart').getContext('2d');
       if(effortChart) effortChart.destroy();
       var tesoro=0,alerta=0;
@@ -342,20 +323,19 @@
         var bg='#a0b8c0';
         if(c.esfuerzo<=4&&c.retorno>=7){ bg='#1eab9b'; tesoro++; }
         else if(c.esfuerzo>=7&&c.retorno<=3){ bg='#e32c6c'; alerta++; }
-        return { label:c.certamen, data:[{x:c.esfuerzo,y:c.retorno,r:14}], backgroundColor:bg, borderColor:'#fff', borderWidth:2 };
+        return {label:c.certamen,data:[{x:c.esfuerzo,y:c.retorno,r:14}],backgroundColor:bg,borderColor:'#fff',borderWidth:2};
       });
       document.getElementById('effortSummary').innerHTML='<div class="kpi-badge"><strong>'+concursos.length+'</strong>Certámenes</div><div class="kpi-badge" style="border-color:#1eab9b;"><strong>'+tesoro+'</strong>Tesoro</div><div class="kpi-badge" style="border-color:#e32c6c;"><strong>'+alerta+'</strong>Alerta</div>';
       effortChart=new Chart(ctx,{type:'bubble',data:{datasets:datasets},options:{
         responsive:true, maintainAspectRatio:false,
-        plugins:{ tooltip:{ bodyFont:{size:18}, padding:16, callbacks:{ label:function(ctx){ var c=concursos[ctx.datasetIndex]; return c.certamen+' | Esfuerzo: '+c.esfuerzo+'/10 | Retorno: '+c.retorno+'/10 | '+c.motivo_corto; } } } },
-        scales:{ x:{min:1,max:10,grid:{color:'rgba(255,255,255,0.15)'},ticks:{color:'#fff',font:{size:14}},title:{display:true,text:'Esfuerzo →',color:'#f7c32f',font:{size:16}}}, y:{min:1,max:10,grid:{color:'rgba(255,255,255,0.15)'},ticks:{color:'#fff',font:{size:14}},title:{display:true,text:'Retorno →',color:'#f7c32f',font:{size:16}}} }
+        plugins:{tooltip:{bodyFont:{size:16},callbacks:{label:function(ctx){var c=concursos[ctx.datasetIndex];return c.certamen+' | Esfuerzo: '+c.esfuerzo+' | Retorno: '+c.retorno+' | '+c.motivo;}}}},
+        scales:{x:{min:1,max:10,ticks:{color:'#fff'}},y:{min:1,max:10,ticks:{color:'#fff'}}}
       }});
-      document.getElementById('effortInsight').innerHTML=alerta>0?'<strong>⚠️ Alerta:</strong> '+alerta+' certamen(es) con mucho esfuerzo y poco retorno.':(tesoro>0?'<strong>✓ Tesoro:</strong> '+tesoro+' certamen(es) de alta eficiencia.':'<strong>⊙ Balance:</strong> Distribución normal.');
     }
 
-    function renderAll(){ if(currentBrewery){ renderMedalChart(); renderRadarChart(); renderEffortChart(); updatePrice(); } }
+    function renderAll(){ if(currentBrewery){ renderMedalChart(); renderRadarChart(); renderEffortChart(); } }
 
-    // ---------- MOTOR DE PRECIOS ----------
+    // ---------- PRECIO ----------
     function updatePrice(){
       var prodMult=[0.6,0.8,1.0,1.3,1.7][prodIndex];
       var salesBase=SALES_VALUES[salesIndex]/1000000*0.015;
@@ -368,35 +348,39 @@
 
     // ---------- SLIDERS ----------
     function initSliders(){
-      var prodRail=document.getElementById('prodRail'), prodThumb=document.getElementById('prodThumb'), prodFill=document.getElementById('prodFill'), prodLabel=document.getElementById('prodValueLabel');
-      var salesRail=document.getElementById('salesRail'), salesThumb=document.getElementById('salesThumb'), salesFill=document.getElementById('salesFill'), salesLabel=document.getElementById('salesValueLabel');
-      function updateProdVisual(){ var p=STEP_POS[prodIndex]*100; prodFill.style.width=p+'%'; prodThumb.style.left=(p/100)*prodRail.clientWidth+'px'; prodLabel.innerText=PROD_LABELS[prodIndex]; }
-      function updateSalesVisual(){ var p=SALES_STEPS[salesIndex]*100; salesFill.style.width=p+'%'; salesThumb.style.left=(p/100)*salesRail.clientWidth+'px'; salesLabel.innerText=SALES_LABELS[salesIndex]; }
-      function handleProd(clientX){ var rect=prodRail.getBoundingClientRect(); var ratio=(clientX-rect.left)/rect.width; ratio=Math.min(1,Math.max(0,ratio)); var idx=0; STEP_POS.forEach(function(s,i){ if(Math.abs(s-ratio)<Math.abs(STEP_POS[idx]-ratio)) idx=i; }); prodIndex=idx; updateProdVisual(); updatePrice(); }
-      function handleSales(clientX){ var rect=salesRail.getBoundingClientRect(); var ratio=(clientX-rect.left)/rect.width; ratio=Math.min(1,Math.max(0,ratio)); var idx=0; SALES_STEPS.forEach(function(s,i){ if(Math.abs(s-ratio)<Math.abs(SALES_STEPS[idx]-ratio)) idx=i; }); salesIndex=idx; updateSalesVisual(); updatePrice(); }
-      prodRail.addEventListener('click',function(e){ handleProd(e.clientX); });
-      salesRail.addEventListener('click',function(e){ handleSales(e.clientX); });
-      var draggingProd=false, draggingSales=false;
-      prodThumb.addEventListener('mousedown',function(){ draggingProd=true; }); salesThumb.addEventListener('mousedown',function(){ draggingSales=true; });
-      window.addEventListener('mousemove',function(e){ if(draggingProd) handleProd(e.clientX); if(draggingSales) handleSales(e.clientX); });
-      window.addEventListener('mouseup',function(){ draggingProd=draggingSales=false; });
-      prodThumb.addEventListener('touchstart',function(e){ e.preventDefault(); draggingProd=true; }); salesThumb.addEventListener('touchstart',function(e){ e.preventDefault(); draggingSales=true; });
-      window.addEventListener('touchmove',function(e){ if(draggingProd&&e.touches[0]) handleProd(e.touches[0].clientX); if(draggingSales&&e.touches[0]) handleSales(e.touches[0].clientX); });
-      window.addEventListener('touchend',function(){ draggingProd=draggingSales=false; });
-      window.addEventListener('resize',function(){ updateProdVisual(); updateSalesVisual(); });
-      setTimeout(function(){ updateProdVisual(); updateSalesVisual(); },60);
+      var pRail=document.getElementById('prodRail'), pThumb=document.getElementById('prodThumb'), pFill=document.getElementById('prodFill'), pLabel=document.getElementById('prodValueLabel');
+      var sRail=document.getElementById('salesRail'), sThumb=document.getElementById('salesThumb'), sFill=document.getElementById('salesFill'), sLabel=document.getElementById('salesValueLabel');
+      function updateProdVisual(){ var p=STEP_POS[prodIndex]*100; pFill.style.width=p+'%'; pThumb.style.left=(p/100)*pRail.clientWidth+'px'; pLabel.innerText=PROD_LABELS[prodIndex]; }
+      function updateSalesVisual(){ var p=SALES_STEPS[salesIndex]*100; sFill.style.width=p+'%'; sThumb.style.left=(p/100)*sRail.clientWidth+'px'; sLabel.innerText=SALES_LABELS[salesIndex]; }
+      function handleProd(clientX){ var rect=pRail.getBoundingClientRect(); var ratio=(clientX-rect.left)/rect.width; ratio=Math.min(1,Math.max(0,ratio)); var idx=0; STEP_POS.forEach(function(s,i){ if(Math.abs(s-ratio)<Math.abs(STEP_POS[idx]-ratio)) idx=i; }); prodIndex=idx; updateProdVisual(); updatePrice(); }
+      function handleSales(clientX){ var rect=sRail.getBoundingClientRect(); var ratio=(clientX-rect.left)/rect.width; ratio=Math.min(1,Math.max(0,ratio)); var idx=0; SALES_STEPS.forEach(function(s,i){ if(Math.abs(s-ratio)<Math.abs(SALES_STEPS[idx]-ratio)) idx=i; }); salesIndex=idx; updateSalesVisual(); updatePrice(); }
+      pRail.addEventListener('click',function(e){ handleProd(e.clientX); }); sRail.addEventListener('click',function(e){ handleSales(e.clientX); });
+      var dragging=false; pThumb.addEventListener('mousedown',function(){ dragging=true; }); sThumb.addEventListener('mousedown',function(){ dragging=true; });
+      window.addEventListener('mousemove',function(e){ if(dragging){ if(e.target===pThumb) handleProd(e.clientX); else if(e.target===sThumb) handleSales(e.clientX); }});
+      window.addEventListener('mouseup',function(){ dragging=false; });
+      pThumb.addEventListener('touchstart',function(e){ e.preventDefault(); dragging=true; }); sThumb.addEventListener('touchstart',function(e){ e.preventDefault(); dragging=true; });
+      window.addEventListener('touchmove',function(e){ if(dragging&&e.touches[0]){ if(e.target===pThumb) handleProd(e.touches[0].clientX); else if(e.target===sThumb) handleSales(e.touches[0].clientX); }});
+      window.addEventListener('touchend',function(){ dragging=false; });
+      setTimeout(function(){ updateProdVisual(); updateSalesVisual(); },80);
     }
 
-    // ---------- INICIALIZACIÓN ----------
+    // ---------- INICIO ----------
     function init(){
       loadCSV().then(function(data){
-        allData=data; if(!allData.length) return;
+        allData=data;
+        if(!allData.length) return;
         var breweries=[]; allData.forEach(function(r){ if(breweries.indexOf(r.cerveceria)===-1)breweries.push(r.cerveceria); });
         var list=document.getElementById('breweryList'); breweries.sort().forEach(function(b){ list.innerHTML+='<option value="'+b+'">'; });
-        document.getElementById('breweryInput').value=breweries[0]||''; currentBrewery=breweries[0]||''; renderAll();
+        document.getElementById('breweryInput').value=breweries[0]||'';
+        currentBrewery=breweries[0]||'';
+        renderAll();
+        updatePrice();
       });
       initSliders();
-      document.getElementById('analyzeBtn').addEventListener('click',function(){ var v=document.getElementById('breweryInput').value.trim(); if(v){ currentBrewery=v; renderAll(); } });
+      document.getElementById('analyzeBtn').addEventListener('click',function(){
+        var v=document.getElementById('breweryInput').value.trim();
+        if(v){ currentBrewery=v; renderAll(); }
+      });
       document.getElementById('ctaBtn').addEventListener('click',function(){ alert('📞 Un asesor te contactará.'); });
       var btns=document.querySelectorAll('.plan-btn');
       btns.forEach(function(b){ b.addEventListener('click',function(){ btns.forEach(function(bb){ bb.classList.remove('active'); }); b.classList.add('active'); currentTier=b.dataset.tier; updatePrice(); }); });
