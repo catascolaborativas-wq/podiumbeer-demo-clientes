@@ -8,94 +8,651 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    :root { --pink:#e32c6c; --navy:#06232e; --gold:#f7c32f; --soft:#CFDEE0; --teal:#1eab9b; }
-    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; color:#fff; }
+    :root {
+      --pink: #e32c6c;
+      --navy: #06232e;
+      --gold: #f7c32f;
+      --soft: #cfdee0;
+      --teal: #1eab9b;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
     body.legacy-ios12::before { background-attachment: scroll; }
-    .hero-bg { position: fixed; inset: 0; z-index: -2; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
-    .overlay-color { position: fixed; inset: 0; background: #06232E; opacity: 0.57; z-index: -1; }
-    .vignette { position: fixed; inset: 0; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
-    .app-container { width: 90%; max-width: none; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
+
+    .hero-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .overlay-color {
+      position: fixed;
+      inset: 0;
+      background: #06232e;
+      opacity: 0.57;
+      z-index: -1;
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-container {
+      width: 90%;
+      max-width: 1240px;
+      margin: 1.5rem auto;
+      padding: 0 0.5rem;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
     .header { text-align: center; }
-    .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
-    .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
-    .h1-sim::-webkit-scrollbar { display: none; }
-    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
-    .bajada-header { font-size: clamp(16px, 5vw, 20px); font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.7); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
-    .glass-card, .metrics-card, .plan-selector-card, .chart-card, .iceberg-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; overflow: hidden; }
-    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before, .iceberg-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
-    .shift-content { margin-left: 2.5%; width: 97.5%; }
-    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
-    .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
-    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
-    .chart-title { font-size: 1.3rem; font-weight: 700; border-left: 5px solid #e32c6c; padding-left: 1rem; color: #f7c32f; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
-    .chart-title img { height: 24px; vertical-align: middle; }
-    .chart-subcopy { margin-left: 1rem; color: #CFDEE0; font-size: 12px; line-height: 1.45; margin-bottom: 1rem; }
-    .chart-container { width: 100%; min-height: 430px; position: relative; }
+
+    .logo-header {
+      display: block;
+      margin: 0 auto 1rem auto;
+      width: 60%;
+      max-width: 220px;
+      height: auto;
+    }
+
+    .h1-sim {
+      font-size: clamp(28px, 8vw, 44px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .h2-sim {
+      font-size: clamp(20px, 6vw, 32px);
+      font-weight: 500;
+      color: var(--soft);
+      margin-top: 0.5rem;
+    }
+
+    .bajada-header {
+      font-size: clamp(16px, 5vw, 20px);
+      font-weight: 500;
+      color: #fff;
+      background: rgba(6, 35, 46, 0.72);
+      padding: 0.8rem 1rem;
+      border-radius: 28px;
+      margin-top: 1rem;
+      line-height: 1.4;
+      text-align: center;
+      backdrop-filter: blur(6px);
+    }
+
+    .glass-card,
+    .metrics-card,
+    .plan-selector-card,
+    .chart-card,
+    .iceberg-card {
+      position: relative;
+      background: rgba(6, 35, 46, 0.35);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .glass-card::before,
+    .metrics-card::before,
+    .plan-selector-card::before,
+    .chart-card::before,
+    .iceberg-card::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: -10px;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background-image: url('assets/espejo.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.18;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .shift-content {
+      margin-left: 2.5%;
+      width: 97.5%;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      text-align: left;
+    }
+
+    .section-subtitle {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      text-align: left;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      color: var(--soft);
+      line-height: 1.4;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .chart-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-left: 5px solid var(--pink);
+      padding-left: 1rem;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chart-title img {
+      height: 24px;
+      vertical-align: middle;
+    }
+
+    .chart-subcopy {
+      margin-left: 1rem;
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-bottom: 1rem;
+    }
+
+    .chart-container {
+      width: 100%;
+      min-height: 430px;
+      position: relative;
+    }
+
     .chart-container.compact { min-height: 360px; }
-    canvas { touch-action: none; max-width: 100%; height: auto; }
-    .svg-chart { display: block; width: 100%; height: 100%; }
-    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem; max-height: 90px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
-    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 20px; transition: 0.2s; }
-    .legend-item:hover { background: rgba(0,0,0,0.8); }
-    .legend-color { width: 12px; height: 12px; border-radius: 2px; }
-    .legend-label { color: #fff; white-space: nowrap; }
-    .legend-item.hidden .legend-label { text-decoration: line-through; opacity: 0.5; }
-    .insight-box, .result-note { margin: 1rem 0 0 1rem; background: rgba(0,0,0,0.32); border: 1px solid rgba(247,195,47,0.18); border-radius: 16px; padding: 0.8rem 1rem; color: #fff; font-size: 12px; line-height: 1.45; }
-    .insight-box strong, .result-note strong { color: var(--gold); }
-    .brewery-input-wrap { margin-top: 1rem; background: rgba(6,35,46,0.78); border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; display: flex; align-items: center; gap: 0.75rem; padding: 0.45rem 0.55rem 0.45rem 1rem; max-width: 760px; margin-left: auto; margin-right: auto; }
-    .brewery-input-wrap input { flex: 1; background: transparent; border: none; outline: none; color: white; font-size: 15px; font-weight: 500; }
-    .brewery-input-wrap input::placeholder { color: rgba(255,255,255,0.55); }
-    .analyze-btn { border: none; border-radius: 999px; background: linear-gradient(90deg, #E40F63, #C32263); color: #fff; font-size: 13px; font-weight: 700; padding: 0.7rem 1rem; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(228,15,99,0.35); }
-    .context-note { margin-top: 0.75rem; font-size: 12px; color: #CFDEE0; line-height: 1.45; text-align: center; }
-    .slider-container { width: 100%; padding: 0 0.5rem; }
-    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
-    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
-    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
-    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
-    .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
-    .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
-    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
-    .slider-current { display: inline-flex; align-items: center; justify-content: center; margin-top: 0.2rem; min-width: 150px; background: rgba(0,0,0,0.42); border: 1px solid rgba(255,255,255,0.14); color: #fff; font-size: 12px; font-weight: 700; padding: 0.45rem 0.8rem; border-radius: 999px; }
-    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
-    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
-    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
-    .tier-icon img { width: 24px; height: auto; display: block; }
-    .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
-    .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
-    .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
+
+    canvas {
+      touch-action: none;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .svg-chart {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .legend-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      max-height: 90px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 11px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      transition: 0.2s;
+    }
+
+    .legend-item:hover { background: rgba(0, 0, 0, 0.8); }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .legend-label {
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .legend-item.hidden .legend-label {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    .insight-box,
+    .result-note {
+      margin: 1rem 0 0 1rem;
+      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(247, 195, 47, 0.18);
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .insight-box strong,
+    .result-note strong { color: var(--gold); }
+
+    .brewery-input-wrap {
+      margin-top: 1rem;
+      background: rgba(6, 35, 46, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.45rem 0.55rem 0.45rem 1rem;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .brewery-input-wrap input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .brewery-input-wrap input::placeholder { color: rgba(255, 255, 255, 0.55); }
+
+    .analyze-btn {
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e40f63, #c32263);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(228, 15, 99, 0.35);
+    }
+
+    .context-note {
+      margin-top: 0.75rem;
+      font-size: 12px;
+      color: var(--soft);
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .slider-container {
+      width: 100%;
+      padding: 0 0.5rem;
+    }
+
+    .slider-track-wrapper {
+      position: relative;
+      margin: 1.5rem 0.5rem 2rem 0.5rem;
+    }
+
+    .slider-rail {
+      width: 100%;
+      height: 6px;
+      background: #1e3a4a;
+      border-radius: 50px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .slider-fill {
+      position: absolute;
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #06232e 0%, #ffffff 100%);
+      width: 0%;
+      pointer-events: none;
+      transition: width 0.1s ease-out;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      border-radius: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      cursor: grab;
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
+      transition: box-shadow 0.1s ease, left 0.15s ease;
+      z-index: 3;
+    }
+
+    .slider-thumb:active {
+      cursor: grabbing;
+      box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.25);
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .slider-labels span {
+      flex: 1;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--soft);
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    .slider-current {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.2rem;
+      min-width: 150px;
+      background: rgba(0, 0, 0, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+    }
+
+    .tier-buttons-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tier-item {
+      flex: 1;
+      max-width: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tier-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 60px;
+      padding: 0.6rem 0.5rem;
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .tier-btn.active {
+      background: linear-gradient(90deg, #e40f63, #c32263);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0, 0, 0, 0.3);
+      transform: scale(1.02) translateY(-2px);
+    }
+
+    .tier-icon img {
+      width: 24px;
+      height: auto;
+      display: block;
+    }
+
+    .tier-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .tier-bajada {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--soft);
+      text-align: center;
+      line-height: 1.3;
+      margin-top: 0.2rem;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
     .metric-row:last-child { margin-bottom: 0; }
-    .metric-icon-col { flex: 0 0 70px; text-align: center; }
-    .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
-    .metric-text-col { flex: 2; text-align: center; }
-    .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
-    .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
-    .metric-value-col { flex: 1; text-align: right; }
-    .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
-    .iceberg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .iceberg-box { background: rgba(0,0,0,0.24); border-radius: 20px; padding: 1rem; border: 1px solid rgba(255,255,255,0.12); }
-    .iceberg-box.top { border-color: rgba(247,195,47,0.22); }
-    .iceberg-box.bottom { border-color: rgba(30,171,155,0.28); }
-    .iceberg-box-title { font-size: 13px; font-weight: 800; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    .metric-icon-col {
+      flex: 0 0 70px;
+      text-align: center;
+    }
+
+    .metric-icon-col img {
+      width: 52px;
+      height: auto;
+      display: inline-block;
+    }
+
+    .metric-text-col {
+      flex: 2;
+      text-align: center;
+    }
+
+    .metric-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .metric-bajada {
+      font-size: 10px;
+      color: var(--soft);
+      line-height: 1.3;
+    }
+
+    .metric-value-col {
+      flex: 1;
+      text-align: right;
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .iceberg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .iceberg-box {
+      background: rgba(0, 0, 0, 0.24);
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .iceberg-box.top { border-color: rgba(247, 195, 47, 0.22); }
+    .iceberg-box.bottom { border-color: rgba(30, 171, 155, 0.28); }
+
+    .iceberg-box-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
     .iceberg-box.top .iceberg-box-title { color: var(--gold); }
     .iceberg-box.bottom .iceberg-box-title { color: var(--teal); }
-    .iceberg-list { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
-    .iceberg-list li { position: relative; padding-left: 1rem; font-size: 12px; line-height: 1.4; color: #CFDEE0; }
-    .iceberg-list li::before { content: ''; position: absolute; left: 0; top: 0.46rem; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+    .iceberg-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .iceberg-list li {
+      position: relative;
+      padding-left: 1rem;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--soft);
+    }
+
+    .iceberg-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.46rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
     .iceberg-box.bottom .iceberg-list li::before { background: var(--teal); }
-    .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
-    .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
-    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
-    .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
-    .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
-    .error-message { background: #e32c6c; color: white; padding: 0.75rem; border-radius: 1rem; text-align: center; font-size: 0.85rem; line-height: 1.4; }
-    .ios-note { display: none; margin: 0.8rem 0 0 1rem; font-size: 11px; color: rgba(255,255,255,0.7); }
+
+    .credits {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gold);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.75rem 1.5rem;
+      border-radius: 60px;
+      margin: 0.5rem auto;
+      backdrop-filter: blur(4px);
+      width: fit-content;
+      max-width: 90%;
+    }
+
+    .cta-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .cta-button {
+      background: linear-gradient(90deg, #e40f63, #c32263);
+      border: none;
+      border-radius: 60px;
+      padding: 12px 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(228, 15, 99, 0.5);
+      transition: transform 0.1s ease, filter 0.1s ease;
+      width: auto;
+      min-width: 240px;
+    }
+
+    .cta-button:active {
+      transform: scale(0.97);
+      filter: brightness(0.92);
+    }
+
+    .cta-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .error-message {
+      background: var(--pink);
+      color: white;
+      padding: 0.75rem;
+      border-radius: 1rem;
+      text-align: center;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-top: 1rem;
+    }
+
+    .ios-note {
+      display: none;
+      margin: 0.8rem 0 0 1rem;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
     body.legacy-ios12 .ios-note { display: block; }
-    @media (min-width: 992px) { .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; } .legend-item { flex-shrink: 0; } }
+
+    @media (min-width: 992px) {
+      .legend-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        white-space: nowrap;
+      }
+
+      .legend-item { flex-shrink: 0; }
+    }
+
     @media (max-width: 991px) {
       .app-container { gap: 1.8rem; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card, .iceberg-card { padding: 1.2rem 1rem; }
+      .glass-card,
+      .metrics-card,
+      .plan-selector-card,
+      .chart-card,
+      .iceberg-card { padding: 1.2rem 1rem; }
+
       .metric-value { font-size: 18px; }
       .metric-icon-col { flex-basis: 60px; }
       .metric-icon-col img { width: 44px; }
@@ -115,18 +672,30 @@
       .brewery-input-wrap { flex-direction: column; border-radius: 24px; padding: 0.8rem; }
       .brewery-input-wrap input, .analyze-btn { width: 100%; }
     }
-    @media (max-width: 380px) { .app-container { width: 95%; } .glass-card, .metrics-card, .plan-selector-card, .chart-card, .iceberg-card { padding: 1rem 0.8rem; } .credits { font-size: 14px; } .tier-item { max-width: 120px; } .tier-bajada { font-size: 11px; } }
+
+    @media (max-width: 380px) {
+      .app-container { width: 95%; }
+      .glass-card,
+      .metrics-card,
+      .plan-selector-card,
+      .chart-card,
+      .iceberg-card { padding: 1rem 0.8rem; }
+      .credits { font-size: 14px; }
+      .tier-item { max-width: 120px; }
+      .tier-bajada { font-size: 11px; }
+    }
+
     @supports (-webkit-touch-callout: none) {
       @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-        body.legacy-ios12 {
-          min-height: -webkit-fill-available;
-        }
+        body.legacy-ios12 { min-height: -webkit-fill-available; }
+
         body.legacy-ios12 .app-container {
           width: 94%;
           padding-left: max(0.6rem, env(safe-area-inset-left));
           padding-right: max(0.6rem, env(safe-area-inset-right));
           padding-bottom: calc(1rem + env(safe-area-inset-bottom));
         }
+
         body.legacy-ios12 .glass-card,
         body.legacy-ios12 .metrics-card,
         body.legacy-ios12 .plan-selector-card,
@@ -134,12 +703,10 @@
         body.legacy-ios12 .iceberg-card {
           border-radius: 28px;
         }
-        body.legacy-ios12 .chart-container {
-          min-height: 320px;
-        }
-        body.legacy-ios12 .chart-container.compact {
-          min-height: 300px;
-        }
+
+        body.legacy-ios12 .chart-container { min-height: 320px; }
+        body.legacy-ios12 .chart-container.compact { min-height: 300px; }
+
         body.legacy-ios12 .legend-container {
           overflow-x: auto;
           overflow-y: hidden;
@@ -147,9 +714,9 @@
           justify-content: flex-start;
           -webkit-overflow-scrolling: touch;
         }
-        body.legacy-ios12 .legend-item {
-          flex-shrink: 0;
-        }
+
+        body.legacy-ios12 .legend-item { flex-shrink: 0; }
+
         body.legacy-ios12 .brewery-input-wrap {
           padding-left: 1rem;
           padding-right: 0.5rem;
@@ -162,62 +729,73 @@
   <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Cervecería fondo"></div>
   <div class="overlay-color"></div>
   <div class="vignette"></div>
+
   <div class="app-container">
     <div class="header">
       <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
       <div class="h1-sim">Simulador de Alianza</div>
       <div class="h2-sim">¿Cuál es tu producción anual?</div>
       <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
+
       <div class="brewery-input-wrap">
         <input id="breweryNameInput" type="text" list="brewerySuggestions" placeholder="Escribe el nombre de tu cervecería">
         <datalist id="brewerySuggestions"></datalist>
         <button class="analyze-btn" id="analyzeBtn">Analizar</button>
       </div>
+
       <div class="context-note" id="contextNote">Ingresa una cervecería para revelar insights que normalmente no aparecen en la lectura tradicional del medallero.</div>
     </div>
 
-    <div class="chart-card animate-item" id="chartCard">
+    <div class="chart-card" id="chartCard">
       <div class="shift-content">
         <div class="chart-title"><img src="assets/bandera.png" alt="Bandera"> Chilean Competition Wings - 2025</div>
         <div class="chart-subcopy" id="existingChartSubcopy">Mejora del gráfico histórico: destaca al líder, intensifica el contraste y ayuda a leer quién acelera o pierde ritmo competitivo.</div>
       </div>
-      <div class="chart-container shift-content" id="existingChartWrap"><canvas id="breweryChart" width="800" height="400"></canvas></div>
+      <div class="chart-container shift-content" id="existingChartWrap">
+        <canvas id="breweryChart" width="800" height="400"></canvas>
+      </div>
       <div class="legend-container shift-content" id="legendContainer"></div>
       <div class="ios-note shift-content">Modo iPad iOS 12.5.8 activado con fallback SVG.</div>
     </div>
 
-    <div class="chart-card animate-item">
+    <div class="chart-card">
       <div class="shift-content">
-        <div class="chart-title">El Espejo</div>
+        <div class="chart-title">🧭 El Espejo</div>
         <div class="chart-subcopy" id="radarTitle">Radar comparativo de performance, consistencia, diversidad, dificultad y posicionamiento frente al promedio chileno.</div>
       </div>
-      <div class="chart-container compact shift-content" id="radarWrap"><canvas id="radarChart" width="800" height="400"></canvas></div>
+      <div class="chart-container compact shift-content" id="radarWrap">
+        <canvas id="radarChart" width="800" height="400"></canvas>
+      </div>
       <div class="insight-box shift-content" id="radarInsight">Ingresa una cervecería para activar el radar estratégico.</div>
       <div class="ios-note shift-content">Modo iPad iOS 12.5.8 activado con fallback SVG.</div>
     </div>
 
-    <div class="chart-card animate-item">
+    <div class="chart-card">
       <div class="shift-content">
-        <div class="chart-title">IAC</div>
+        <div class="chart-title">🫧 IAC</div>
         <div class="chart-subcopy" id="bubbleTitle">Cada burbuja cruza dificultad del certamen, percentil en el estilo y número de competidores para medir peso relativo.</div>
       </div>
-      <div class="chart-container shift-content" id="bubbleWrap"><canvas id="bubbleChart" width="800" height="420"></canvas></div>
+      <div class="chart-container shift-content" id="bubbleWrap">
+        <canvas id="bubbleChart" width="800" height="420"></canvas>
+      </div>
       <div class="legend-container shift-content" id="bubbleLegend"></div>
       <div class="insight-box shift-content" id="bubbleInsight">Ingresa una cervecería para revelar qué medalla pesa más estratégicamente.</div>
       <div class="ios-note shift-content">Modo iPad iOS 12.5.8 activado con fallback SVG.</div>
     </div>
 
-    <div class="chart-card animate-item">
+    <div class="chart-card">
       <div class="shift-content">
-        <div class="chart-title">IVC</div>
+        <div class="chart-title">🗺️ IVC</div>
         <div class="chart-subcopy" id="heatmapTitle">Top 10 estilos con mayor vacío competitivo en Chile. Más oscuro = menos densidad histórica de medallas.</div>
       </div>
-      <div class="chart-container compact shift-content" id="heatmapWrap"><canvas id="heatmapChart" width="800" height="420"></canvas></div>
+      <div class="chart-container compact shift-content" id="heatmapWrap">
+        <canvas id="heatmapChart" width="800" height="420"></canvas>
+      </div>
       <div class="insight-box shift-content" id="heatmapInsight">Ingresa una cervecería para detectar espacios de categoría con menor ocupación competitiva.</div>
       <div class="ios-note shift-content">Modo iPad iOS 12.5.8 activado con fallback SVG.</div>
     </div>
 
-    <div class="glass-card animate-item">
+    <div class="glass-card">
       <div class="shift-content">
         <div class="section-title">SLIDER</div>
         <div class="section-subtitle">Escala de Producción</div>
@@ -225,7 +803,9 @@
       </div>
       <div class="slider-container shift-content">
         <div class="slider-track-wrapper" id="sliderWrapper">
-          <div class="slider-rail" id="sliderRail"><div class="slider-fill" id="sliderFill"></div></div>
+          <div class="slider-rail" id="sliderRail">
+            <div class="slider-fill" id="sliderFill"></div>
+          </div>
           <div class="slider-thumb" id="sliderThumb"></div>
         </div>
         <div class="slider-labels">
@@ -239,7 +819,7 @@
       </div>
     </div>
 
-    <div class="glass-card animate-item">
+    <div class="glass-card">
       <div class="shift-content">
         <div class="section-title">SLIDER</div>
         <div class="section-subtitle">Ventas Anuales</div>
@@ -247,7 +827,9 @@
       </div>
       <div class="slider-container shift-content">
         <div class="slider-track-wrapper" id="sliderWrapperB">
-          <div class="slider-rail" id="sliderRailB"><div class="slider-fill" id="sliderFillB"></div></div>
+          <div class="slider-rail" id="sliderRailB">
+            <div class="slider-fill" id="sliderFillB"></div>
+          </div>
           <div class="slider-thumb" id="sliderThumbB"></div>
         </div>
         <div class="slider-labels">
@@ -260,13 +842,14 @@
       </div>
     </div>
 
-    <div class="plan-selector-card animate-item">
+    <div class="plan-selector-card">
       <div class="shift-content">
         <div class="section-title">SELECTOR DE PLANES</div>
         <div class="section-subtitle">Nivel de Alianza Estratégica</div>
         <div class="section-desc">Elige la profundidad con la que quieres convertir medallas en una herramienta activa de ventas, posicionamiento e inteligencia.</div>
       </div>
-      <div class="tier-buttons-container shift-content" id="tierButtonsContainer">
+
+      <div class="tier-buttons-container shift-content">
         <div class="tier-item">
           <div class="tier-btn" data-tier="explorer" id="tierExplorer">
             <div class="tier-icon"><img src="assets/explorer.png" alt="Explorer"></div>
@@ -274,6 +857,7 @@
           </div>
           <div class="tier-bajada">Visibilidad inicial<br>basada en datos reales</div>
         </div>
+
         <div class="tier-item">
           <div class="tier-btn" data-tier="podium" id="tierPodium">
             <div class="tier-icon"><img src="assets/podium.png" alt="Podium"></div>
@@ -281,6 +865,7 @@
           </div>
           <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja</div>
         </div>
+
         <div class="tier-item">
           <div class="tier-btn active" data-tier="champion" id="tierChampion">
             <div class="tier-icon"><img src="assets/champion.png" alt="Champion"></div>
@@ -291,38 +876,54 @@
       </div>
     </div>
 
-    <div class="metrics-card animate-item">
+    <div class="metrics-card">
       <div class="shift-content">
         <div class="section-title">BLOQUE DE RESULTADOS</div>
         <div class="section-subtitle">Impacto en tu negocio</div>
         <div class="section-desc">La inversión ya no es una cifra aislada: responde a escala operativa, ventas, plan y señales competitivas derivadas de la BBDD.</div>
       </div>
+
       <div class="shift-content">
         <div class="metric-row">
           <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
-          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Valor mensual conectado a producción, ventas y nivel de servicio.</div></div>
+          <div class="metric-text-col">
+            <div class="metric-name">Inversión Inteligente</div>
+            <div class="metric-bajada">Valor mensual conectado a producción, ventas y nivel de servicio.</div>
+          </div>
           <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
         </div>
+
         <div class="metric-row">
           <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
-          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Retorno anual estimado por optimizar decisiones, categorías y comunicación comercial.</div></div>
+          <div class="metric-text-col">
+            <div class="metric-name">Valor Recuperado</div>
+            <div class="metric-bajada">Retorno anual estimado por optimizar decisiones, categorías y comunicación comercial.</div>
+          </div>
           <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
         </div>
+
         <div class="metric-row">
           <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
-          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">Indicador de impacto probable según el cruce de señales del modelo.</div></div>
+          <div class="metric-text-col">
+            <div class="metric-name">Impacto en Rentabilidad</div>
+            <div class="metric-bajada">Indicador de impacto probable según el cruce de señales del modelo.</div>
+          </div>
           <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
         </div>
       </div>
-      <div class="shift-content"><div class="result-note" id="resultNote">La simulación ya conecta producción, ventas y plan. Ingresa una cervecería para sumar lectura competitiva real.</div></div>
+
+      <div class="shift-content">
+        <div class="result-note" id="resultNote">La simulación ya conecta producción, ventas y plan. Ingresa una cervecería para sumar lectura competitiva real.</div>
+      </div>
     </div>
 
-    <div class="iceberg-card animate-item">
+    <div class="iceberg-card">
       <div class="shift-content">
         <div class="section-title">ICEBERG</div>
         <div class="section-subtitle">Lo visible y lo que sostiene la ventaja</div>
         <div class="section-desc">No es un dashboard. Es una herramienta de decisión donde la parte visible vende y la parte sumergida construye la ventaja real.</div>
       </div>
+
       <div class="iceberg-grid shift-content">
         <div class="iceberg-box top">
           <div class="iceberg-box-title">Superficie</div>
@@ -332,6 +933,7 @@
             <li>Insights accionables para ventas, marca y relato técnico.</li>
           </ul>
         </div>
+
         <div class="iceberg-box bottom">
           <div class="iceberg-box-title">Fondo</div>
           <ul class="iceberg-list">
@@ -343,8 +945,11 @@
       </div>
     </div>
 
-    <div class="cta-wrapper animate-item"><button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button></div>
-    <div class="credits animate-item">Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015</div>
+    <div class="cta-wrapper">
+      <button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button>
+    </div>
+
+    <div class="credits">Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015</div>
   </div>
 
   <script>
@@ -369,17 +974,26 @@
     }
 
     function getScaleModifier(index) {
-      const scaleMap = [{ l: +20 }, { l: +10 }, { l: 0 }, { l: -10 }, { l: -20 }];
+      const scaleMap = [
+        { l: +20 },
+        { l: +10 },
+        { l: 0 },
+        { l: -10 },
+        { l: -20 }
+      ];
       return scaleMap[index];
     }
 
     function generateDynamicColor(index, tier) {
       const planMod = getPlanModifier(tier);
       const scaleMod = getScaleModifier(index);
+
       let s = BASE_COLOR.s + planMod.s;
       let l = BASE_COLOR.l + planMod.l + scaleMod.l;
+
       s = Math.max(20, Math.min(100, s));
       l = Math.max(20, Math.min(70, l));
+
       return `hsl(${BASE_COLOR.h}, ${s}%, ${l}%)`;
     }
 
@@ -389,7 +1003,12 @@
     }
 
     function escapeHtml(text) {
-      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     function formatearTextoPresentacion(str) {
@@ -400,7 +1019,7 @@
     function esBasura(valor) {
       if (!valor) return true;
       const limpio = valor.toString().toUpperCase().trim();
-      return limpio === "PENDIENTE" || limpio === "COMPLETAR" || limpio === "-" || limpio === "#N/D";
+      return limpio === 'PENDIENTE' || limpio === 'COMPLETAR' || limpio === '-' || limpio === '#N/D';
     }
 
     function getYear(item) {
@@ -423,6 +1042,7 @@
     function getDifficulty(item) {
       const cert = normalizeText(item.certamen || '');
       const origin = normalizeText(item.origen || '');
+
       if (cert.includes('world beer cup') || cert.includes('world beer awards') || cert.includes('european beer star')) return 5;
       if (cert.includes('copa cervezas de america')) return 4.6;
       if (cert.includes('south beer cup')) return 4.2;
@@ -437,6 +1057,7 @@
       try {
         const response = await fetch('BBDD_Medallero_Chile.csv', { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
         const texto = await response.text();
         const lineas = texto.split('\n');
         const encabezados = lineas[0].replace(/\r/g, '').split(';').map(function(h) { return h.trim(); });
@@ -446,17 +1067,28 @@
           if (!lineas[i].trim()) continue;
           const valores = lineas[i].replace(/\r/g, '').split(';');
           const fila = {};
+
           encabezados.forEach(function(enc, idx) {
             let val = valores[idx] ? valores[idx].trim() : '';
-            if (enc === 'cerveceria' || enc === 'cerveza_ganadora' || enc === 'estilo' || enc === 'estilo_corregido' || enc === 'estilo_limpio' || enc === 'estilo_cliente' || enc === 'certamen') {
+            if (
+              enc === 'cerveceria' ||
+              enc === 'cerveza_ganadora' ||
+              enc === 'estilo' ||
+              enc === 'estilo_corregido' ||
+              enc === 'estilo_limpio' ||
+              enc === 'estilo_cliente' ||
+              enc === 'certamen'
+            ) {
               val = formatearTextoPresentacion(val);
             }
             fila[enc] = val;
           });
+
           if (esBasura(fila.medalla_base)) continue;
           if (esBasura(fila.cerveceria)) continue;
           datos.push(fila);
         }
+
         return datos;
       } catch (err) {
         document.getElementById('chartCard').innerHTML += '<div class="error-message">⚠️ No se pudo cargar el archivo BBDD_Medallero_Chile.csv.</div>';
@@ -465,7 +1097,9 @@
     }
 
     function getAllBreweries() {
-      return [...new Set(allData.map(function(d) { return d.cerveceria; }).filter(Boolean))].sort(function(a, b) { return a.localeCompare(b, 'es'); });
+      return [...new Set(allData.map(function(d) { return d.cerveceria; }).filter(Boolean))].sort(function(a, b) {
+        return a.localeCompare(b, 'es');
+      });
     }
 
     function findCanonicalBreweryName(name) {
@@ -482,7 +1116,9 @@
 
     function fillSuggestions() {
       const list = document.getElementById('brewerySuggestions');
-      list.innerHTML = getAllBreweries().map(function(name) { return '<option value="' + escapeHtml(name) + '"></option>'; }).join('');
+      list.innerHTML = getAllBreweries().map(function(name) {
+        return '<option value="' + escapeHtml(name) + '"></option>';
+      }).join('');
     }
 
     const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
@@ -494,6 +1130,7 @@
         const div = document.createElement('div');
         div.className = 'legend-item';
         div.innerHTML = '<div class="legend-color" style="background:' + colors[idx] + ';"></div><span class="legend-label">' + escapeHtml(label) + '</span>';
+
         if (chartInstance) {
           div.addEventListener('click', function() {
             const meta = chartInstance.getDatasetMeta(idx);
@@ -502,6 +1139,7 @@
             chartInstance.update();
           });
         }
+
         container.appendChild(div);
       });
     }
@@ -532,9 +1170,16 @@
       labels.forEach(function(label, idx) {
         const color = idx === 0 ? '#f7c32f' : colorPalette[idx % colorPalette.length];
         const points = monthlyTotal[label].map(function(v, i) {
-          return { x: pad.left + (innerW / (monthNames.length - 1)) * i, y: pad.top + innerH - ((v / maxVal) * innerH) };
+          return {
+            x: pad.left + (innerW / (monthNames.length - 1)) * i,
+            y: pad.top + innerH - ((v / maxVal) * innerH)
+          };
         });
-        const linePath = points.map(function(p, i) { return (i === 0 ? 'M' : 'L') + ' ' + p.x + ' ' + p.y; }).join(' ');
+
+        const linePath = points.map(function(p, i) {
+          return (i === 0 ? 'M' : 'L') + ' ' + p.x + ' ' + p.y;
+        }).join(' ');
+
         const areaPath = linePath + ' L ' + points[points.length - 1].x + ' ' + (pad.top + innerH) + ' L ' + points[0].x + ' ' + (pad.top + innerH) + ' Z';
         svg.push('<path d="' + areaPath + '" fill="' + color + (idx === 0 ? '44' : '18') + '" stroke="none"></path>');
         svg.push('<path d="' + linePath + '" fill="none" stroke="' + color + '" stroke-width="' + (idx === 0 ? 3 : 1.4) + '" stroke-linejoin="round" stroke-linecap="round"></path>');
@@ -550,6 +1195,7 @@
         const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
         return anio === '2025';
       });
+
       if (!data2025.length) return;
 
       const breweryTotal = {};
@@ -559,7 +1205,11 @@
         breweryTotal[brew] = (breweryTotal[brew] || 0) + 1;
       });
 
-      const top = Object.entries(breweryTotal).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 12).map(function(entry) { return entry[0]; });
+      const top = Object.entries(breweryTotal)
+        .sort(function(a, b) { return b[1] - a[1]; })
+        .slice(0, 12)
+        .map(function(entry) { return entry[0]; });
+
       const leader = top[0];
       const monthlyTotal = {};
       top.forEach(function(brew) { monthlyTotal[brew] = Array(10).fill(0); });
@@ -576,7 +1226,9 @@
 
       if (legacyIOS12) {
         renderLegacyLine('existingChartWrap', top, monthlyTotal);
-        renderLegend(top, top.map(function(_, idx) { return idx === 0 ? '#f7c32f' : colorPalette[idx % colorPalette.length]; }), document.getElementById('legendContainer'), null);
+        renderLegend(top, top.map(function(_, idx) {
+          return idx === 0 ? '#f7c32f' : colorPalette[idx % colorPalette.length];
+        }), document.getElementById('legendContainer'), null);
         return;
       }
 
@@ -592,7 +1244,19 @@
             const color = idx === 0 ? '#f7c32f' : colorPalette[idx % colorPalette.length];
             gradient.addColorStop(0, color + (idx === 0 ? '88' : '44'));
             gradient.addColorStop(1, color + '06');
-            return { label: brew, data: monthlyTotal[brew], borderColor: color, backgroundColor: gradient, borderWidth: idx === 0 ? 3.2 : (idx < 4 ? 1.8 : 1.2), tension: 0.42, fill: true, pointRadius: idx === 0 ? 4 : 2.6, pointHoverRadius: idx === 0 ? 7 : 5, pointHitRadius: 15 };
+
+            return {
+              label: brew,
+              data: monthlyTotal[brew],
+              borderColor: color,
+              backgroundColor: gradient,
+              borderWidth: idx === 0 ? 3.2 : (idx < 4 ? 1.8 : 1.2),
+              tension: 0.42,
+              fill: true,
+              pointRadius: idx === 0 ? 4 : 2.6,
+              pointHoverRadius: idx === 0 ? 7 : 5,
+              pointHitRadius: 15
+            };
           })
         },
         options: {
@@ -615,9 +1279,11 @@
                   const current = Number(context.raw || 0);
                   const previous = context.dataIndex > 0 ? Number(dataset[context.dataIndex - 1] || 0) : 0;
                   const delta = current - previous;
+
                   if (context.dataset.label === leader) {
                     return delta > 0 ? 'Insight: el líder acelera su ritmo este mes.' : 'Insight: el líder sostiene la referencia aun sin acelerar.';
                   }
+
                   return delta > 0 ? 'Insight: esta cervecería viene ganando tracción mensual.' : 'Insight: pierde impulso frente al bloque puntero.';
                 }
               }
@@ -625,13 +1291,22 @@
             legend: { display: false }
           },
           scales: {
-            y: { beginAtZero: true, ticks: { color: '#fff', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.1)' } },
-            x: { ticks: { color: '#fff', maxRotation: 45, autoSkip: true }, grid: { display: false } }
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#fff', stepSize: 1 },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            },
+            x: {
+              ticks: { color: '#fff', maxRotation: 45, autoSkip: true },
+              grid: { display: false }
+            }
           }
         }
       });
 
-      renderLegend(top, top.map(function(_, idx) { return idx === 0 ? '#f7c32f' : colorPalette[idx % colorPalette.length]; }), document.getElementById('legendContainer'), breweryChart);
+      renderLegend(top, top.map(function(_, idx) {
+        return idx === 0 ? '#f7c32f' : colorPalette[idx % colorPalette.length];
+      }), document.getElementById('legendContainer'), breweryChart);
     }
 
     function percentileRank(arr, value) {
@@ -641,11 +1316,14 @@
       return Math.round((lower / arr.length) * 100);
     }
 
-    function clamp10(v) { return Math.max(0, Math.min(10, Number(v.toFixed(1)))); }
+    function clamp10(v) {
+      return Math.max(0, Math.min(10, Number(v.toFixed(1))));
+    }
 
     function computeRadarMetrics(breweryName) {
       const records = getBreweryRecords(breweryName);
       if (!records.length) return null;
+
       const chileRecords = allData.filter(function(item) { return normalizeText(item.pais) === 'chile'; });
       const breweryMap = {};
 
@@ -660,9 +1338,18 @@
       const maxYear = Math.max.apply(null, years);
       const span = Math.max(1, maxYear - minYear + 1);
       const ownYears = [...new Set(records.map(getYear).filter(Boolean))];
-      const maxPerformance = Math.max(1, ...Object.values(breweryMap).map(function(recs) { return recs.reduce(function(acc, r) { return acc + getMedalWeight(r.medalla_base); }, 0); }));
-      const maxStyles = Math.max(1, ...Object.values(breweryMap).map(function(recs) { return new Set(recs.map(getStyleName).filter(Boolean)).size; }));
-      const maxDifficulty = Math.max(1, ...Object.values(breweryMap).map(function(recs) { return recs.reduce(function(acc, r) { return acc + getDifficulty(r); }, 0); }));
+
+      const maxPerformance = Math.max(1, ...Object.values(breweryMap).map(function(recs) {
+        return recs.reduce(function(acc, r) { return acc + getMedalWeight(r.medalla_base); }, 0);
+      }));
+
+      const maxStyles = Math.max(1, ...Object.values(breweryMap).map(function(recs) {
+        return new Set(recs.map(getStyleName).filter(Boolean)).size;
+      }));
+
+      const maxDifficulty = Math.max(1, ...Object.values(breweryMap).map(function(recs) {
+        return recs.reduce(function(acc, r) { return acc + getDifficulty(r); }, 0);
+      }));
 
       const performanceRaw = records.reduce(function(acc, r) { return acc + getMedalWeight(r.medalla_base); }, 0);
       const diversityRaw = new Set(records.map(getStyleName).filter(Boolean)).size;
@@ -681,11 +1368,25 @@
         const div = new Set(recs.map(getStyleName).filter(Boolean)).size;
         const diff = recs.reduce(function(acc, r) { return acc + getDifficulty(r); }, 0);
         const cert = new Set(recs.map(function(r) { return r.certamen; }).filter(Boolean)).size;
-        return [clamp10((perf / maxPerformance) * 10), clamp10((recYears.length / span) * 10), clamp10((div / maxStyles) * 10), clamp10((diff / maxDifficulty) * 10), clamp10(((perf * Math.max(1, cert)) / Math.max(1, recs.length)) / 3.2)];
+
+        return [
+          clamp10((perf / maxPerformance) * 10),
+          clamp10((recYears.length / span) * 10),
+          clamp10((div / maxStyles) * 10),
+          clamp10((diff / maxDifficulty) * 10),
+          clamp10(((perf * Math.max(1, cert)) / Math.max(1, recs.length)) / 3.2)
+        ];
       });
 
-      const industry = [0,0,0,0,0].map(function(_, idx) { return Number((industryRows.reduce(function(acc, row) { return acc + row[idx]; }, 0) / industryRows.length).toFixed(1)); });
-      return { labels: ['Performance', 'Consistencia', 'Diversidad', 'Dificultad', 'Posicionamiento'], values: [performance, consistencia, diversidad, dificultad, posicionamiento], industry: industry };
+      const industry = [0, 0, 0, 0, 0].map(function(_, idx) {
+        return Number((industryRows.reduce(function(acc, row) { return acc + row[idx]; }, 0) / industryRows.length).toFixed(1));
+      });
+
+      return {
+        labels: ['Performance', 'Consistencia', 'Diversidad', 'Dificultad', 'Posicionamiento'],
+        values: [performance, consistencia, diversidad, dificultad, posicionamiento],
+        industry: industry
+      };
     }
 
     function renderLegacyRadar(radar) {
@@ -704,14 +1405,18 @@
         });
       }
 
-      function toPath(points) { return points.map(function(p, i) { return (i === 0 ? 'M' : 'L') + ' ' + p.x.toFixed(2) + ' ' + p.y.toFixed(2); }).join(' ') + ' Z'; }
+      function toPath(points) {
+        return points.map(function(p, i) { return (i === 0 ? 'M' : 'L') + ' ' + p.x.toFixed(2) + ' ' + p.y.toFixed(2); }).join(' ') + ' Z';
+      }
 
       let svg = [];
       svg.push('<svg class="svg-chart" viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="xMidYMid meet">');
+
       for (let s = 1; s <= 5; s++) {
-        const grid = polygonPoints([s*2,s*2,s*2,s*2,s*2]);
+        const grid = polygonPoints([s * 2, s * 2, s * 2, s * 2, s * 2]);
         svg.push('<path d="' + toPath(grid) + '" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"></path>');
       }
+
       svg.push('<path d="' + toPath(polygonPoints(radar.industry)) + '" fill="rgba(247,195,47,0.08)" stroke="#f7c32f" stroke-width="1.5" stroke-dasharray="5 4"></path>');
       svg.push('<path d="' + toPath(polygonPoints(radar.values)) + '" fill="rgba(227,44,108,0.18)" stroke="#e32c6c" stroke-width="2.2"></path>');
       svg.push('</svg>');
@@ -723,12 +1428,24 @@
       if (!radar) return;
 
       document.getElementById('radarTitle').innerText = 'Radar de ' + breweryName + ' frente al benchmark chileno en cinco KPIs críticos.';
-      const pairs = [['Performance',radar.values[0]],['Consistencia',radar.values[1]],['Diversidad',radar.values[2]],['Dificultad',radar.values[3]],['Posicionamiento',radar.values[4]]];
-      const strongest = pairs.slice().sort(function(a,b){return b[1]-a[1];})[0];
-      const weakest = pairs.slice().sort(function(a,b){return a[1]-b[1];})[0];
+
+      const pairs = [
+        ['Performance', radar.values[0]],
+        ['Consistencia', radar.values[1]],
+        ['Diversidad', radar.values[2]],
+        ['Dificultad', radar.values[3]],
+        ['Posicionamiento', radar.values[4]]
+      ];
+
+      const strongest = pairs.slice().sort(function(a, b) { return b[1] - a[1]; })[0];
+      const weakest = pairs.slice().sort(function(a, b) { return a[1] - b[1]; })[0];
+
       document.getElementById('radarInsight').innerHTML = '<strong>Insight:</strong> tu señal más fuerte hoy está en <strong>' + strongest[0] + '</strong>, mientras la brecha principal aparece en <strong>' + weakest[0] + '</strong>.';
 
-      if (legacyIOS12) { renderLegacyRadar(radar); return; }
+      if (legacyIOS12) {
+        renderLegacyRadar(radar);
+        return;
+      }
 
       const ctx = document.getElementById('radarChart').getContext('2d');
       if (radarChart) radarChart.destroy();
@@ -738,8 +1455,27 @@
         data: {
           labels: radar.labels,
           datasets: [
-            { label: breweryName, data: radar.values, backgroundColor: 'rgba(227,44,108,0.18)', borderColor: '#e32c6c', borderWidth: 2.2, pointBackgroundColor: '#e32c6c', pointBorderColor: '#fff', pointBorderWidth: 1.4, pointRadius: 4 },
-            { label: 'Industria', data: radar.industry, backgroundColor: 'rgba(247,195,47,0.08)', borderColor: '#f7c32f', borderWidth: 1.8, borderDash: [6,5], pointBackgroundColor: '#f7c32f', pointRadius: 2.5 }
+            {
+              label: breweryName,
+              data: radar.values,
+              backgroundColor: 'rgba(227,44,108,0.18)',
+              borderColor: '#e32c6c',
+              borderWidth: 2.2,
+              pointBackgroundColor: '#e32c6c',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 1.4,
+              pointRadius: 4
+            },
+            {
+              label: 'Industria',
+              data: radar.industry,
+              backgroundColor: 'rgba(247,195,47,0.08)',
+              borderColor: '#f7c32f',
+              borderWidth: 1.8,
+              borderDash: [6, 5],
+              pointBackgroundColor: '#f7c32f',
+              pointRadius: 2.5
+            }
           ]
         },
         options: {
@@ -780,8 +1516,8 @@
     function computeBubbleData(breweryName) {
       const records = getBreweryRecords(breweryName);
       if (!records.length) return null;
-      const styleByBrewery = {};
 
+      const styleByBrewery = {};
       allData.forEach(function(r) {
         const style = getStyleName(r);
         const brew = r.cerveceria || 'Sin cervecería';
@@ -794,12 +1530,25 @@
         const breweryScore = (styleByBrewery[style] && styleByBrewery[style][breweryName]) || 0;
         const styleScores = styleByBrewery[style] ? Object.values(styleByBrewery[style]) : [];
         const percentile = percentileRank(styleScores, breweryScore);
+
         const competitors = allData.filter(function(d) {
-          return normalizeText(getStyleName(d)) === normalizeText(style) && normalizeText(d.certamen) === normalizeText(r.certamen) && (d.anio || '') === (r.anio || '');
+          return normalizeText(getStyleName(d)) === normalizeText(style) &&
+            normalizeText(d.certamen) === normalizeText(r.certamen) &&
+            (d.anio || '') === (r.anio || '');
         }).length;
 
-        return { x: Number(getDifficulty(r).toFixed(2)), y: percentile, r: Math.min(20, 6 + competitors * 1.6), competitors: competitors, impact: getDifficulty(r) * getMedalWeight(r.medalla_base), certamen: r.certamen || 'Certamen', label: (r.cerveza_ganadora && !esBasura(r.cerveza_ganadora) ? r.cerveza_ganadora : style) + ' · ' + (r.certamen || 'Certamen') };
-      }).sort(function(a, b) { return b.impact - a.impact; }).slice(0, 12);
+        return {
+          x: Number(getDifficulty(r).toFixed(2)),
+          y: percentile,
+          r: Math.min(20, 6 + competitors * 1.6),
+          competitors: competitors,
+          impact: getDifficulty(r) * getMedalWeight(r.medalla_base),
+          certamen: r.certamen || 'Certamen',
+          label: (r.cerveza_ganadora && !esBasura(r.cerveza_ganadora) ? r.cerveza_ganadora : style) + ' · ' + (r.certamen || 'Certamen')
+        };
+      }).sort(function(a, b) {
+        return b.impact - a.impact;
+      }).slice(0, 12);
 
       return points.length ? points : null;
     }
@@ -811,8 +1560,8 @@
       const pad = { left: 52, right: 18, top: 18, bottom: 40 };
       const innerW = width - pad.left - pad.right;
       const innerH = height - pad.top - pad.bottom;
-      let svg = [];
 
+      let svg = [];
       svg.push('<svg class="svg-chart" viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="xMidYMid meet">');
       svg.push('<line x1="' + pad.left + '" y1="' + (height - pad.bottom) + '" x2="' + (width - pad.right) + '" y2="' + (height - pad.bottom) + '" stroke="rgba(255,255,255,0.15)"></line>');
       svg.push('<line x1="' + pad.left + '" y1="' + pad.top + '" x2="' + pad.left + '" y2="' + (height - pad.bottom) + '" stroke="rgba(255,255,255,0.15)"></line>');
@@ -832,12 +1581,20 @@
       if (!points) return;
 
       const palette = ['#e32c6c', '#f7c32f', '#1eab9b', '#8c52ff', '#ff66c4', '#33ebd6', '#cb6ce6'];
+
       document.getElementById('bubbleTitle').innerText = 'Burbujas IAC de ' + breweryName + ': dificultad del certamen, percentil y tamaño competitivo por medalla.';
       document.getElementById('bubbleInsight').innerHTML = '<strong>Insight:</strong> hoy tu medalla con mayor peso relativo viene de <strong>' + escapeHtml(points[0].certamen) + '</strong> y se ubica en el <strong>' + points[0].y + '%</strong> del estilo.';
 
-      renderLegend(points.map(function(point) { return point.label.length > 34 ? point.label.slice(0, 34) + '…' : point.label; }), points.map(function(_, idx) { return palette[idx % palette.length]; }), document.getElementById('bubbleLegend'), null);
+      renderLegend(points.map(function(point) {
+        return point.label.length > 34 ? point.label.slice(0, 34) + '…' : point.label;
+      }), points.map(function(_, idx) {
+        return palette[idx % palette.length];
+      }), document.getElementById('bubbleLegend'), null);
 
-      if (legacyIOS12) { renderLegacyBubble(points, palette); return; }
+      if (legacyIOS12) {
+        renderLegacyBubble(points, palette);
+        return;
+      }
 
       const ctx = document.getElementById('bubbleChart').getContext('2d');
       if (bubbleChart) bubbleChart.destroy();
@@ -846,7 +1603,13 @@
         type: 'bubble',
         data: {
           datasets: points.map(function(point, idx) {
-            return { label: point.label, data: [{ x: point.x, y: point.y, r: point.r }], backgroundColor: palette[idx % palette.length] + 'B3', borderColor: palette[idx % palette.length], borderWidth: 1.2 };
+            return {
+              label: point.label,
+              data: [{ x: point.x, y: point.y, r: point.r }],
+              backgroundColor: palette[idx % palette.length] + 'B3',
+              borderColor: palette[idx % palette.length],
+              borderWidth: 1.2
+            };
           })
         },
         options: {
@@ -855,11 +1618,34 @@
           animation: { duration: 700 },
           plugins: {
             legend: { display: false },
-            tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label; }, afterLabel: function(ctx) { const p = points[ctx.datasetIndex]; return 'Insight: dificultad ' + p.x + ' · percentil ' + p.y + '% · competidores ' + p.competitors; } } }
+            tooltip: {
+              callbacks: {
+                label: function(ctx) { return ctx.dataset.label; },
+                afterLabel: function(ctx) {
+                  const p = points[ctx.datasetIndex];
+                  return 'Insight: dificultad ' + p.x + ' · percentil ' + p.y + '% · competidores ' + p.competitors;
+                }
+              }
+            }
           },
           scales: {
-            x: { min: 1, max: 5.2, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.08)' }, title: { display: true, text: 'Dificultad del certamen', color: '#fff' } },
-            y: { min: 0, max: 100, ticks: { color: '#fff', callback: function(v) { return v + '%'; } }, grid: { color: 'rgba(255,255,255,0.08)' }, title: { display: true, text: 'Percentil en el estilo', color: '#fff' } }
+            x: {
+              min: 1,
+              max: 5.2,
+              ticks: { color: '#fff' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              title: { display: true, text: 'Dificultad del certamen', color: '#fff' }
+            },
+            y: {
+              min: 0,
+              max: 100,
+              ticks: {
+                color: '#fff',
+                callback: function(v) { return v + '%'; }
+              },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              title: { display: true, text: 'Percentil en el estilo', color: '#fff' }
+            }
           }
         }
       });
@@ -880,9 +1666,16 @@
       allData.filter(function(item) { return normalizeText(item.pais) === 'chile'; }).forEach(function(item) {
         const style = getStyleName(item);
         if (!style) return;
+
         if (!chileStyles[style]) {
-          chileStyles[style] = { total: 0, difficulty: 0, family: item.estilo_cliente || style, certs: new Set() };
+          chileStyles[style] = {
+            total: 0,
+            difficulty: 0,
+            family: item.estilo_cliente || style,
+            certs: new Set()
+          };
         }
+
         chileStyles[style].total += 1;
         chileStyles[style].difficulty += getDifficulty(item);
         if (item.certamen) chileStyles[style].certs.add(normalizeText(item.certamen));
@@ -900,8 +1693,17 @@
         const certAlignment = records.length && [...row.certs].some(function(cert) { return preferredCerts.has(cert); }) ? 1.08 : 0.96;
         const ivc = Number((baseIVC * familyAffinity * expansionFactor * certAlignment).toFixed(2));
 
-        return { style: style, family: row.family, ivc: ivc, density: density, alreadyOwned: alreadyOwned, familyAffinity: familyFocus[familyKey] || 0 };
-      }).sort(function(a, b) { return b.ivc - a.ivc; }).slice(0, 10);
+        return {
+          style: style,
+          family: row.family,
+          ivc: ivc,
+          density: density,
+          alreadyOwned: alreadyOwned,
+          familyAffinity: familyFocus[familyKey] || 0
+        };
+      }).sort(function(a, b) {
+        return b.ivc - a.ivc;
+      }).slice(0, 10);
     }
 
     function renderLegacyIVC(rows) {
@@ -912,17 +1714,20 @@
       const rowH = 28;
       const height = 24 + rows.length * rowH + 20;
       const maxValue = Math.max.apply(null, rows.map(function(r) { return r.ivc; }));
-      let svg = [];
 
+      let svg = [];
       svg.push('<svg class="svg-chart" viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="xMinYMin meet">');
+
       rows.forEach(function(row, idx) {
         const y = 24 + idx * rowH;
         const barW = (row.ivc / maxValue) * chartW;
         const alpha = 0.28 + (row.ivc / maxValue) * 0.62;
+
         svg.push('<text x="4" y="' + (y + 15) + '" fill="#fff" font-size="10.5">' + escapeHtml(row.style.length > 22 ? row.style.slice(0, 22) + '…' : row.style) + '</text>');
         svg.push('<rect x="' + labelW + '" y="' + y + '" width="' + barW + '" height="20" rx="10" ry="10" fill="rgba(227,44,108,' + alpha.toFixed(2) + ')" stroke="' + (idx === 0 ? '#f7c32f' : '#e32c6c') + '" stroke-width="' + (idx === 0 ? 2 : 1) + '"></rect>');
         svg.push('<text x="' + (labelW + barW - 8) + '" y="' + (y + 14) + '" fill="#fff" font-size="10" text-anchor="end">' + row.ivc + '</text>');
       });
+
       svg.push('</svg>');
       container.innerHTML = svg.join('');
     }
@@ -934,12 +1739,16 @@
       document.getElementById('heatmapTitle').innerText = 'Top 10 estilos con mayor vacío competitivo para ' + breweryName + '.';
       document.getElementById('heatmapInsight').innerHTML = '<strong>Insight:</strong> el mayor vacío competitivo hoy aparece en <strong>' + escapeHtml(rows[0].style) + '</strong>, con un IVC de <strong>' + rows[0].ivc + '</strong> y afinidad directa con tu territorio de juego.';
 
-      if (legacyIOS12) { renderLegacyIVC(rows); return; }
+      if (legacyIOS12) {
+        renderLegacyIVC(rows);
+        return;
+      }
 
       const ctx = document.getElementById('heatmapChart').getContext('2d');
       if (heatmapChart) heatmapChart.destroy();
 
       const maxValue = Math.max.apply(null, rows.map(function(r) { return r.ivc; }));
+
       heatmapChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -948,7 +1757,10 @@
             data: rows.map(function(r) { return r.ivc; }),
             borderRadius: 14,
             borderSkipped: false,
-            backgroundColor: rows.map(function(r) { const alpha = 0.28 + (r.ivc / maxValue) * 0.62; return 'rgba(227,44,108,' + alpha.toFixed(2) + ')'; }),
+            backgroundColor: rows.map(function(r) {
+              const alpha = 0.28 + (r.ivc / maxValue) * 0.62;
+              return 'rgba(227,44,108,' + alpha.toFixed(2) + ')';
+            }),
             borderColor: rows.map(function(r, idx) { return idx === 0 ? '#f7c32f' : '#e32c6c'; }),
             borderWidth: rows.map(function(r, idx) { return idx === 0 ? 2.2 : 1.2; })
           }]
@@ -975,8 +1787,16 @@
             }
           },
           scales: {
-            x: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.08)' }, title: { display: true, text: 'Índice de vacío de categoría', color: '#fff' } },
-            y: { ticks: { color: '#fff' }, grid: { display: false } }
+            x: {
+              beginAtZero: true,
+              ticks: { color: '#fff' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              title: { display: true, text: 'Índice de vacío de categoría', color: '#fff' }
+            },
+            y: {
+              ticks: { color: '#fff' },
+              grid: { display: false }
+            }
           }
         }
       });
@@ -997,26 +1817,38 @@
 
     const stepPositions = [0, 0.25, 0.5, 0.75, 1];
     const salesSteps = [0, 0.33, 0.66, 1];
-    const salesData = [54000000, 216036000, 540036000, 720000000];
+
+    const salesData = [
+      54000000,
+      216036000,
+      540036000,
+      720000000
+    ];
+
     const productionLabels = ['<500 hl', '501 - 1000 hl', '1001 - 5000 hl', '5001 - 10000 hl', '≥20000 hl'];
     const salesLabels = ['$54M CLP', '$216M CLP', '$540M CLP', '$720M CLP'];
 
     let currentRangeIndex = 3;
     let currentSalesIndex = 1;
-    let currentTier = "champion";
-    let currentBrewery = "";
+    let currentTier = 'champion';
+    let currentBrewery = '';
     let isDragging = false;
     let isDraggingB = false;
     let wrapperWidth = 0;
 
     function getDefaultBrewery() {
-      const chile2025 = allData.filter(function(item) { return normalizeText(item.pais) === 'chile' && String(getYear(item) || '') === '2025'; });
+      const chile2025 = allData.filter(function(item) {
+        return normalizeText(item.pais) === 'chile' && String(getYear(item) || '') === '2025';
+      });
+
       if (!chile2025.length) return getAllBreweries()[0] || '';
+
       const totals = {};
       chile2025.forEach(function(item) {
         if (!item.cerveceria) return;
         totals[item.cerveceria] = (totals[item.cerveceria] || 0) + getMedalWeight(item.medalla_base);
       });
+
       const sorted = Object.entries(totals).sort(function(a, b) { return b[1] - a[1]; });
       return sorted.length ? sorted[0][0] : (getAllBreweries()[0] || '');
     }
@@ -1046,19 +1878,24 @@
     function updateSliderBVisual(index) {
       const percent = salesSteps[index] * 100;
       sliderFillB.style.width = `${percent}%`;
+
       const thumbLeft = percent * sliderRailB.clientWidth / 100;
       sliderThumbB.style.left = `${thumbLeft}px`;
+
       document.getElementById('sliderCurrentB').innerText = salesLabels[index];
+
       updateSliderBColor();
     }
 
     function calculatePrice() {
       let base = (salesData[currentSalesIndex] / 1000000) * 0.02;
       base *= (currentRangeIndex + 1) * 0.8;
+
       let mult = 1;
-      if (currentTier === "explorer") mult = 0.7;
-      if (currentTier === "podium") mult = 1;
-      if (currentTier === "champion") mult = 1.4;
+      if (currentTier === 'explorer') mult = 0.7;
+      if (currentTier === 'podium') mult = 1;
+      if (currentTier === 'champion') mult = 1.4;
+
       return Math.round(base * mult);
     }
 
@@ -1072,6 +1909,7 @@
 
     function updatePriceDisplay() {
       const price = calculatePrice();
+
       inversionEl.innerText = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -1079,15 +1917,18 @@
       }).format(price);
 
       let multiplier = 12;
-      if (currentTier === "podium") multiplier = 18;
-      if (currentTier === "champion") multiplier = 28;
-      optimizacionEl.innerText = "$ " + (price * multiplier).toLocaleString();
+      if (currentTier === 'podium') multiplier = 18;
+      if (currentTier === 'champion') multiplier = 28;
+
+      optimizacionEl.innerText = '$ ' + (price * multiplier).toLocaleString();
 
       const competitiveFactor = getCompetitiveFactor();
       const impactBase = currentTier === 'explorer' ? 38 : currentTier === 'podium' ? 56 : 72;
       roiEl.innerText = Math.round(impactBase + currentRangeIndex * 5 - currentSalesIndex * 3 + (competitiveFactor - 1) * 26) + '%';
 
-      document.getElementById('resultNote').innerHTML = currentBrewery ? '<strong>' + escapeHtml(currentBrewery) + '</strong>: el precio responde al modelo A × B × Plan y el retorno suma señales reales del historial competitivo.' : 'El precio responde al modelo A × B × Plan. Ingresa una cervecería para sumar lectura competitiva real.';
+      document.getElementById('resultNote').innerHTML = currentBrewery
+        ? '<strong>' + escapeHtml(currentBrewery) + '</strong>: el precio responde al modelo A × B × Plan y el retorno suma señales reales del historial competitivo.'
+        : 'El precio responde al modelo A × B × Plan. Ingresa una cervecería para sumar lectura competitiva real.';
     }
 
     function setRangeByIndex(index) {
@@ -1105,7 +1946,9 @@
 
     function updateTierButtonsActive() {
       const btns = { explorer: tierExplorer, podium: tierPodium, champion: tierChampion };
-      Object.keys(btns).forEach(function(tier) { btns[tier].classList.toggle('active', tier === currentTier); });
+      Object.keys(btns).forEach(function(tier) {
+        btns[tier].classList.toggle('active', tier === currentTier);
+      });
     }
 
     function getNearestStep(clientX) {
@@ -1124,32 +1967,119 @@
       return distances.indexOf(Math.min.apply(null, distances));
     }
 
-    function onDragStart(e) { isDragging = true; e.preventDefault(); window.addEventListener('mousemove', onDragMove); window.addEventListener('mouseup', onDragEnd); window.addEventListener('touchmove', onDragMove, { passive: false }); window.addEventListener('touchend', onDragEnd); sliderThumb.style.cursor = 'grabbing'; }
-    function onDragMove(e) { if (!isDragging) return; const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0); const rect = sliderRail.getBoundingClientRect(); let ratio = (clientX - rect.left) / rect.width; ratio = Math.min(Math.max(ratio, 0), 1); sliderFill.style.width = `${ratio * 100}%`; sliderThumb.style.left = `${ratio * wrapperWidth}px`; }
-    function onDragEnd(e) { if (!isDragging) return; isDragging = false; const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0); setRangeByIndex(getNearestStep(clientX)); sliderThumb.style.cursor = 'grab'; window.removeEventListener('mousemove', onDragMove); window.removeEventListener('mouseup', onDragEnd); window.removeEventListener('touchmove', onDragMove); window.removeEventListener('touchend', onDragEnd); }
-    function onDragStartB(e) { isDraggingB = true; e.preventDefault(); window.addEventListener('mousemove', onDragMoveB); window.addEventListener('mouseup', onDragEndB); window.addEventListener('touchmove', onDragMoveB, { passive: false }); window.addEventListener('touchend', onDragEndB); sliderThumbB.style.cursor = 'grabbing'; }
-    function onDragMoveB(e) { if (!isDraggingB) return; const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0); const rect = sliderRailB.getBoundingClientRect(); let ratio = (clientX - rect.left) / rect.width; ratio = Math.min(Math.max(ratio, 0), 1); sliderFillB.style.width = `${ratio * 100}%`; sliderThumbB.style.left = `${ratio * rect.width}px`; }
-    function onDragEndB(e) { if (!isDraggingB) return; isDraggingB = false; const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0); setSalesByIndex(getNearestStepB(clientX)); sliderThumbB.style.cursor = 'grab'; window.removeEventListener('mousemove', onDragMoveB); window.removeEventListener('mouseup', onDragEndB); window.removeEventListener('touchmove', onDragMoveB); window.removeEventListener('touchend', onDragEndB); }
+    function onDragStart(e) {
+      isDragging = true;
+      e.preventDefault();
+      window.addEventListener('mousemove', onDragMove);
+      window.addEventListener('mouseup', onDragEnd);
+      window.addEventListener('touchmove', onDragMove, { passive: false });
+      window.addEventListener('touchend', onDragEnd);
+      sliderThumb.style.cursor = 'grabbing';
+    }
+
+    function onDragMove(e) {
+      if (!isDragging) return;
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const rect = sliderRail.getBoundingClientRect();
+      let ratio = (clientX - rect.left) / rect.width;
+      ratio = Math.min(Math.max(ratio, 0), 1);
+      sliderFill.style.width = `${ratio * 100}%`;
+      sliderThumb.style.left = `${ratio * wrapperWidth}px`;
+    }
+
+    function onDragEnd(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
+      setRangeByIndex(getNearestStep(clientX));
+      sliderThumb.style.cursor = 'grab';
+      window.removeEventListener('mousemove', onDragMove);
+      window.removeEventListener('mouseup', onDragEnd);
+      window.removeEventListener('touchmove', onDragMove);
+      window.removeEventListener('touchend', onDragEnd);
+    }
+
+    function onDragStartB(e) {
+      isDraggingB = true;
+      e.preventDefault();
+      window.addEventListener('mousemove', onDragMoveB);
+      window.addEventListener('mouseup', onDragEndB);
+      window.addEventListener('touchmove', onDragMoveB, { passive: false });
+      window.addEventListener('touchend', onDragEndB);
+      sliderThumbB.style.cursor = 'grabbing';
+    }
+
+    function onDragMoveB(e) {
+      if (!isDraggingB) return;
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const rect = sliderRailB.getBoundingClientRect();
+      let ratio = (clientX - rect.left) / rect.width;
+      ratio = Math.min(Math.max(ratio, 0), 1);
+      sliderFillB.style.width = `${ratio * 100}%`;
+      sliderThumbB.style.left = `${ratio * rect.width}px`;
+    }
+
+    function onDragEndB(e) {
+      if (!isDraggingB) return;
+      isDraggingB = false;
+      const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
+      setSalesByIndex(getNearestStepB(clientX));
+      sliderThumbB.style.cursor = 'grab';
+      window.removeEventListener('mousemove', onDragMoveB);
+      window.removeEventListener('mouseup', onDragEndB);
+      window.removeEventListener('touchmove', onDragMoveB);
+      window.removeEventListener('touchend', onDragEndB);
+    }
 
     function initSlider() {
-      const updateSize = function() { wrapperWidth = sliderRail.clientWidth; updateSliderVisual(currentRangeIndex); };
+      const updateSize = function() {
+        wrapperWidth = sliderRail.clientWidth;
+        updateSliderVisual(currentRangeIndex);
+      };
+
       updateSize();
       window.addEventListener('resize', updateSize);
       sliderThumb.addEventListener('mousedown', onDragStart);
       sliderThumb.addEventListener('touchstart', onDragStart, { passive: false });
-      sliderRail.addEventListener('click', function(e) { if (isDragging) return; setRangeByIndex(getNearestStep(e.clientX)); });
+      sliderRail.addEventListener('click', function(e) {
+        if (isDragging) return;
+        setRangeByIndex(getNearestStep(e.clientX));
+      });
     }
 
     function initSliderB() {
       sliderThumbB.addEventListener('mousedown', onDragStartB);
       sliderThumbB.addEventListener('touchstart', onDragStartB, { passive: false });
-      sliderRailB.addEventListener('click', function(e) { if (isDraggingB) return; setSalesByIndex(getNearestStepB(e.clientX)); });
+      sliderRailB.addEventListener('click', function(e) {
+        if (isDraggingB) return;
+        setSalesByIndex(getNearestStepB(e.clientX));
+      });
     }
 
     function bindTierEvents() {
-      tierExplorer.addEventListener('click', function() { currentTier = 'explorer'; updateTierButtonsActive(); updateSliderColor(); updateSliderBColor(); updatePriceDisplay(); });
-      tierPodium.addEventListener('click', function() { currentTier = 'podium'; updateTierButtonsActive(); updateSliderColor(); updateSliderBColor(); updatePriceDisplay(); });
-      tierChampion.addEventListener('click', function() { currentTier = 'champion'; updateTierButtonsActive(); updateSliderColor(); updateSliderBColor(); updatePriceDisplay(); });
+      tierExplorer.addEventListener('click', function() {
+        currentTier = 'explorer';
+        updateTierButtonsActive();
+        updateSliderColor();
+        updateSliderBColor();
+        updatePriceDisplay();
+      });
+
+      tierPodium.addEventListener('click', function() {
+        currentTier = 'podium';
+        updateTierButtonsActive();
+        updateSliderColor();
+        updateSliderBColor();
+        updatePriceDisplay();
+      });
+
+      tierChampion.addEventListener('click', function() {
+        currentTier = 'champion';
+        updateTierButtonsActive();
+        updateSliderColor();
+        updateSliderBColor();
+        updatePriceDisplay();
+      });
     }
 
     function applyAnalysis() {
@@ -1168,6 +2098,7 @@
       currentBrewery = canonicalName;
       document.getElementById('breweryNameInput').value = canonicalName;
       document.getElementById('contextNote').innerText = canonicalName + ': lectura competitiva construida desde certámenes, estilos, medallas y densidades históricas reales.';
+
       renderRadarChart(canonicalName);
       renderBubbleChart(canonicalName);
       renderIVCChart(canonicalName);
@@ -1175,26 +2106,32 @@
     }
 
     document.getElementById('analyzeBtn').addEventListener('click', applyAnalysis);
-    document.getElementById('breweryNameInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') applyAnalysis(); });
+    document.getElementById('breweryNameInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') applyAnalysis();
+    });
+
     document.getElementById('ctaBtn').addEventListener('click', function() {
       if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
-      alert("📞 Diagnóstico estratégico – Un asesor te contactará para potenciar tu negocio.");
+      alert('📞 Diagnóstico estratégico – Un asesor te contactará para potenciar tu negocio.');
     });
 
     async function init() {
       const data = await cargarCSV();
       if (!data.length) return;
+
       allData = data;
       fillSuggestions();
       renderBreweryChart(data);
       initSlider();
       initSliderB();
       bindTierEvents();
+
       updateTierButtonsActive();
       updateSliderVisual(currentRangeIndex);
       updateSliderBVisual(currentSalesIndex);
       updateSliderColor();
       updatePriceDisplay();
+
       document.getElementById('breweryNameInput').value = getDefaultBrewery();
       applyAnalysis();
     }
