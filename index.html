@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>PodiumBeer – Demo Clientes</title>
+    <title>PodiumBeer – Inteligencia Competitiva</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -35,7 +35,6 @@
             z-index: -2;
         }
 
-        /* Fallback para iOS 12 */
         body.legacy-ios12::before {
             background-attachment: scroll;
         }
@@ -48,25 +47,27 @@
             z-index: 1;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 1.5rem;
         }
+
         .logo {
             max-width: 260px;
             width: 100%;
             height: auto;
             margin-bottom: 1rem;
         }
+
         .tagline {
             font-size: clamp(16px, 5vw, 22px);
-            font-weight: 600;
+            font-weight: 700;
             color: #f7c32f;
             max-width: 700px;
             margin: 0 auto;
             line-height: 1.3;
         }
+
         .descripcion {
             font-size: 14px;
             color: #cfdee0;
@@ -76,10 +77,9 @@
             text-align: center;
         }
 
-        /* Buscador de cervecería */
         .brewery-input-wrap {
-            background: rgba(6, 35, 46, 0.78);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(6, 35, 46, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 999px;
             display: flex;
             align-items: center;
@@ -88,6 +88,7 @@
             max-width: 560px;
             margin: 1.5rem auto 1rem;
         }
+
         .brewery-input-wrap input {
             flex: 1;
             background: transparent;
@@ -97,9 +98,11 @@
             font-size: 15px;
             font-weight: 500;
         }
+
         .brewery-input-wrap input::placeholder {
             color: rgba(255, 255, 255, 0.55);
         }
+
         .analyze-btn {
             border: none;
             border-radius: 999px;
@@ -110,9 +113,13 @@
             padding: 0.7rem 1.2rem;
             cursor: pointer;
             white-space: nowrap;
+            transition: transform 0.1s;
         }
 
-        /* Tarjetas y gráficos */
+        .analyze-btn:active {
+            transform: scale(0.97);
+        }
+
         .card {
             background: rgba(10, 25, 35, 0.75);
             backdrop-filter: blur(10px);
@@ -121,19 +128,22 @@
             border: 1px solid rgba(30, 171, 155, 0.3);
             margin-bottom: 1.5rem;
         }
+
         .card-title {
             font-size: 20px;
             font-weight: 800;
             color: #f7c32f;
             margin-bottom: 0.25rem;
         }
+
         .card-subtitle {
             font-size: 14px;
             color: #cfdee0;
             margin-bottom: 1rem;
         }
+
         .stats-summary {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.45);
             border-radius: 16px;
             padding: 0.8rem;
             margin-bottom: 1rem;
@@ -143,28 +153,41 @@
             justify-content: space-between;
             gap: 0.5rem;
         }
+
         .stats-summary span {
             font-weight: 700;
             color: #f7c32f;
         }
+
+        /* FIX 4: altura fija para gráficos */
         .chart-container {
-            min-height: 320px;
+            height: 360px;
             width: 100%;
             position: relative;
         }
-        canvas {
-            max-width: 100%;
-            height: auto;
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            .card-title {
+                font-size: 18px;
+            }
+            .stats-summary {
+                font-size: 12px;
+            }
         }
 
         /* Sliders y planes */
         .slider-group {
             margin: 1.5rem 0;
         }
+
         .slider-label {
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
+
         .slider-rail {
             width: 100%;
             height: 6px;
@@ -173,6 +196,7 @@
             position: relative;
             cursor: pointer;
         }
+
         .slider-fill {
             position: absolute;
             height: 100%;
@@ -181,6 +205,7 @@
             width: 0%;
             pointer-events: none;
         }
+
         .slider-thumb {
             position: absolute;
             width: 24px;
@@ -191,7 +216,9 @@
             transform: translate(-50%, -50%);
             cursor: grab;
             z-index: 3;
+            box-shadow: 0 0 8px rgba(0,0,0,0.3);
         }
+
         .slider-labels {
             display: flex;
             justify-content: space-between;
@@ -199,48 +226,81 @@
             font-size: 12px;
             color: #cfdee0;
         }
+
         .tier-buttons {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
             margin: 1rem 0;
         }
+
         .tier-btn {
             flex: 1;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 60px;
             padding: 0.6rem;
             text-align: center;
             cursor: pointer;
             font-weight: 700;
+            transition: all 0.2s;
         }
+
         .tier-btn.active {
             background: linear-gradient(90deg, #e40f63, #c32263);
             border-color: #fff;
+            box-shadow: 0 0 12px rgba(228,15,99,0.4);
         }
+
         .metric-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin: 1rem 0;
-            padding: 0.5rem;
-            background: rgba(0,0,0,0.3);
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.35);
             border-radius: 20px;
         }
+
         .metric-name {
             font-weight: 700;
+            font-size: 15px;
         }
+
         .metric-value {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
             color: #f7c32f;
         }
 
         @media (max-width: 768px) {
-            .card-title { font-size: 18px; }
-            .stats-summary { font-size: 12px; }
-            .metric-value { font-size: 18px; }
+            .metric-value {
+                font-size: 18px;
+            }
+            .metric-name {
+                font-size: 13px;
+            }
+        }
+
+        .tabla-estilos {
+            margin-top: 1rem;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .tabla-estilos table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla-estilos th, .tabla-estilos td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tabla-estilos th {
+            color: #f7c32f;
         }
     </style>
 </head>
@@ -263,7 +323,7 @@
     <div class="card">
         <div class="card-title">📊 Tus medallas: cuáles sí te ayudan de verdad</div>
         <div class="card-subtitle">Identificamos qué premios te diferencian y cuáles son solo ruido.</div>
-        <div id="medallasStats" class="stats-summary">Cargando datos...</div>
+        <div id="medallasStats" class="stats-summary">Esperando análisis...</div>
         <div class="chart-container"><canvas id="medallasChart" width="800" height="400"></canvas></div>
     </div>
 
@@ -271,26 +331,26 @@
     <div class="card">
         <div class="card-title">📈 En qué estilos todavía tienes espacio</div>
         <div class="card-subtitle">Oportunidades ocultas en tu portafolio. ¿Dónde puedes liderar?</div>
-        <div id="estilosStats" class="stats-summary">Cargando datos...</div>
+        <div id="estilosStats" class="stats-summary">Esperando análisis...</div>
         <div class="chart-container"><canvas id="radarChart" width="800" height="400"></canvas></div>
-        <div id="estilosTabla" style="margin-top:1rem; font-size:13px;"></div>
+        <div id="estilosTabla" class="tabla-estilos"></div>
     </div>
 
     <!-- Vista 3: Esfuerzo vs retorno en concursos -->
     <div class="card">
         <div class="card-title">⚖️ Concursos donde tu esfuerzo rinde… y donde no</div>
         <div class="card-subtitle">No todos los certámenes merecen tu plata.</div>
-        <div id="concursosStats" class="stats-summary">Cargando datos...</div>
+        <div id="concursosStats" class="stats-summary">Esperando análisis...</div>
         <div class="chart-container"><canvas id="concursosChart" width="800" height="400"></canvas></div>
     </div>
 
-    <!-- Motor de precios (Sliders + Planes) -->
+    <!-- Motor de precios -->
     <div class="card">
         <div class="card-title">💰 Simulador de Alianza</div>
         <div class="card-subtitle">Ajusta tu producción y ventas para ver la inversión y retorno estimado.</div>
 
         <div class="slider-group">
-            <div class="slider-label">Escala de Producción (hL/año)</div>
+            <div class="slider-label">📦 Escala de Producción (hL/año)</div>
             <div class="slider-rail" id="prodRail">
                 <div class="slider-fill" id="prodFill"></div>
                 <div class="slider-thumb" id="prodThumb"></div>
@@ -302,7 +362,7 @@
         </div>
 
         <div class="slider-group">
-            <div class="slider-label">Ventas Anuales (CLP)</div>
+            <div class="slider-label">💰 Ventas Anuales (CLP)</div>
             <div class="slider-rail" id="ventasRail">
                 <div class="slider-fill" id="ventasFill"></div>
                 <div class="slider-thumb" id="ventasThumb"></div>
@@ -320,54 +380,64 @@
         </div>
 
         <div class="metric-row">
-            <div class="metric-name">Inversión Inteligente (USD/mes)</div>
+            <div class="metric-name">💸 Inversión Inteligente (USD/mes)</div>
             <div class="metric-value" id="inversion">--</div>
         </div>
         <div class="metric-row">
-            <div class="metric-name">Valor Recuperado Estimado (USD/año)</div>
+            <div class="metric-name">📈 Valor Recuperado Estimado (USD/año)</div>
             <div class="metric-value" id="recuperado">--</div>
         </div>
         <div class="metric-row">
-            <div class="metric-name">Impacto en Rentabilidad</div>
+            <div class="metric-name">🎯 Impacto en Rentabilidad</div>
             <div class="metric-value" id="impacto">--%</div>
         </div>
-        <div class="card-subtitle" id="precioNota">Ingresa una cervecería para sumar lectura competitiva real.</div>
+        <div class="card-subtitle" id="precioNota" style="margin-top:0.5rem;">Ingresa una cervecería para sumar lectura competitiva real.</div>
     </div>
 </div>
 
 <script>
-    // ----------------------------- DETECCIÓN iOS 12 ---------------------------------
+    // ======================== DETECCIÓN iOS 12 ========================
     var legacyIOS12 = /iPad|iPhone|iPod/.test(navigator.userAgent) && /OS 12_/.test(navigator.userAgent);
     if (legacyIOS12) document.body.classList.add('legacy-ios12');
 
-    // ----------------------------- CARGA Y PROCESAMIENTO DE DATOS ---------------------------------
-    var allData = [];            // datos crudos del CSV
-    var enrichedData = [];       // datos enriquecidos con scores
-    var certamenScores = {};     // mapa certamen -> score (1-5)
-    var saturacionEstilos = {};   // mapa estilo -> { puntaje_saturacion, clasificacion }
-    var dificultadPorCertamen = {};
+    // ======================== VARIABLES GLOBALES ========================
+    var allData = [];
+    var enrichedData = [];
+    var certamenScoresMap = {};
+    var saturacionEstilosMap = {};
 
-    function normalizeText(t) { if (!t) return ''; return t.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); }
+    var medallasChart = null;
+    var radarChart = null;
+    var concursosChart = null;
+
+    // ======================== UTILIDADES ========================
+    function normalizeText(t) {
+        if (!t) return '';
+        return t.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
 
     function formatearTextoPresentacion(str) {
         if (!str) return '';
         return str.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
     }
 
-    function esBasura(val) { if (!val) return true; var v = val.toString().toUpperCase().trim(); return v === "PENDIENTE" || v === "COMPLETAR" || v === "-"; }
+    function esBasura(val) {
+        if (!val) return true;
+        var v = val.toString().toUpperCase().trim();
+        return v === "PENDIENTE" || v === "COMPLETAR" || v === "-" || v === "#N/D";
+    }
 
-    // Asignación de score de certamen según manual
+    // ======================== SCORE CERTAMEN ========================
     function getCertamenScore(certamen) {
         var c = normalizeText(certamen);
         if (c.includes('world beer cup') || c.includes('world beer awards') || c.includes('european beer star')) return 5;
         if (c.includes('copa cervezas de america')) return 4;
         if (c.includes('south beer cup')) return 4;
         if (c.includes('tayrona') || c.includes('capital beer') || c.includes('conquistadores')) return 3;
-        if (c.includes('nacional') || c.includes('chile')) return 2;
         return 2;
     }
 
-    // Cargar CSV con XMLHttpRequest
+    // ======================== CARGA DE CSV ========================
     function cargarCSV(callback) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'BBDD_Medallero_Chile.csv', true);
@@ -376,6 +446,7 @@
                 if (xhr.status === 200 || xhr.status === 0) {
                     var texto = xhr.responseText;
                     var lineas = texto.split(/\r?\n/);
+                    if (lineas.length === 0) { callback(new Error("CSV vacío"), null); return; }
                     var encabezados = lineas[0].split(';').map(function(h) { return h.trim(); });
                     var datos = [];
                     for (var i = 1; i < lineas.length; i++) {
@@ -405,50 +476,42 @@
         xhr.send();
     }
 
-    // Construir tablas derivadas y enriquecer datos
+    // ======================== CONSTRUIR TABLAS DERIVADAS ========================
     function buildDerivedTables(data) {
-        // 1. certamen_score
+        // Certamen scores
         var certScores = {};
         data.forEach(function(row) {
-            var cert = row.certamen;
-            if (!cert) return;
-            if (!certScores[cert]) certScores[cert] = getCertamenScore(cert);
+            if (row.certamen && !certScores[row.certamen]) {
+                certScores[row.certamen] = getCertamenScore(row.certamen);
+            }
         });
 
-        // 2. saturacion_estilo (global)
+        // Saturación de estilos (global)
         var totalMedallas = data.length;
         var conteoEstilos = {};
         data.forEach(function(row) {
-            var estilo = row.estilo;
-            if (!estilo) return;
-            conteoEstilos[estilo] = (conteoEstilos[estilo] || 0) + 1;
+            if (row.estilo) {
+                conteoEstilos[row.estilo] = (conteoEstilos[row.estilo] || 0) + 1;
+            }
         });
         var saturacion = {};
         for (var estilo in conteoEstilos) {
             var ratio = conteoEstilos[estilo] / totalMedallas;
-            var puntaje, clasif;
-            if (ratio > 0.03) { puntaje = 1; clasif = "ALTA"; }
-            else if (ratio >= 0.01) { puntaje = 2; clasif = "MEDIA"; }
-            else { puntaje = 3; clasif = "BAJA"; }
-            saturacion[estilo] = { puntaje: puntaje, clasificacion: clasif };
+            var puntaje;
+            if (ratio > 0.03) puntaje = 1;
+            else if (ratio >= 0.01) puntaje = 2;
+            else puntaje = 3;
+            saturacion[estilo] = puntaje;
         }
 
-        // 3. dificultad por certamen (si tiene entries, pero no tenemos, asignamos 2 por defecto)
-        var dificultad = {};
-        data.forEach(function(row) {
-            var cert = row.certamen;
-            if (!cert) return;
-            dificultad[cert] = 2; // valor por defecto medio
-        });
-
-        // 4. Enriquecer cada fila
+        // Enriquecer cada fila
         var enriched = [];
         data.forEach(function(row) {
             var cert = row.certamen;
             var estilo = row.estilo;
             var scoreCert = certScores[cert] || 2;
-            var satPuntaje = (estilo && saturacion[estilo]) ? saturacion[estilo].puntaje : 2;
-            var difPuntaje = dificultad[cert] || 2;
+            var satPuntaje = (estilo && saturacion[estilo]) ? saturacion[estilo] : 2;
+            var difPuntaje = 2; // dificultad por defecto
             var scoreTotal = scoreCert + satPuntaje + difPuntaje;
             var valorEstrategico = "";
             if (scoreTotal >= 9) valorEstrategico = "ALTO";
@@ -462,18 +525,20 @@
                 medalla: row.medalla_base,
                 score_certamen: scoreCert,
                 puntaje_saturacion: satPuntaje,
-                puntaje_dificultad: difPuntaje,
                 score_total: scoreTotal,
                 valor_estrategico: valorEstrategico
             });
         });
-        return { enriched: enriched, certamenScores: certScores, saturacionEstilos: saturacion, dificultad: dificultad };
+
+        return { enriched: enriched, certamenScores: certScores, saturacionEstilos: saturacion };
     }
 
-    // KPI 2: Espacio de crecimiento por estilo para una cervecería
-    function calcularEspacioEstilos(cerveceria, enriched, allDataRaw) {
+    // ======================== KPI 2: ESPACIO DE CRECIMIENTO ========================
+    function calcularEspacioEstilos(cerveceria, enriched) {
         var cervezaNorm = normalizeText(cerveceria);
-        var medallasCerveza = enriched.filter(function(e) { return normalizeText(e.cerveceria) === cervezaNorm; });
+        var medallasCerveza = enriched.filter(function(e) {
+            return normalizeText(e.cerveceria) === cervezaNorm;
+        });
         if (!medallasCerveza.length) return [];
 
         // Agrupar por estilo
@@ -483,30 +548,27 @@
             estilosCerveza[m.estilo] = (estilosCerveza[m.estilo] || 0) + 1;
         });
 
-        // Calcular para cada estilo que produce
         var resultados = [];
         for (var estilo in estilosCerveza) {
-            // pts_saturacion_inv
-            var sat = window.saturacionEstilosGlobal && window.saturacionEstilosGlobal[estilo] ? window.saturacionEstilosGlobal[estilo].puntaje : 2;
-            var ptsSatInv = (sat === 1 ? 0 : (sat === 2 ? 1 : 2));
-            // presencia chilena en ese estilo
-            var totalEstilo = allDataRaw.filter(function(r) { return r.estilo === estilo; }).length;
-            var chileEstilo = allDataRaw.filter(function(r) { return r.estilo === estilo && normalizeText(r.pais) === 'chile'; }).length;
-            var propChile = totalEstilo ? chileEstilo / totalEstilo : 0;
-            var ptsPresencia = (propChile < 0.10 ? 2 : (propChile <= 0.30 ? 1 : 0));
-            // historial de la cervecería en el estilo (medallas de alto valor)
-            var medallasAlto = medallasCerveza.filter(function(m) { return m.estilo === estilo && m.valor_estrategico === "ALTO"; }).length;
-            var ptsHistorial = medallasAlto >= 1 ? 2 : (estilosCerveza[estilo] >= 1 ? 1 : 0);
-            var espacioScore = ptsSatInv + ptsPresencia + ptsHistorial; // 0-6
-            var espacioNormalizado = Math.min(10, Math.round(espacioScore * 10 / 6));
+            // pts_saturacion_inv: saturación inversa
+            var satPuntaje = saturacionEstilosMap[estilo] || 2;
+            var ptsSatInv = (satPuntaje === 1 ? 0 : (satPuntaje === 2 ? 1 : 2));
+            // pts_historial: si tiene medallas ALTO en este estilo
+            var medallasAlto = medallasCerveza.filter(function(m) {
+                return m.estilo === estilo && m.valor_estrategico === "ALTO";
+            }).length;
+            var ptsHistorial = (medallasAlto >= 1 ? 2 : (estilosCerveza[estilo] >= 1 ? 1 : 0));
+            // No usamos presencia chilena porque el CSV no tiene campo 'pais' confiable
+            var espacioScore = ptsSatInv + ptsHistorial; // 0-4
+            var espacioNormalizado = Math.min(10, Math.round(espacioScore * 10 / 4));
             var categoria = "";
-            if (espacioScore >= 5) categoria = "ALTO";
-            else if (espacioScore >= 3) categoria = "MEDIO";
+            if (espacioScore >= 3) categoria = "ALTO";
+            else if (espacioScore >= 2) categoria = "MEDIO";
             else categoria = "POCO";
             var motivo = "";
-            if (categoria === "ALTO") motivo = "Pocas medallas globales, casi sin Chile y ya tienes resultados aquí.";
-            else if (categoria === "MEDIO") motivo = "Hay espacio, pero debes consolidar presencia.";
-            else motivo = "Estilo muy competido o sin tracción local.";
+            if (categoria === "ALTO") motivo = "Estilo con baja saturación global y ya tienes resultados destacados aquí.";
+            else if (categoria === "MEDIO") motivo = "Hay espacio, pero debes consolidar presencia con medallas de alto valor.";
+            else motivo = "Estilo muy competido o aún sin tracción en tu portafolio.";
             resultados.push({
                 estilo: estilo,
                 espacio_score: espacioNormalizado,
@@ -514,21 +576,25 @@
                 motivo_corto: motivo
             });
         }
-        resultados.sort(function(a,b) { return b.espacio_score - a.espacio_score; });
+        resultados.sort(function(a, b) { return b.espacio_score - a.espacio_score; });
         return resultados;
     }
 
-    // KPI 3: Esfuerzo vs retorno por certamen
+    // ======================== KPI 3: ESFUERZO VS RETORNO ========================
     function calcularEsfuerzoRetorno(cerveceria, enriched) {
         var cervezaNorm = normalizeText(cerveceria);
-        var medallasCerveza = enriched.filter(function(e) { return normalizeText(e.cerveceria) === cervezaNorm; });
+        var medallasCerveza = enriched.filter(function(e) {
+            return normalizeText(e.cerveceria) === cervezaNorm;
+        });
         if (!medallasCerveza.length) return [];
 
         var certamenes = {};
         medallasCerveza.forEach(function(m) {
             var cert = m.certamen;
             if (!cert) return;
-            if (!certamenes[cert]) certamenes[cert] = { anos: new Set(), medallasAlto: 0, medallasMedio: 0 };
+            if (!certamenes[cert]) {
+                certamenes[cert] = { anos: new Set(), medallasAlto: 0, medallasMedio: 0 };
+            }
             certamenes[cert].anos.add(m.anio);
             if (m.valor_estrategico === "ALTO") certamenes[cert].medallasAlto++;
             if (m.valor_estrategico === "MEDIO") certamenes[cert].medallasMedio++;
@@ -537,12 +603,14 @@
         var esfuerzos = [];
         for (var cert in certamenes) {
             var participaciones = certamenes[cert].anos.size;
-            var scoreCert = window.certamenScoresGlobal && window.certamenScoresGlobal[cert] ? window.certamenScoresGlobal[cert] : 2;
+            var scoreCert = certamenScoresMap[cert] || 2;
             var esfuerzoBruto = participaciones * scoreCert;
             esfuerzos.push({ cert: cert, esfuerzoBruto: esfuerzoBruto });
         }
         var minEsf = esfuerzos.length ? Math.min.apply(null, esfuerzos.map(function(e) { return e.esfuerzoBruto; })) : 0;
         var maxEsf = esfuerzos.length ? Math.max.apply(null, esfuerzos.map(function(e) { return e.esfuerzoBruto; })) : 1;
+        var rangoEsf = (maxEsf - minEsf) || 1; // FIX 1
+
         var retornos = [];
         for (var cert2 in certamenes) {
             var retornoBruto = certamenes[cert2].medallasAlto * 2 + certamenes[cert2].medallasMedio * 1;
@@ -550,45 +618,67 @@
         }
         var minRet = retornos.length ? Math.min.apply(null, retornos.map(function(r) { return r.retornoBruto; })) : 0;
         var maxRet = retornos.length ? Math.max.apply(null, retornos.map(function(r) { return r.retornoBruto; })) : 1;
+        var rangoRet = (maxRet - minRet) || 1; // FIX 1
 
         var resultado = [];
         for (var cert3 in certamenes) {
             var part = certamenes[cert3].anos.size;
-            var scoreC = window.certamenScoresGlobal && window.certamenScoresGlobal[cert3] ? window.certamenScoresGlobal[cert3] : 2;
+            var scoreC = certamenScoresMap[cert3] || 2;
             var esfBruto = part * scoreC;
-            var esfuerzo = 1 + 9 * (esfBruto - minEsf) / (maxEsf - minEsf);
+            var esfuerzo = 1 + 9 * (esfBruto - minEsf) / rangoEsf;
             var retBruto = certamenes[cert3].medallasAlto * 2 + certamenes[cert3].medallasMedio * 1;
-            var retorno = 1 + 9 * (retBruto - minRet) / (maxRet - minRet);
+            var retorno = 1 + 9 * (retBruto - minRet) / rangoRet;
+            esfuerzo = Math.round(esfuerzo * 10) / 10;
+            retorno = Math.round(retorno * 10) / 10;
             var motivo = "";
-            if (esfuerzo >= 7 && retorno <= 3) motivo = "Mucha energía puesta, poco cambio real. Decide si seguir invirtiendo igual.";
-            else if (esfuerzo <= 4 && retorno >= 7) motivo = "Tesoro: bajo esfuerzo, alto retorno. Aumenta participación.";
-            else motivo = "Equilibrio aceptable, revisar si se puede optimizar.";
+            if (esfuerzo >= 7 && retorno <= 3) motivo = "⚠️ Mucha energía puesta, poco cambio real. Decide si seguir invirtiendo igual.";
+            else if (esfuerzo <= 4 && retorno >= 7) motivo = "🏆 Tesoro: bajo esfuerzo, alto retorno. ¡Aumenta participación!";
+            else motivo = "🟡 Equilibrio aceptable, revisar si se puede optimizar.";
             resultado.push({
                 certamen: cert3,
-                esfuerzo: Math.round(esfuerzo * 10) / 10,
-                retorno: Math.round(retorno * 10) / 10,
+                esfuerzo: esfuerzo,
+                retorno: retorno,
                 motivo_corto: motivo
             });
         }
-        resultado.sort(function(a,b) { return b.retorno - a.retorno; });
+        resultado.sort(function(a, b) { return b.retorno - a.retorno; });
         return resultado;
     }
 
-    // ----------------------------- VARIABLES GLOBALES ---------------------------------
-    var currentBrewery = "";
-    var medallasChart, radarChart, concursosChart;
+    // ======================== FUNCIONES DE RENDER (CON FIXES) ========================
+    function resetCharts() {
+        if (medallasChart) { medallasChart.destroy(); medallasChart = null; }
+        if (radarChart) { radarChart.destroy(); radarChart = null; }
+        if (concursosChart) { concursosChart.destroy(); concursosChart = null; }
+    }
 
-    // ----------------------------- FUNCIONES DE RENDERIZADO ---------------------------------
+    function showLoading() {
+        document.getElementById("medallasStats").innerHTML = "⏳ Analizando medallas...";
+        document.getElementById("estilosStats").innerHTML = "⏳ Procesando estilos...";
+        document.getElementById("concursosStats").innerHTML = "⏳ Calculando concursos...";
+        document.getElementById("estilosTabla").innerHTML = "";
+    }
+
+    // Vista 1: Mapa de medallas (scatter con eje categórico)
     function renderMedallasValor(cerveceria, enriched) {
         var cervezaNorm = normalizeText(cerveceria);
-        var medallas = enriched.filter(function(e) { return normalizeText(e.cerveceria) === cervezaNorm; });
+        var medallas = enriched.filter(function(e) {
+            return normalizeText(e.cerveceria) === cervezaNorm;
+        });
         var total = medallas.length;
         var altas = medallas.filter(function(m) { return m.valor_estrategico === "ALTO"; }).length;
         var bajas = medallas.filter(function(m) { return m.valor_estrategico === "BAJO"; }).length;
         document.getElementById("medallasStats").innerHTML = "📊 Medallas analizadas: <span>" + total + "</span> | Valor ALTO: <span>" + altas + "</span> | Valor BAJO: <span>" + bajas + "</span>";
 
-        // Preparar datos para scatter: eje X = certamen, eje Y = valor (1=BAJO,2=MEDIO,3=ALTO)
-        var points = medallas.map(function(m) {
+        // Agrupar por certamen para eje X categórico
+        var certamenesUnicos = [];
+        medallas.forEach(function(m) {
+            if (m.certamen && certamenesUnicos.indexOf(m.certamen) === -1) {
+                certamenesUnicos.push(m.certamen);
+            }
+        });
+
+        var dataPoints = medallas.map(function(m) {
             var yVal = m.valor_estrategico === "ALTO" ? 3 : (m.valor_estrategico === "MEDIO" ? 2 : 1);
             return {
                 x: m.certamen,
@@ -596,20 +686,13 @@
                 medalla: m.medalla,
                 estilo: m.estilo,
                 valor: m.valor_estrategico,
-                anio: m.anio
+                anio: m.anio,
+                certamen: m.certamen
             };
         });
-        // Agrupar por certamen para evitar solapamiento
-        var uniqueCert = {};
-        points.forEach(function(p) { uniqueCert[p.x] = true; });
-        var certs = Object.keys(uniqueCert);
-        var dataPoints = points.map(function(p, idx) {
-            var xPos = certs.indexOf(p.x);
-            return { x: xPos, y: p.y, label: p.x, medalla: p.medalla, estilo: p.estilo, valor: p.valor, anio: p.anio };
-        });
 
-        if (medallasChart) medallasChart.destroy();
         var ctx = document.getElementById("medallasChart").getContext("2d");
+        if (medallasChart) medallasChart.destroy();
         medallasChart = new Chart(ctx, {
             type: 'scatter',
             data: {
@@ -622,23 +705,25 @@
                         if (v === 2) return '#ffc107';
                         return '#f44336';
                     },
-                    pointRadius: 8,
-                    pointHoverRadius: 12
+                    pointRadius: 9,
+                    pointHoverRadius: 13,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1.5
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false, // FIX 4
                 plugins: {
                     tooltip: {
                         callbacks: {
                             label: function(tooltipItem) {
                                 var p = tooltipItem.raw;
-                                return p.label + " " + p.anio + " · " + p.estilo + " · " + p.medalla + " · Valor: " + p.valor;
+                                return p.certamen + " " + (p.anio || '') + " · " + p.estilo + " · " + p.medalla;
                             },
                             afterLabel: function(tooltipItem) {
                                 var p = tooltipItem.raw;
-                                if (p.valor === "ALTO") return "✅ Esta medalla sí construye tu marca.";
+                                if (p.valor === "ALTO") return "✅ Esta medalla SÍ construye tu marca.";
                                 if (p.valor === "BAJO") return "⚠️ Ruido. No inviertas recursos en destacarla.";
                                 return "🟡 Valor medio, puede mejorar.";
                             }
@@ -647,32 +732,51 @@
                     legend: { display: false }
                 },
                 scales: {
-                    x: { title: { display: true, text: 'Certamen', color: '#fff' }, ticks: { callback: function(val) { return certs[val] || ''; }, color: '#fff' } },
-                    y: { title: { display: true, text: 'Valor Estratégico', color: '#fff' }, ticks: { callback: function(val) { if(val===3) return 'ALTO'; if(val===2) return 'MEDIO'; return 'BAJO'; }, color: '#fff' }, min: 0.5, max: 3.5 }
+                    x: {
+                        type: 'category', // FIX 5
+                        labels: certamenesUnicos,
+                        title: { display: true, text: 'Certamen', color: '#cfdee0' },
+                        ticks: { color: '#fff', maxRotation: 45, autoSkip: true }
+                    },
+                    y: {
+                        title: { display: true, text: 'Valor Estratégico', color: '#cfdee0' },
+                        ticks: {
+                            callback: function(val) {
+                                if (val === 3) return 'ALTO';
+                                if (val === 2) return 'MEDIO';
+                                return 'BAJO';
+                            },
+                            color: '#fff'
+                        },
+                        min: 0.5,
+                        max: 3.5
+                    }
                 }
             }
         });
     }
 
+    // Vista 2: Radar de estilos (limitado a 8)
     function renderRadarEspacio(cerveceria) {
-        var espacios = calcularEspacioEstilos(cerveceria, enrichedData, allData);
+        var espacios = calcularEspacioEstilos(cerveceria, enrichedData);
         if (!espacios.length) {
             document.getElementById("estilosStats").innerHTML = "No hay estilos para esta cervecería.";
             return;
         }
-        var altos = espacios.filter(function(e) { return e.espacio_crecimiento === "ALTO"; }).length;
-        document.getElementById("estilosStats").innerHTML = "📊 Estilos con espacio ALTO: <span>" + altos + "</span> | Total estilos analizados: <span>" + espacios.length + "</span>";
+        var topEspacios = espacios.slice(0, 8); // FIX 3
+        var altos = topEspacios.filter(function(e) { return e.espacio_crecimiento === "ALTO"; }).length;
+        document.getElementById("estilosStats").innerHTML = "📊 Estilos con espacio ALTO: <span>" + altos + "</span> | Total analizados: <span>" + topEspacios.length + "</span>";
 
-        var labels = espacios.map(function(e) { return e.estilo; });
-        var scores = espacios.map(function(e) { return e.espacio_score; });
-        var colores = espacios.map(function(e) {
-            if (e.espacio_crecimiento === "ALTO") return 'rgba(76,175,80,0.6)';
-            if (e.espacio_crecimiento === "MEDIO") return 'rgba(255,193,7,0.6)';
-            return 'rgba(158,158,158,0.6)';
+        var labels = topEspacios.map(function(e) { return e.estilo; });
+        var scores = topEspacios.map(function(e) { return e.espacio_score; });
+        var colores = topEspacios.map(function(e) {
+            if (e.espacio_crecimiento === "ALTO") return '#4caf50';
+            if (e.espacio_crecimiento === "MEDIO") return '#ffc107';
+            return '#9e9e9e';
         });
 
-        if (radarChart) radarChart.destroy();
         var ctx = document.getElementById("radarChart").getContext("2d");
+        if (radarChart) radarChart.destroy();
         radarChart = new Chart(ctx, {
             type: 'radar',
             data: {
@@ -683,226 +787,5 @@
                     backgroundColor: 'rgba(227,44,108,0.2)',
                     borderColor: '#e32c6c',
                     borderWidth: 2,
-                    pointBackgroundColor: colores
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, color: '#fff' } } },
-                plugins: { tooltip: { callbacks: { label: function(ctx) { return ctx.raw + '/10 - ' + espacios[ctx.dataIndex].motivo_corto; } } } }
-            }
-        });
-
-        var tablaHtml = '<table style="width:100%; font-size:12px; border-collapse:collapse;"> <tr><th>Estilo</th><th>Espacio</th><th>Recomendación</th></tr>';
-        espacios.slice(0,5).forEach(function(e) {
-            tablaHtml += '<tr><td>' + e.estilo + '</td><td>' + e.espacio_crecimiento + '</td><td>' + e.motivo_corto + '</td></tr>';
-        });
-        tablaHtml += '</table>';
-        document.getElementById("estilosTabla").innerHTML = tablaHtml;
-    }
-
-    function renderConcursosEsfuerzoRetorno(cerveceria) {
-        var concursos = calcularEsfuerzoRetorno(cerveceria, enrichedData);
-        if (!concursos.length) {
-            document.getElementById("concursosStats").innerHTML = "No hay datos de concursos.";
-            return;
-        }
-        var alertas = concursos.filter(function(c) { return c.esfuerzo >= 7 && c.retorno <= 3; }).length;
-        var tesoros = concursos.filter(function(c) { return c.esfuerzo <= 4 && c.retorno >= 7; }).length;
-        document.getElementById("concursosStats").innerHTML = "⚠️ Concursos con ALERTA (mucho esfuerzo, poco retorno): <span>" + alertas + "</span> | 🏆 Tesoros: <span>" + tesoros + "</span>";
-
-        var points = concursos.map(function(c) {
-            var color = 'gray';
-            if (c.esfuerzo >= 7 && c.retorno <= 3) color = '#f44336';
-            else if (c.esfuerzo <= 4 && c.retorno >= 7) color = '#4caf50';
-            return { x: c.esfuerzo, y: c.retorno, label: c.certamen, color: color, motivo: c.motivo_corto };
-        });
-
-        if (concursosChart) concursosChart.destroy();
-        var ctx = document.getElementById("concursosChart").getContext("2d");
-        concursosChart = new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Concursos',
-                    data: points,
-                    backgroundColor: points.map(function(p) { return p.color; }),
-                    pointRadius: 10,
-                    pointHoverRadius: 14
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                var p = tooltipItem.raw;
-                                return p.label + " · Esfuerzo: " + p.x.toFixed(1) + "/10 · Retorno: " + p.y.toFixed(1) + "/10";
-                            },
-                            afterLabel: function(tooltipItem) {
-                                return tooltipItem.raw.motivo;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: { title: { display: true, text: 'Esfuerzo (1-10)', color: '#fff' }, min: 1, max: 10 },
-                    y: { title: { display: true, text: 'Retorno (1-10)', color: '#fff' }, min: 1, max: 10 }
-                }
-            }
-        });
-    }
-
-    // ----------------------------- MOTOR DE PRECIOS ---------------------------------
-    var prodIndex = 3; // 0-4
-    var ventasIndex = 1; // 0-3
-    var currentPlan = "champion";
-    var prodLabels = ['<500 hl', '501-1000 hl', '1001-5000 hl', '5001-10000 hl', '≥20000 hl'];
-    var ventasLabels = ['$54M CLP', '$216M CLP', '$540M CLP', '$720M CLP'];
-    var ventasValores = [54000000, 216000000, 540000000, 720000000];
-
-    function calcularPrecio() {
-        var base = (ventasValores[ventasIndex] / 1000000) * 0.018;
-        base *= (prodIndex + 1) * 0.75;
-        var mult = 1;
-        if (currentPlan === "explorer") mult = 0.65;
-        if (currentPlan === "podium") mult = 0.9;
-        if (currentPlan === "champion") mult = 1.2;
-        var precio = Math.round(base * mult);
-        return precio;
-    }
-
-    function actualizarPrecio() {
-        var inv = calcularPrecio();
-        document.getElementById("inversion").innerText = "$ " + inv.toLocaleString() + " USD";
-        var multiplicador = (currentPlan === "explorer" ? 10 : (currentPlan === "podium" ? 18 : 28));
-        var recuperado = inv * multiplicador;
-        document.getElementById("recuperado").innerText = "$ " + recuperado.toLocaleString() + " USD";
-        var impactoBase = currentPlan === "explorer" ? 35 : (currentPlan === "podium" ? 55 : 70);
-        var impacto = Math.min(98, impactoBase + prodIndex * 3 - ventasIndex * 2);
-        document.getElementById("impacto").innerText = impacto + "%";
-        if (currentBrewery) {
-            document.getElementById("precioNota").innerHTML = currentBrewery + ": precio basado en producción, ventas y plan. Los gráficos reflejan su competitividad real.";
-        } else {
-            document.getElementById("precioNota").innerHTML = "Ingresa una cervecería para activar los análisis y ajustar la inversión.";
-        }
-    }
-
-    function initSliders() {
-        var prodRail = document.getElementById("prodRail");
-        var prodThumb = document.getElementById("prodThumb");
-        var prodFill = document.getElementById("prodFill");
-        var ventasRail = document.getElementById("ventasRail");
-        var ventasThumb = document.getElementById("ventasThumb");
-        var ventasFill = document.getElementById("ventasFill");
-
-        function setProd(index) {
-            prodIndex = index;
-            var percent = [0, 0.25, 0.5, 0.75, 1][index] * 100;
-            prodFill.style.width = percent + "%";
-            var left = (percent / 100) * prodRail.clientWidth;
-            prodThumb.style.left = left + "px";
-            document.getElementById("prodValue").innerHTML = prodLabels[index];
-            actualizarPrecio();
-        }
-        function setVentas(index) {
-            ventasIndex = index;
-            var percent = [0, 0.33, 0.66, 1][index] * 100;
-            ventasFill.style.width = percent + "%";
-            var left = (percent / 100) * ventasRail.clientWidth;
-            ventasThumb.style.left = left + "px";
-            document.getElementById("ventasValue").innerHTML = ventasLabels[index];
-            actualizarPrecio();
-        }
-        prodRail.addEventListener("click", function(e) {
-            var rect = prodRail.getBoundingClientRect();
-            var ratio = (e.clientX - rect.left) / rect.width;
-            var idx = [0,0.25,0.5,0.75,1].reduce(function(prev, curr, i) {
-                return (Math.abs(curr - ratio) < Math.abs(prev.val - ratio)) ? {idx:i, val:curr} : prev;
-            }, {idx:0, val:0}).idx;
-            setProd(idx);
-        });
-        ventasRail.addEventListener("click", function(e) {
-            var rect = ventasRail.getBoundingClientRect();
-            var ratio = (e.clientX - rect.left) / rect.width;
-            var idx = [0,0.33,0.66,1].reduce(function(prev, curr, i) {
-                return (Math.abs(curr - ratio) < Math.abs(prev.val - ratio)) ? {idx:i, val:curr} : prev;
-            }, {idx:0, val:0}).idx;
-            setVentas(idx);
-        });
-        setProd(3);
-        setVentas(1);
-    }
-
-    function initPlanes() {
-        var btns = document.querySelectorAll(".tier-btn");
-        btns.forEach(function(btn) {
-            btn.addEventListener("click", function() {
-                btns.forEach(function(b) { b.classList.remove("active"); });
-                btn.classList.add("active");
-                currentPlan = btn.getAttribute("data-tier");
-                actualizarPrecio();
-            });
-        });
-    }
-
-    // ----------------------------- INICIALIZACIÓN PRINCIPAL ---------------------------------
-    function cargarSugerencias(breweries) {
-        var datalist = document.getElementById("breweryList");
-        datalist.innerHTML = "";
-        breweries.forEach(function(b) {
-            var opt = document.createElement("option");
-            opt.value = b;
-            datalist.appendChild(opt);
-        });
-    }
-
-    function analizarCerveceria() {
-        var input = document.getElementById("breweryName").value.trim();
-        if (!input) return;
-        var cervezaNorm = normalizeText(input);
-        var existe = enrichedData.some(function(e) { return normalizeText(e.cerveceria) === cervezaNorm; });
-        if (!existe) {
-            document.getElementById("medallasStats").innerHTML = "Cervecería no encontrada. Revisa el nombre.";
-            return;
-        }
-        currentBrewery = input;
-        renderMedallasValor(input, enrichedData);
-        renderRadarEspacio(input);
-        renderConcursosEsfuerzoRetorno(input);
-        actualizarPrecio();
-    }
-
-    cargarCSV(function(err, data) {
-        if (err || !data.length) {
-            document.body.innerHTML = "<div style='color:red; padding:2rem;'>Error cargando CSV. Asegúrate de que BBDD_Medallero_Chile.csv exista.</div>";
-            return;
-        }
-        allData = data;
-        var derivadas = buildDerivedTables(data);
-        enrichedData = derivadas.enriched;
-        window.certamenScoresGlobal = derivadas.certamenScores;
-        window.saturacionEstilosGlobal = derivadas.saturacionEstilos;
-        // Extraer lista única de cervecerías
-        var breweries = [];
-        enrichedData.forEach(function(e) {
-            if (breweries.indexOf(e.cerveceria) === -1) breweries.push(e.cerveceria);
-        });
-        breweries.sort();
-        cargarSugerencias(breweries);
-        initSliders();
-        initPlanes();
-        // Seleccionar primera cervecería por defecto
-        if (breweries.length) {
-            document.getElementById("breweryName").value = breweries[0];
-            analizarCerveceria();
-        }
-        document.getElementById("analyzeBtn").addEventListener("click", analizarCerveceria);
-        document.getElementById("breweryName").addEventListener("keypress", function(e) { if (e.key === "Enter") analizarCerveceria(); });
-    });
-</script>
-</body>
-</html>
+                    pointBackgroundColor: colores,
+                    point
