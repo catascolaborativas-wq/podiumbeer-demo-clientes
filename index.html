@@ -2,276 +2,249 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Podium Beer | Simulador de Alianza BI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Podium Beer | Business Intelligence Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #f7c32f;
             --secondary: #E40F63;
             --bg-dark: #06232E;
-            --text-main: #FFFFFF;
-            --text-dim: #CFDEE0;
-            --glass: rgba(6,35,46,0.35);
-            --border: rgba(255,255,255,0.2);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background: #000; color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { 
+            background: url('assets/bg_cerveceria.jpg') no-repeat center center fixed; 
+            background-size: cover; 
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .overlay { background: rgba(6, 35, 46, 0.85); min-height: 100vh; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { height: 50px; }
         
-        .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
-        .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
-        .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); opacity: 0.6; z-index: -1; }
-        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 100px rgba(0,0,0,0.6); pointer-events: none; z-index: 0; }
-
-        .app-container { width: 92%; max-width: 1200px; margin: 2rem auto; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 2.5rem; }
-
-        .header { text-align: center; }
-        .logo-header { display: block; margin: 0 auto 1.5rem; width: 220px; height: auto; }
-        .h1-sim { font-size: clamp(32px, 8vw, 48px); font-weight: 800; letter-spacing: -1px; text-transform: uppercase; }
-        .h2-sim { font-size: clamp(18px, 5vw, 24px); font-weight: 500; color: var(--text-dim); margin-top: 0.5rem; }
-        .bajada-header { background: rgba(6,35,46,0.8); padding: 1rem 1.5rem; border-radius: 40px; margin-top: 1.5rem; backdrop-filter: blur(8px); display: inline-block; }
-
-        /* BI VIEWS STRUCTURE */
-        .bi-view { display: flex; flex-direction: column; gap: 1.5rem; }
-        .view-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; border-left: 4px solid var(--secondary); padding-left: 1rem; margin-bottom: 0.5rem; }
-
-        .glass-card { 
-            position: relative; background: var(--glass); backdrop-filter: blur(25px); 
-            border-radius: 2.5rem; border: 1.5px solid var(--border); 
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3); padding: 2rem; 
-            transition: transform 0.3s ease;
+        /* Main Grid Structure for 3 BI Views */
+        .bi-container { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 25px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
+        
+        @media (min-width: 1024px) {
+            .bi-container { grid-template-columns: 1fr 1fr; }
+            .view-3 { grid-column: span 2; }
+        }
+
+        .view-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
 
         /* VISTA 1: PERFIL */
-        .search-row { display: flex; gap: 1rem; margin-top: 1rem; }
-        .brewery-input { flex: 1; background: rgba(0,0,0,0.5); border: 2px solid var(--border); border-radius: 60px; padding: 0.8rem 1.5rem; color: #fff; font-size: 1rem; outline: none; }
-        .brewery-input:focus { border-color: var(--primary); }
-        .btn-analyze { background: linear-gradient(135deg, var(--secondary), #A0154E); border: none; border-radius: 60px; padding: 0.8rem 2rem; font-weight: 700; color: #fff; cursor: pointer; box-shadow: 0 5px 15px rgba(228,15,99,0.3); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { 
+            flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); 
+            border-radius: 10px; padding: 12px; color: white; outline: none;
+        }
+        .btn-main { background: var(--primary); color: #000; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .profile-info { display: flex; align-items: center; gap: 15px; }
+        .brewery-logo { width: 60px; height: 60px; border-radius: 50%; background: white; padding: 5px; }
 
         /* VISTA 2: SIMULADOR */
-        .slider-track { position: relative; height: 10px; background: #1E3A4A; border-radius: 10px; margin: 3rem 1rem 2.5rem; cursor: pointer; }
-        .slider-fill { position: absolute; height: 100%; background: linear-gradient(90deg, #06232E, #fff); border-radius: 10px; width: 0%; transition: width 0.2s; }
-        .slider-thumb { position: absolute; width: 30px; height: 30px; background: #fff; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
-        .slider-labels { display: flex; justify-content: space-between; padding: 0 0.5rem; }
-        .slider-labels span { text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-dim); line-height: 1.2; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .metric-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; }
+        .metric-val { font-size: 1.5rem; font-weight: bold; color: var(--primary); display: block; }
+        .metric-label { font-size: 0.8rem; color: #ccc; }
+        .slider-container { margin: 30px 0; }
+        input[type=range] { width: 100%; height: 6px; border-radius: 5px; background: #333; outline: none; accent-color: var(--primary); }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .metric-card-inner { text-align: center; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 2rem; border: 1px solid var(--border); }
-        .metric-label { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem; }
-        .metric-value { font-size: 2.5rem; font-weight: 800; color: #fff; }
+        /* VISTA 3: RADAR / OPORTUNIDADES */
+        .radar-box { height: 300px; margin-bottom: 20px; }
+        .opt-list { list-style: none; }
+        .opt-item { 
+            display: flex; justify-content: space-between; padding: 12px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem;
+        }
+        .badge { padding: 4px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; }
+        .badge-high { background: #27ae60; }
+        .badge-mid { background: #f39c12; }
 
-        /* VISTA 3: RADAR */
-        .radar-container { height: 400px; margin-top: 1rem; }
-        .opportunity-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-        .opt-item { background: rgba(0,0,0,0.4); padding: 1.2rem; border-radius: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
-        .opt-level { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
-        .level-high { background: #2ecc71; color: #fff; }
-        .level-mid { background: #f1c40f; color: #000; }
-
-        .cta-footer { text-align: center; margin-top: 1rem; }
-        .wsp-button { background: #25D366; color: #fff; padding: 1.2rem 3rem; border-radius: 60px; font-weight: 800; font-size: 1.1rem; text-decoration: none; display: inline-block; box-shadow: 0 8px 25px rgba(37,211,102,0.3); transition: transform 0.2s; }
-        .wsp-button:active { transform: scale(0.96); }
-
-        @media (max-width: 768px) {
-            .app-container { gap: 2rem; margin: 1rem auto; }
-            .radar-container { height: 300px; }
-            .metrics-grid { grid-template-columns: 1fr; }
+        .cta-btn { 
+            display: block; width: 100%; background: #25D366; color: white; 
+            text-align: center; padding: 15px; border-radius: 15px; text-decoration: none;
+            font-weight: bold; margin-top: 30px; 
         }
     </style>
 </head>
 <body>
-    <div class="hero-bg"><img src="assets/background.jpg" alt="bg"></div>
-    <div class="overlay-color"></div>
-    <div class="vignette"></div>
-
-    <div class="app-container">
+    <div class="overlay">
         <header class="header">
-            <img src="assets/logo-podium.png" alt="Podium Beer" class="logo-header">
-            <h1 class="h1-sim">SIMULADOR DE ALIANZA</h1>
-            <h2 class="h2-sim">Estrategia Basada en Ciencia de Datos</h2>
-            <div class="bajada-header">Demo de Inteligencia de Negocios para Clientes Elite</div>
+            <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo">
+            <div style="text-align: right">
+                <p style="font-size: 0.7rem; color: var(--primary)">DASHBOARD DE ALIANZA</p>
+                <p style="font-weight: bold">v1.2 Demo</p>
+            </div>
         </header>
 
-        <!-- VISTA 1: PERFIL DE COMPETITIVIDAD -->
-        <section class="bi-view" id="view1">
-            <h3 class="view-title">VISTA 1: Perfil de Competitividad</h3>
-            <div class="glass-card">
-                <p style="margin-bottom: 1rem; color: var(--text-dim);">Identifica tu cervecería para cargar el historial de medallas y posicionamiento en el mercado.</p>
-                <div class="search-row">
-                    <input type="text" id="brewerySearch" class="brewery-input" placeholder="Nombre de la cervecería...">
-                    <button id="btnAnalyze" class="btn-analyze">ANALIZAR</button>
+        <main class="bi-container">
+            <!-- VISTA 1: PERFIL Y BÚSQUEDA -->
+            <section class="view-card view-1">
+                <h2>Vista 1: Perfil de Cervecería</h2>
+                <div class="search-box">
+                    <input type="text" id="brewerySearch" placeholder="Buscar cervecería (ej: Kross)..." value="Kross">
+                    <button class="btn-main" id="btnAnalyze">ANALIZAR</button>
                 </div>
-                <div id="statusMsg" style="margin-top: 1rem; font-weight: 600; color: var(--primary);"></div>
-            </div>
-        </section>
+                <div class="profile-info" id="profileInfo">
+                    <div class="brewery-logo" id="logoPlaceholder" style="background: url('https://placehold.co/60x60/png?text=B') center center no-repeat; background-size: contain;"></div>
+                    <div>
+                        <h3 id="breweryName">Seleccione Cervecería</h3>
+                        <p id="breweryLocation" style="font-size: 0.8rem; color: #ccc;">Región Metropolitana, Chile</p>
+                    </div>
+                </div>
+            </section>
 
-        <!-- VISTA 2: SIMULADOR ESTRATÉGICO -->
-        <section class="bi-view" id="view2">
-            <h3 class="view-title">VISTA 2: Simulador Estratégico</h3>
-            <div class="glass-card">
-                <p style="color: var(--text-dim); margin-bottom: 0.5rem;">Ajusta el nivel de la Alianza Podium para ver la proyección de impacto en tus KPIs.</p>
-                
-                <div class="slider-track" id="sliderTrack">
-                    <div class="slider-fill" id="sliderFill"></div>
-                    <div class="slider-thumb" id="sliderThumb"></div>
+            <!-- VISTA 2: SIMULADOR DE IMPACTO -->
+            <section class="view-card view-2">
+                <h2>Vista 2: Simulador de Tier</h2>
+                <div class="slider-container">
+                    <p style="margin-bottom: 10px; font-size: 0.9rem;">Nivel de Alianza: <span id="tierLabel" style="color: var(--primary); font-weight: bold;">Plata</span></p>
+                    <input type="range" id="tierSlider" min="1" max="4" step="1" value="2">
                 </div>
-                <div class="slider-labels">
-                    <span>ESSENTIAL<br>1 Evento</span>
-                    <span>PRO<br>3 Eventos</span>
-                    <span>ELITE<br>Full Latam</span>
-                    <span>VISIONARY<br>Global</span>
-                </div>
-
                 <div class="metrics-grid">
-                    <div class="metric-card-inner">
-                        <div class="metric-label">Score Podium Proyectado</div>
-                        <div class="metric-value" id="valScore">0</div>
+                    <div class="metric-item">
+                        <span class="metric-val" id="valInversion">$0</span>
+                        <span class="metric-label">Inversión</span>
                     </div>
-                    <div class="metric-card-inner">
-                        <div class="metric-label">Win Rate Estimado</div>
-                        <div class="metric-value" id="valWin">0%</div>
-                    </div>
-                    <div class="metric-card-inner">
-                        <div class="metric-label">ROI Publicitario</div>
-                        <div class="metric-value" id="valRoi">0x</div>
+                    <div class="metric-item">
+                        <span class="metric-val" id="valRetorno">$0</span>
+                        <span class="metric-label">Retorno Est.</span>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- VISTA 3: RADAR DE ESTILOS Y OPORTUNIDADES -->
-        <section class="bi-view" id="view3">
-            <h3 class="view-title">VISTA 3: Radar de Estilos y Oportunidades</h3>
-            <div class="glass-card">
-                <div class="radar-container">
-                    <canvas id="radarChart"></canvas>
+            <!-- VISTA 3: RADAR Y OPORTUNIDADES -->
+            <section class="view-card view-3">
+                <h2>Vista 3: Radar de Desempeño y Oportunidades</h2>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    <div class="radar-box">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    <div>
+                        <ul class="opt-list" id="optList">
+                            <!-- Oportunidades dinámicas -->
+                        </ul>
+                    </div>
                 </div>
-                <h4 style="margin-top: 2rem; color: var(--primary);">ESTILOS CON MAYOR POTENCIAL DE MEDALLA</h4>
-                <div class="opportunity-list" id="optList">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-        </section>
-
-        <footer class="cta-footer">
-            <a href="#" class="wsp-button" id="btnWsp">SOLICITAR MI PLAN BI PERSONALIZADO</a>
-            <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-dim);">© 2024 Podium Beer | Data Intelligence for Breweries</p>
-        </footer>
+                <a href="#" class="cta-btn" id="btnWsp">WHATSAPP: SOLICITAR PLAN BI</a>
+            </section>
+        </main>
     </div>
 
     <script>
-        const DB = [
-            { n: "Kross", s: 82, w: 20, r: 4.2, d: [85, 70, 90, 60, 80, 75], e: [{n:"IPA", l:"ALTO"}, {n:"Stout", l:"MEDIO"}] },
-            { n: "Granizo", s: 88, w: 28, r: 5.5, d: [95, 80, 85, 95, 85, 90], e: [{n:"Wild Ale", l:"ALTO"}, {n:"Strong Ale", l:"ALTO"}] },
-            { n: "Tamango", s: 85, w: 24, r: 4.9, d: [80, 95, 90, 70, 90, 85], e: [{n:"Hazy IPA", l:"ALTO"}, {n:"Sour", l:"MEDIO"}] },
-            { n: "Rothhammer", s: 78, w: 18, r: 3.5, d: [70, 65, 85, 80, 75, 60], e: [{n:"Lager", l:"ALTO"}, {n:"Session IPA", l:"MEDIO"}] }
+        const breweries = [
+            { n: "Kross", l: "Curacaví", b: [80, 70, 90, 85, 75], o: ["Expansión Regional", "Canal Horeca High"] },
+            { n: "Granizo", l: "Olmué", b: [90, 60, 85, 95, 70], o: ["Specialty Releases", "Direct-to-Consumer"] },
+            { n: "Tamango", l: "Quilicura", b: [75, 95, 80, 80, 90], o: ["Cold Chain Optimization", "Export Ready"] }
         ];
 
-        let current = null;
-        let tierIdx = 0;
-        let chart = null;
-
-        const brewerySearch = document.getElementById('brewerySearch');
-        const btnAnalyze = document.getElementById('btnAnalyze');
-        const statusMsg = document.getElementById('statusMsg');
-        const sliderThumb = document.getElementById('sliderThumb');
-        const sliderFill = document.getElementById('sliderFill');
-        const sliderTrack = document.getElementById('sliderTrack');
-        const optList = document.getElementById('optList');
-
-        // SIMULATION LOGIC
-        btnAnalyze.addEventListener('click', () => {
-            const name = brewerySearch.value.trim();
-            const found = DB.find(b => b.n.toLowerCase() === name.toLowerCase());
-            if(found) {
-                current = found;
-                statusMsg.textContent = "✓ Datos de " + found.n + " cargados con éxito.";
-                updateUI();
-            } else {
-                statusMsg.textContent = "⚠ Cervecería no encontrada. Usando promedio industrial.";
-                current = { n: name || "Genérica", s: 55, w: 8, r: 1.5, d: [50, 50, 50, 50, 50, 50], e: [{n:"Estilo Base", l:"MEDIO"}] };
-                updateUI();
-            }
-        });
-
-        // SLIDER
-        let isDragging = false;
-        const moveSlider = (clientX) => {
-            const rect = sliderTrack.getBoundingClientRect();
-            let pos = (clientX - rect.left) / rect.width;
-            pos = Math.max(0, Math.min(1, pos));
-            tierIdx = Math.round(pos * 3);
-            const snapped = (tierIdx / 3) * 100;
-            sliderThumb.style.left = snapped + '%';
-            sliderFill.style.width = snapped + '%';
-            updateUI();
-        };
-
-        sliderTrack.addEventListener('mousedown', () => isDragging = true);
-        window.addEventListener('mousemove', (e) => isDragging && moveSlider(e.clientX));
-        window.addEventListener('mouseup', () => isDragging = false);
-        sliderTrack.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); }, {passive: false});
-        window.addEventListener('touchmove', (e) => isDragging && moveSlider(e.touches[0].clientX), {passive: false});
-        window.addEventListener('touchend', () => isDragging = false);
+        let current = breweries[0];
+        let chart;
 
         function updateUI() {
-            if(!current) return;
-            const mult = [1, 1.15, 1.35, 1.6][tierIdx];
+            const tier = document.getElementById('tierSlider').value;
+            const labels = ["Bronce", "Plata", "Oro", "Diamante"];
+            document.getElementById('tierLabel').innerText = labels[tier-1];
             
-            document.getElementById('valScore').textContent = Math.min(100, Math.round(current.s * mult));
-            document.getElementById('valWin').textContent = Math.min(70, Math.round(current.w * mult * 1.2)) + "%";
-            document.getElementById('valRoi').textContent = (current.r * mult).toFixed(1) + "x";
+            const factor = tier * 1.5;
+            document.getElementById('valInversion').innerText = "$" + (factor * 500).toLocaleString() + "k";
+            document.getElementById('valRetorno').innerText = "$" + (factor * 1200).toLocaleString() + "k";
 
-            updateChart(mult);
+            updateChart(tier);
             updateOpportunities();
         }
 
-        function updateChart(mult) {
-            const dataActual = current.d;
-            const dataProyectada = dataActual.map(v => Math.min(100, Math.round(v * mult)));
+        function updateChart(tier) {
+            const factor = 1 + (tier * 0.1);
+            const projection = current.b.map(v => Math.min(100, v * factor));
             
-            if(chart) {
-                chart.data.datasets[0].data = dataActual;
-                chart.data.datasets[1].data = dataProyectada;
-                chart.update();
-            } else {
-                const ctx = document.getElementById('radarChart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Técnica', 'Estilo', 'Mercado', 'Innovación', 'Limpieza', 'Branding'],
-                        datasets: [
-                            { label: 'Perfil Actual', data: dataActual, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.1)', borderWidth: 2, pointRadius: 0 },
-                            { label: 'Proyección Alianza', data: dataProyectada, borderColor: '#E40F63', backgroundColor: 'rgba(228, 15, 99, 0.4)', borderWidth: 3 }
-                        ]
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Calidad', 'Marketing', 'Distribución', 'Brand Equity', 'Digital'],
+                    datasets: [{
+                        label: 'Actual',
+                        data: current.b,
+                        borderColor: 'rgba(255,255,255,0.4)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2
+                    }, {
+                        label: 'Proyección Alianza',
+                        data: projection,
+                        borderColor: '#f7c32f',
+                        backgroundColor: 'rgba(247, 195, 47, 0.2)',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#fff', font: { size: 10 } },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
                     },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#CFDEE0' }, ticks: { display: false }, min: 0, max: 100 } },
-                        plugins: { legend: { labels: { color: '#fff' } } }
-                    }
-                });
-            }
-        }
-
-        function updateOpportunities() {
-            optList.innerHTML = '';
-            current.e.forEach(o => {
-                const div = document.createElement('div');
-                div.className = 'opt-item';
-                div.innerHTML = `<span>\${o.n}</span><span class="opt-level \${o.l === 'ALTO' ? 'level-high' : 'level-mid'}">\${o.l} POTENCIAL</span>`;
-                optList.appendChild(div);
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
             });
         }
 
-        document.getElementById('btnWsp').onclick = () => {
-            const msg = encodeURIComponent("Hola Podium Beer, quiero mi Plan BI para " + (current ? current.n : "mi cervecería"));
-            window.open("https://wa.me/569XXXXXXXX?text=" + msg, "_blank");
+        function updateOpportunities() {
+            const list = document.getElementById('optList');
+            list.innerHTML = "";
+            current.o.forEach(opt => {
+                const li = document.createElement('li');
+                li.className = "opt-item";
+                li.innerHTML = `<span>${opt}</span> <span class="badge badge-high">ALTO IMPACTO</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById('btnAnalyze').onclick = () => {
+            const val = document.getElementById('brewerySearch').value.toLowerCase();
+            const found = breweries.find(b => b.n.toLowerCase().includes(val));
+            if (found) {
+                current = found;
+                document.getElementById('breweryName').innerText = found.n;
+                document.getElementById('breweryLocation').innerText = found.l + ", Chile";
+                updateUI();
+            }
         };
 
-        window.onload = () => { brewerySearch.value = "Kross"; btnAnalyze.click(); };
+        document.getElementById('tierSlider').oninput = updateUI;
+        
+        document.getElementById('btnWsp').onclick = (e) => {
+            e.preventDefault();
+            const msg = encodeURIComponent(`Hola Podium Beer, analicé mi cervecería ${current.n} y me interesa el Plan BI nivel ${document.getElementById('tierLabel').innerText}.`);
+            window.open(`https://wa.me/569XXXXXXXX?text=${msg}`);
+        };
+
+        window.onload = updateUI;
     </script>
 </body>
 </html>
