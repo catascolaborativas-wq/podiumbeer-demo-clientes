@@ -1,232 +1,191 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PodiumBeer – Inteligencia Competitiva</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Podium Beer | Business Intelligence Simulator</title>
+    //fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #f7c32f;
+            --secondary: #E40F63;
+            --bg-dark: #06232E;
+            --text-main: #FFFFFF;
+            --text-dim: #CFDEE0;
+            --glass: rgba(6, 35, 46, 0.35);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+        
+        /* === FONDO ORIGINAL === */
+        .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: url('assets/bg_cerveceria.jpg') no-repeat center center; background-size: cover; }
+        .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); opacity: 0.57; z-index: -1; }
+        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
 
-<!-- Chart.js compatible -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+        /* === CONTENEDOR PRINCIPAL === */
+        .app-container { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 2rem; }
 
-<style>
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f172a;color:#e5e7eb;}
-.container{max-width:980px;margin:0 auto;padding:16px;}
-header{text-align:center;padding:10px 0 14px 0;border-bottom:1px solid #1f2937;}
-.logo{width:120px;display:block;margin:0 auto 8px auto;}
-h1{font-size:22px;margin:6px 0;}
-h2{font-size:16px;color:#9ca3af;margin:0;}
-.section{margin-top:18px;background:#111827;border:1px solid #1f2937;border-radius:10px;padding:14px;}
-.section h3{margin:0 0 10px 0;font-size:16px;}
-.icon-title{width:18px;height:18px;vertical-align:middle;margin-right:8px;}
-.row{display:block;}
-.kpis{display:block;margin-top:10px;}
-.kpi{display:inline-block;width:48%;margin:1%;background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:10px;text-align:center;}
-.kpi b{font-size:20px;display:block;}
-.chart-container{position:relative;width:100%;height:300px;}
-@media (min-width:768px){.chart-container{height:380px;}}
-.input-box{width:100%;padding:10px;border-radius:6px;border:1px solid #374151;background:#0b1220;color:#e5e7eb;}
-.btn{margin-top:10px;padding:10px 14px;border-radius:6px;border:0;background:#2563eb;color:#fff;cursor:pointer;}
-.small{font-size:12px;color:#9ca3af;}
-.sim-box{margin-top:10px;background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:10px;}
-.result{font-size:20px;margin-top:6px;}
-.insight{margin-top:10px;background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:10px;}
-</style>
+        /* === CABECERA (JERARQUÍA ORIGINAL) === */
+        .header { text-align: center; margin-bottom: 1.5rem; }
+        .logo-header { display: block; margin: 0 auto 1.5rem auto; width: 50%; max-width: 200px; height: auto; }
+        .h1-sim { font-size: clamp(32px, 8vw, 48px); font-weight: 800; line-height: 1.1; margin-bottom: 0.5rem; }
+        .bajada-header { font-size: clamp(15px, 4vw, 18px); font-weight: 500; background: rgba(0,0,0,0.65); padding: 0.8rem 1.5rem; border-radius: 28px; display: inline-block; backdrop-filter: blur(4px); }
+
+        /* === GRID DE 3 VISTAS BI === */
+        .bi-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media (min-width: 1024px) { .bi-grid { grid-template-columns: 1fr 1fr; } .view-3 { grid-column: span 2; } }
+
+        /* === TARJETAS GLASS (ESPEJO.PNG) === */
+        .glass-card {
+            position: relative; background: var(--glass); backdrop-filter: blur(20px);
+            border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); padding: 2rem;
+            box-shadow: inset 0 0 30px rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .glass-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background: url('assets/espejo.png') center/cover; opacity: 0.6; mix-blend-mode: overlay; z-index: -1; }
+
+        .section-title { font-size: 14px; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.8rem; }
+        .section-subtitle { font-size: 22px; font-weight: 700; margin-bottom: 1.5rem; }
+
+        /* VISTA 1: IDENTIFICACIÓN */
+        .search-box { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 60px; padding: 12px 20px; color: white; outline: none; }
+        .btn-main { background: var(--primary); color: #000; border: none; border-radius: 60px; padding: 0 25px; font-weight: 800; cursor: pointer; }
+
+        /* VISTA 2: SLIDER */
+        .slider-track { height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; margin: 2rem 0; cursor: pointer; }
+        .slider-fill { height: 100%; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); border-radius: 50px; transition: width 0.2s; }
+        .slider-thumb { position: absolute; width: 26px; height: 26px; background: #FFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); transition: left 0.2s; }
+
+        .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .metric-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 1.5rem; text-align: center; }
+        .metric-val { font-size: 26px; font-weight: 800; display: block; }
+        .metric-lab { font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+
+        /* VISTA 3: RADAR */
+        .radar-box { height: 400px; width: 100%; margin-top: 1rem; }
+        .opt-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .badge { background: linear-gradient(90deg, var(--secondary), #C32263); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+
+        .cta-btn { display: block; width: 100%; background: linear-gradient(90deg, var(--secondary), #C32263); color: white; text-align: center; padding: 18px; border-radius: 60px; font-weight: 800; text-decoration: none; margin-top: 2rem; box-shadow: 0 4px 16px rgba(228,15,99,0.4); }
+    </style>
 </head>
-
 <body>
-<div class="container">
+    <div class="hero-bg"></div><div class="overlay-color"></div><div class="vignette"></div>
+    <div class="app-container">
+        <header class="header">
+            <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
+            <h1 class="h1-sim">Business Intelligence</h1>
+            <div class="bajada-header">Simulador de Alianza Estratégica v1.5</div>
+        </header>
 
-<header>
-  <img src="./assets/logo_podiumbeer.png" class="logo" alt="logo">
-  <h1>Inteligencia Competitiva Cervecera</h1>
-  <h2>Convierte medallas en decisiones comerciales</h2>
-</header>
+        <main class="bi-grid">
+            <section class="glass-card view-1">
+                <p class="section-title">VISTA 1: Perfil</p>
+                <h3 class="section-subtitle">Cervecería Analizada</h3>
+                <div class="search-box">
+                    <input type="text" id="brewSearch" placeholder="Buscar cervecería..." value="Kross">
+                    <button class="btn-main" id="btnAnalyze">ANALIZAR</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <img src="assets/champion.png" style="width: 60px;">
+                    <div>
+                        <h4 id="dispName" style="font-size: 22px; font-weight: 800;">Kross</h4>
+                        <p id="dispLoc" style="color: var(--text-dim); font-size: 14px;">Curacaví, RM</p>
+                    </div>
+                </div>
+            </section>
 
-<!-- INPUT -->
-<div class="section">
-  <h3>
-    <img src="./assets/icon_valor.png" class="icon-title">
-    Ingresa tu cervecería
-  </h3>
-  <input id="cerveceriaInput" class="input-box" placeholder="Ej: Mi Cervecería">
-  <button class="btn" onclick="calcular()">Analizar</button>
-  <div class="small">Puedes escribir cualquier nombre. Si no existe, se usa un ejemplo base.</div>
-</div>
+            <section class="glass-card view-2">
+                <p class="section-title">VISTA 2: Simulador</p>
+                <h3 class="section-subtitle">Proyección de Inversión</h3>
+                <p style="font-size: 14px;">Plan Seleccionado: <span id="tierName" style="color: var(--primary); font-weight: 800;">Champion</span></p>
+                <div class="slider-track" id="sliderTrack">
+                    <div class="slider-fill" id="sliderFill" style="width: 100%;"></div>
+                    <div class="slider-thumb" id="sliderThumb" style="left: 100%;"></div>
+                </div>
+                <div class="metric-row">
+                    <div class="metric-box">
+                        <span class="metric-lab">Inversión</span>
+                        <span class="metric-val" id="valInv">$1.200</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-lab">Valor Recuperado</span>
+                        <span class="metric-val" id="valRec">$14.500</span>
+                    </div>
+                </div>
+            </section>
 
-<!-- KPIs -->
-<div class="section">
-  <h3>
-    <img src="./assets/icon_impacto.png" class="icon-title">
-    Impacto en tu negocio
-  </h3>
+            <section class="glass-card view-3">
+                <p class="section-title">VISTA 3: Mapa Estratégico</p>
+                <h3 class="section-subtitle">Radar de Premios y Oportunidades</h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 30px;">
+                    <div class="radar-box">anvas id="radarChart"></canvas></div>
+                    <div id="optList"></div>
+                </div>
+                <a href="#" class="cta-btn" id="btnWsp">AGENDAR DIAGNÓSTICO ESTRATÉGICO</a>
+            </section>
+        </main>
+    </div>
 
-  <div class="kpis">
-    <div class="kpi"><b id="kpiTotal">0</b>Medallas</div>
-    <div class="kpi"><b id="kpiConstruye">0</b>Construyen marca</div>
-    <div class="kpi"><b id="kpiNeutro">0</b>Neutras</div>
-    <div class="kpi"><b id="kpiRuido">0</b>Ruido</div>
-  </div>
-</div>
+    <script>
+        const data = [
+            { n: "Kross", l: "Curacaví", b: [85, 75, 90, 80, 70], o: ["Expansión Regional", "Horeca Premium"] },
+            { n: "Granizo", l: "Olmué", b: [95, 65, 80, 90, 60], o: ["Ediciones Limitadas", "Directo a Cliente"] }
+        ];
+        let current = data[0];
+        let chart;
+        const tiers = [{n:"Explorer", i:"$300", r:"$3.600", f:1.05}, {n:"Podium", i:"$600", r:"$7.200", f:1.15}, {n:"Champion", i:"$1.200", r:"$14.500", f:1.25}];
+        let currentTierIdx = 2;
 
-<!-- GRÁFICO PRINCIPAL -->
-<div class="section">
-  <h3>
-    <img src="./assets/icon_valor.png" class="icon-title">
-    Chilean Competition Winners - 2025
-  </h3>
-  <div class="chart-container">
-    <canvas id="competitionChart"></canvas>
-  </div>
-</div>
+        function update() {
+            const t = tiers[currentTierIdx];
+            document.getElementById('tierName').innerText = t.n;
+            document.getElementById('valInv').innerText = t.i;
+            document.getElementById('valRec').innerText = t.r;
+            const fill = (currentTierIdx / 2) * 100;
+            document.getElementById('sliderFill').style.width = fill + "%";
+            document.getElementById('sliderThumb').style.left = fill + "%";
 
-<!-- GRÁFICO ADICIONAL (ESFUERZO VS RETORNO) -->
-<div class="section">
-  <h3>
-    <img src="./assets/icon_inversion.png" class="icon-title">
-    Esfuerzo vs Retorno (según calidad)
-  </h3>
-  <div class="chart-container">
-    <canvas id="effortChart"></canvas>
-  </div>
-</div>
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['CALIDAD', 'MARKETING', 'DISTRIBUCIÓN', 'BRAND EQUITY', 'DIGITAL'],
+                    datasets: [{
+                        label: 'ACTUAL', data: current.b, borderColor: 'rgba(255,255,255,0.4)', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 0
+                    }, {
+                        label: 'PROYECCIÓN', data: current.b.map(v => Math.min(100, v * t.f)), borderColor: '#f7c32f', backgroundColor: 'rgba(247,195,47,0.2)', borderWidth: 4, pointBackgroundColor: '#f7c32f', pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { angleLines:{color:'rgba(255,255,255,0.1)'}, grid:{color:'rgba(255,255,255,0.1)'}, pointLabels:{color:'#CFDEE0', font:{size:11, weight:'bold'}}, ticks:{display:false, min:0, max:100} } },
+                    plugins: { 
+                        legend: { labels: { color: '#FFF', font: { weight: '800' } } },
+                        tooltip: { backgroundColor: '#06232E', titleFont: { size: 16 }, bodyFont: { size: 14 }, borderColor: '#f7c32f', borderWidth: 1 }
+                    }
+                }
+            });
+            const list = document.getElementById('optList');
+            list.innerHTML = current.o.map(o => `<div class="opt-item"><span style="font-weight:700">${o}</span><span class="badge">ALTO IMPACTO</span></div>`).join('');
+        }
 
-<!-- SIMULADOR -->
-<div class="section">
-  <h3>
-    <img src="./assets/icon_inversion.png" class="icon-title">
-    Simulador de impacto
-  </h3>
+        document.getElementById('btnAnalyze').onclick = () => {
+            const val = document.getElementById('brewSearch').value.toLowerCase();
+            const found = data.find(b => b.n.toLowerCase().includes(val));
+            if (found) { current = found; document.getElementById('dispName').innerText = found.n; document.getElementById('dispLoc').innerText = found.l; update(); }
+        };
 
-  <div class="sim-box">
-    <div>Inversión mensual (CLP)</div>
-    <input id="inversion" class="input-box" value="500000">
-    <button class="btn" onclick="simular()">Simular</button>
+        document.getElementById('sliderTrack').onclick = (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pct = (e.clientX - rect.left) / rect.width;
+            currentTierIdx = pct < 0.33 ? 0 : (pct < 0.66 ? 1 : 2);
+            update();
+        };
 
-    <div class="result" id="resultado">$0</div>
-    <div class="small">El resultado depende de la calidad de tus medallas (KPIs).</div>
-  </div>
-</div>
-
-<!-- INSIGHTS -->
-<div class="section">
-  <h3>
-    <img src="./assets/icon_impacto.png" class="icon-title">
-    Interpretación automática
-  </h3>
-  <div id="insight" class="insight">Ingresa tu cervecería para ver análisis.</div>
-</div>
-
-</div>
-
-<script>
-var chart1 = null;
-var chart2 = null;
-
-// DATA BASE (ejemplo coherente)
-var data = [
-  {c:"Mi Cervecería", score:9},
-  {c:"Mi Cervecería", score:7},
-  {c:"Mi Cervecería", score:5},
-  {c:"Mi Cervecería", score:10},
-  {c:"Mi Cervecería", score:8},
-  {c:"Mi Cervecería", score:6},
-
-  {c:"Líder", score:10},
-  {c:"Líder", score:9},
-  {c:"Líder", score:9},
-  {c:"Líder", score:8},
-  {c:"Líder", score:10},
-  {c:"Líder", score:9}
-];
-
-var currentKPIs = {total:0,construye:0,neutro:0,ruido:0};
-
-function calcular(){
-  var nombre = document.getElementById("cerveceriaInput").value;
-  if(!nombre){ nombre="Mi Cervecería"; }
-
-  var total=0,construye=0,neutro=0,ruido=0;
-
-  for(var i=0;i<data.length;i++){
-    if(data[i].c===nombre){
-      total++;
-      if(data[i].score>=9){construye++;}
-      else if(data[i].score>=6){neutro++;}
-      else{ruido++;}
-    }
-  }
-
-  if(total===0){
-    // fallback coherente
-    total=6; construye=2; neutro=2; ruido=2;
-  }
-
-  currentKPIs.total=total;
-  currentKPIs.construye=construye;
-  currentKPIs.neutro=neutro;
-  currentKPIs.ruido=ruido;
-
-  document.getElementById("kpiTotal").innerHTML=total;
-  document.getElementById("kpiConstruye").innerHTML=construye;
-  document.getElementById("kpiNeutro").innerHTML=neutro;
-  document.getElementById("kpiRuido").innerHTML=ruido;
-
-  graficos(construye,neutro,ruido);
-  insight(construye,total);
-}
-
-function graficos(c,n,r){
-  var ctx=document.getElementById("competitionChart").getContext("2d");
-  if(chart1){chart1.destroy();}
-  chart1=new Chart(ctx,{
-    type:"doughnut",
-    data:{
-      labels:["Construye","Neutro","Ruido"],
-      datasets:[{data:[c,n,r]}]
-    },
-    options:{legend:{labels:{fontColor:"#e5e7eb"}}}
-  });
-
-  var ctx2=document.getElementById("effortChart").getContext("2d");
-  if(chart2){chart2.destroy();}
-  chart2=new Chart(ctx2,{
-    type:"bar",
-    data:{
-      labels:["Bajo","Medio","Alto"],
-      datasets:[{data:[r,n,c]}]
-    },
-    options:{
-      scales:{
-        yAxes:[{ticks:{beginAtZero:true,fontColor:"#e5e7eb"}}],
-        xAxes:[{ticks:{fontColor:"#e5e7eb"}}]
-      },
-      legend:{display:false}
-    }
-  });
-}
-
-function simular(){
-  var inv=parseFloat(document.getElementById("inversion").value);
-  if(isNaN(inv)){inv=0;}
-
-  var calidad = 1 + (currentKPIs.construye * 0.1);
-  var retorno = inv * 3 * calidad;
-
-  document.getElementById("resultado").innerHTML="$"+Math.round(retorno);
-}
-
-function insight(c,total){
-  var txt="";
-  if(c===0){
-    txt="No tienes medallas que construyan marca. Estás perdiendo impacto comercial.";
-  }else if(c<total/2){
-    txt="Tienes base, pero debes aumentar medallas de alto valor para competir.";
-  }else{
-    txt="Buen posicionamiento. Estás cerca del nivel competitivo alto.";
-  }
-  document.getElementById("insight").innerHTML=txt;
-}
-</script>
-
+        window.onload = update;
+    </script>
 </body>
 </html>
