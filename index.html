@@ -1,89 +1,448 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <title>Simulador de Alianza | Podium Beer</title>
-  //fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
-    .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
-    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
-    .app-container { width: 90%; max-width: none; margin: 1.5rem auto; padding: 0 0.5rem 2rem 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
-    .header { text-align: center; }
-    .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
-    .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
-    .h1-sim::-webkit-scrollbar { display: none; }
-    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
-    .bajada-header { font-size: clamp(16px, 5vw, 20px); font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.7); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
-    .frase-podiumbeer { font-size: clamp(14px, 4vw, 17px); font-weight: 700; color: #f7c32f; text-align: center; margin-top: 0.75rem; line-height: 1.4; font-style: italic; }
-    .glass-card, .metrics-card, .plan-selector-card, .chart-card, .brewery-search-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
-    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before, .brewery-search-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
-    .shift-content { margin-left: 2.5%; width: 97.5%; }
-    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
-    .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
-    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
-    .chart-title { font-size: 1.3rem; font-weight: 700; border-left: 5px solid #e32c6c; padding-left: 1rem; color: #f7c32f; text-transform: none; letter-spacing: normal; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-    .chart-title img { height: 24px; vertical-align: middle; }
-    .search-row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
-    .autocomplete-wrapper { position: relative; flex: 1; min-width: 180px; }
-    .brewery-input { width: 100%; background: rgba(0,0,0,0.6); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.65rem 1.2rem; font-size: 15px; font-family: 'Inter', sans-serif; color: #fff; outline: none; }
-    .brewery-input:focus { border-color: #f7c32f; }
-    .brewery-input::placeholder { color: #6a8a95; }
-    .autocomplete-list { position: absolute; top: 110%; left: 0; right: 0; background: #071e28; border: 1px solid rgba(255,255,255,0.2); border-radius: 1rem; z-index: 200; max-height: 200px; overflow-y: auto; display: none; }
-    .autocomplete-item { padding: 0.6rem 1.2rem; font-size: 14px; color: #CFDEE0; cursor: pointer; }
-    .autocomplete-item:hover { background: rgba(247,195,47,0.15); color: #f7c32f; }
-    .btn-analyze { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 0.65rem 1.5rem; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(228,15,99,0.4); }
-    .btn-analyze:active { transform: scale(0.97); }
-    .estado-analisis { font-size: 13px; color: #f7c32f; text-align: center; margin-top: 0.5rem; min-height: 18px; }
-    .kpi-fallback { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
-    .kpi-pill { font-size: 13px; font-weight: 700; color: #06232E; background: #f7c32f; border-radius: 999px; padding: 0.3rem 0.85rem; white-space: nowrap; }
-    .kpi-pill.verde { background: #2ecc71; color: #fff; }
-    .kpi-pill.rojo { background: #e74c3c; color: #fff; }
-    .kpi-pill.gris { background: #7f8c8d; color: #fff; }
-    .slider-container { width: 100%; padding: 0 0.5rem; }
-    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
-    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
-    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
-    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
-    .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
-    .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
-    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
-    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
-    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
-    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
-    .tier-icon img { width: 24px; height: auto; display: block; }
-    .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
-    .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
-    .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
-    .metric-row:last-child { margin-bottom: 0; }
-    .metric-icon-col { flex: 0 0 70px; text-align: center; }
-    .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
-    .metric-text-col { flex: 2; text-align: center; }
-    .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
-    .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
-    .metric-value-col { flex: 1; text-align: right; }
-    .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
-    .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
-    .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
-    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
-    .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
-    .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
-    .chart-card { padding: 1.2rem; }
-    .chart-container { width: 100%; height: 300px; min-height: 280px; position: relative; }
-    canvas { touch-action: none; display: block; }
-    .estilos-tabla { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
-    .espacio-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.3); border-radius: 0.6rem; padding: 0.5rem 0.9rem; }
-    .espacio-fila { display: flex; justify-content: space-between; align-items: center; }
-    .espacio-nombre { font-size: 13px; font-weight: 600; color: #fff; }
-    .espacio-nivel { font-size: 13px; font-weight: 800; }
-    .espacio-nivel.ALTO { color: #2ecc71; }
-    .espacio-nivel.MEDIO { color: #f1c40f; }
-    .espacio-nivel.POCO { color: #7f8c8d; }
-    .espacio-rec { font-size: 11px; color: #CFDEE0; margin-top: 3px; }
-    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top:
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Simulador de Alianza | Podium Beer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+        .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
+        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
+        .app-container { width: 90%; max-width: none; margin: 1.5rem auto; padding: 0 0.5rem 2rem 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
+        .header { text-align: center; }
+        .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
+        .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+        .h1-sim::-webkit-scrollbar { display: none; }
+        .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
+        .bajada-header { font-size: clamp(16px, 5vw, 20px); font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.7); padding: 0.75rem 1rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; text-align: center; backdrop-filter: blur(4px); }
+        .frase-podiumbeer { font-size: clamp(14px, 4vw, 17px); font-weight: 700; color: #f7c32f; text-align: center; margin-top: 0.75rem; line-height: 1.4; font-style: italic; }
+        .glass-card, .metrics-card, .plan-selector-card, .chart-card, .brewery-search-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
+        .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before, .brewery-search-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
+        .shift-content { margin-left: 2.5%; width: 97.5%; }
+        .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
+        .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
+        .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
+        .chart-title { font-size: 1.3rem; font-weight: 700; border-left: 5px solid #e32c6c; padding-left: 1rem; color: #f7c32f; text-transform: none; letter-spacing: normal; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .chart-title img { height: 24px; vertical-align: middle; }
+        .search-row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+        .autocomplete-wrapper { position: relative; flex: 1; min-width: 180px; }
+        .brewery-input { width: 100%; background: rgba(0,0,0,0.6); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.65rem 1.2rem; font-size: 15px; font-family: 'Inter', sans-serif; color: #fff; outline: none; }
+        .brewery-input:focus { border-color: #f7c32f; }
+        .brewery-input::placeholder { color: #6a8a95; }
+        .autocomplete-list { position: absolute; top: 110%; left: 0; right: 0; background: #071e28; border: 1px solid rgba(255,255,255,0.2); border-radius: 1rem; z-index: 200; max-height: 200px; overflow-y: auto; display: none; }
+        .autocomplete-item { padding: 0.6rem 1.2rem; font-size: 14px; color: #CFDEE0; cursor: pointer; }
+        .autocomplete-item:hover { background: rgba(247,195,47,0.15); color: #f7c32f; }
+        .btn-analyze { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 0.65rem 1.5rem; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(228,15,99,0.4); }
+        .btn-analyze:active { transform: scale(0.97); }
+        .estado-analisis { font-size: 13px; color: #f7c32f; text-align: center; margin-top: 0.5rem; min-height: 18px; }
+        .kpi-pill { font-size: 13px; font-weight: 700; color: #06232E; background: #f7c32f; border-radius: 999px; padding: 0.3rem 0.85rem; white-space: nowrap; }
+        .kpi-pill.verde { background: #2ecc71; color: #fff; }
+        .kpi-pill.rojo { background: #e74c3c; color: #fff; }
+        .kpi-pill.gris { background: #7f8c8d; color: #fff; }
+        .slider-container { width: 100%; padding: 0 0.5rem; }
+        .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
+        .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
+        .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
+        .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
+        .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
+        .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
+        .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
+        .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
+        .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
+        .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
+        .tier-icon img { width: 24px; height: auto; display: block; }
+        .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
+        .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
+        .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
+        .metric-row:last-child { margin-bottom: 0; }
+        .metric-icon-col { flex: 0 0 70px; text-align: center; }
+        .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
+        .metric-text-col { flex: 2; text-align: center; }
+        .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
+        .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
+        .metric-value-col { flex: 1; text-align: right; }
+        .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
+        .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
+        .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
+        .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
+        .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
+        .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
+        .chart-card { padding: 1.2rem; }
+        .chart-container { width: 100%; height: 300px; min-height: 280px; position: relative; }
+        canvas { touch-action: none; display: block; }
+        .estilos-tabla { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+        .espacio-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.3); border-radius: 0.6rem; padding: 0.5rem 0.9rem; }
+        .espacio-fila { display: flex; justify-content: space-between; align-items: center; }
+        .espacio-nombre { font-size: 13px; font-weight: 600; color: #fff; }
+        .espacio-nivel { font-size: 13px; font-weight: 800; }
+        .espacio-nivel.ALTO { color: #2ecc71; }
+        .espacio-nivel.MEDIO { color: #f1c40f; }
+        .espacio-nivel.POCO { color: #7f8c8d; }
+        .espacio-rec { font-size: 11px; color: #CFDEE0; margin-top: 3px; }
+        .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 12px; color: #CFDEE0; }
+        .legend-color { width: 10px; height: 10px; border-radius: 2px; }
+        @media (max-width: 600px) {
+            .app-container { gap: 1.5rem; }
+            .metric-value { font-size: 18px; }
+            .tier-label { font-size: 11px; }
+            .tier-bajada { font-size: 12px; }
+            .section-subtitle { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class=\"hero-bg\"><img src=\"assets/background.jpg\" alt=\"bg\"></div>
+    <div class=\"overlay-color\"></div>
+    <div class=\"vignette\"></div>
+
+    <div class=\"app-container\">
+        <header class=\"header\">
+            <img src=\"assets/logo-podium.png\" alt=\"Podium Beer Logo\" class=\"logo-header\">
+            <h1 class=\"h1-sim\">SIMULADOR DE ALIANZA</h1>
+            <h2 class=\"h2-sim\">ESTRATEGIA DE COMPETENCIAS</h2>
+            <div class=\"bajada-header\">Descubre el impacto de tu marca en las principales competencias cerveceras y optimiza tu inversión.</div>
+            <div class=\"frase-podiumbeer\">Beer Competitions, Data Science and Sommelier Expertise</div>
+        </header>
+
+        <!-- CARD 1: BUSCADOR DE CERVECERÍA -->
+        <div class=\"brewery-search-card\">
+            <div class=\"shift-content\">
+                <h3 class=\"section-title\">Paso 1</h3>
+                <h4 class=\"section-subtitle\">Identifica tu Cervecería</h4>
+                <p class=\"section-desc\">Selecciona tu marca para cargar tu perfil histórico de medallas y desempeño.</p>
+                <div class=\"search-row\">
+                    <div class=\"autocomplete-wrapper\">
+                        <input type=\"text\" class=\"brewery-input\" id=\"brewerySearch\" placeholder=\"Escribe el nombre de tu cervecería...\">
+                        <div class=\"autocomplete-list\" id=\"autocompleteList\"></div>
+                    </div>
+                    <button class=\"btn-analyze\" id=\"btnAnalyze\">ANALIZAR PERFIL</button>
+                </div>
+                <div class=\"estado-analisis\" id=\"estadoAnalisis\"></div>
+            </div>
+        </div>
+
+        <!-- CARD 2: SELECTOR DE PLAN -->
+        <div class=\"plan-selector-card\">
+            <div class=\"shift-content\">
+                <h3 class=\"section-title\">Paso 2</h3>
+                <h4 class=\"section-subtitle\">Configura tu Plan de Alianza</h4>
+                <p class=\"section-desc\">Ajusta el alcance de tu consultoría y el nivel de profundidad de los reportes.</p>
+                
+                <div class=\"slider-container\">
+                    <div class=\"slider-track-wrapper\">
+                        <div class=\"slider-rail\" id=\"sliderRail\">
+                            <div class=\"slider-fill\" id=\"sliderFill\"></div>
+                            <div class=\"slider-thumb\" id=\"sliderThumb\"></div>
+                        </div>
+                    </div>
+                    <div class=\"slider-labels\">
+                        <span>ALIANZA<br>ESSENTIAL</span>
+                        <span>ALIANZA<br>PRO</span>
+                        <span>ALIANZA<br>ELITE</span>
+                        <span>ALIANZA<br>VISIONARY</span>
+                    </div>
+                </div>
+
+                <div class=\"tier-buttons-container\">
+                    <div class=\"tier-item\">
+                        <button class=\"tier-btn active\" data-tier=\"basic\">
+                            <div class=\"tier-icon\"><img src=\"assets/icon-basic.png\" alt=\"Basic\"></div>
+                            <span class=\"tier-label\">Básico</span>
+                        </button>
+                        <div class=\"tier-bajada\">Análisis de 1 competencia anual</div>
+                    </div>
+                    <div class=\"tier-item\">
+                        <button class=\"tier-btn\" data-tier=\"premium\">
+                            <div class=\"tier-icon\"><img src=\"assets/icon-premium.png\" alt=\"Premium\"></div>
+                            <span class=\"tier-label\">Premium</span>
+                        </button>
+                        <div class=\"tier-bajada\">Análisis de todas las competencias</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3: MÉTRICAS DE IMPACTO -->
+        <div class=\"metrics-card\">
+            <div class=\"shift-content\">
+                <h3 class=\"section-title\">Impacto Estimado</h3>
+                <h4 class=\"section-subtitle\">Proyección de Resultados</h4>
+                
+                <div class=\"metric-row\">
+                    <div class=\"metric-icon-col\"><img src=\"assets/icon-score.png\" alt=\"Score\"></div>
+                    <div class=\"metric-text-col\">
+                        <div class=\"metric-name\">Score Podium</div>
+                        <div class=\"metric-bajada\">Índice de competitividad global de tu marca</div>
+                    </div>
+                    <div class=\"metric-value-col\"><div class=\"metric-value\" id=\"valScore\">0</div></div>
+                </div>
+
+                <div class=\"metric-row\">
+                    <div class=\"metric-icon-col\"><img src=\"assets/icon-win.png\" alt=\"Win Rate\"></div>
+                    <div class=\"metric-text-col\">
+                        <div class=\"metric-name\">Win Rate Proyectado</div>
+                        <div class=\"metric-bajada\">Probabilidad de obtener medalla con asesoría</div>
+                    </div>
+                    <div class=\"metric-value-col\"><div class=\"metric-value\" id=\"valWin\">0%</div></div>
+                </div>
+
+                <div class=\"metric-row\">
+                    <div class=\"metric-icon-col\"><img src=\"assets/icon-roi.png\" alt=\"ROI\"></div>
+                    <div class=\"metric-text-col\">
+                        <div class=\"metric-name\">ROI Estimado</div>
+                        <div class=\"metric-bajada\">Retorno de inversión en marketing y ventas</div>
+                    </div>
+                    <div class=\"metric-value-col\"><div class=\"metric-value\" id=\"valRoi\">0x</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 4: GRÁFICO DE COMPETITIVIDAD -->
+        <div class=\"chart-card\">
+            <div class=\"shift-content\">
+                <h3 class=\"chart-title\"><img src=\"assets/icon-chart.png\" alt=\"Chart\"> Radar de Competitividad por Estilo</h3>
+                <div class=\"chart-container\">
+                    <canvas id=\"radarChart\"></canvas>
+                </div>
+                <div class=\"legend-container\" id=\"chartLegend\"></div>
+            </div>
+        </div>
+
+        <!-- CARD 5: ESPACIOS DE OPORTUNIDAD -->
+        <div class=\"glass-card\">
+            <div class=\"shift-content\">
+                <h3 class=\"section-title\">Oportunidades</h3>
+                <h4 class=\"section-subtitle\">Estilos con Mayor Potencial</h4>
+                <p class=\"section-desc\">Basado en el análisis de jueces y tendencias de mercado.</p>
+                <div class=\"estilos-tabla\" id=\"estilosLista\">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <div class=\"credits\">Demo exclusiva para clientes Podium Beer</div>
+
+        <div class=\"cta-wrapper\">
+            <button class=\"cta-button\" id=\"btnWsp\">
+                <span class=\"cta-text\">SOLICITAR MI PLAN PERSONALIZADO</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const BREWERIES_DB = [
+            { n: \"Kross\", s: 85, w: 22, r: 4.5, d: [80, 70, 90, 65, 85, 75], e: [ {n:\"IPA\", l:\"ALTO\", r:\"Alta demanda jueces\"}, {n:\"Stout\", l:\"MEDIO\", r:\"Nivel técnico estable\"} ] },
+            { n: \"Kunstmann\", s: 78, w: 15, r: 3.2, d: [60, 85, 70, 50, 60, 80], e: [ {n:\"Lager\", l:\"ALTO\", r:\"Fidelidad al estilo\"}, {n:\"Torobayo\", l:\"MEDIO\", r:\"Icono consolidado\"} ] },
+            { n: \"Rothhammer\", s: 82, w: 18, r: 3.8, d: [75, 65, 85, 80, 70, 60], e: [ {n:\"Pilsner\", l:\"ALTO\", r:\"Limpieza técnica\"}, {n:\"Session IPA\", l:\"MEDIO\", r:\"Tendencia joven\"} ] },
+            { n: \"Granizo\", s: 88, w: 25, r: 5.2, d: [90, 80, 85, 95, 80, 85], e: [ {n:\"Strong Ale\", l:\"ALTO\", r:\"Complejidad única\"}, {n:\"Wild Ale\", l:\"ALTO\", r:\"Referente nacional\"} ] },
+            { n: \"Tamango\", s: 86, w: 23, r: 4.8, d: [85, 75, 95, 70, 85, 80], e: [ {n:\"Hazy IPA\", l:\"ALTO\", r:\"Dominio del lúpulo\"}, {n:\"Sour\", l:\"MEDIO\", r:\"Innovación constante\"} ] }
+        ];
+
+        let currentBrewery = null;
+        let selectedTierIndex = 0; 
+        let selectedPlan = 'basic';
+        let chart = null;
+
+        const brewerySearch = document.getElementById('brewerySearch');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const btnAnalyze = document.getElementById('btnAnalyze');
+        const estadoAnalisis = document.getElementById('estadoAnalisis');
+        
+        const sliderThumb = document.getElementById('sliderThumb');
+        const sliderFill = document.getElementById('sliderFill');
+        const sliderRail = document.getElementById('sliderRail');
+        
+        const tierBtns = document.querySelectorAll('.tier-btn');
+        const valScore = document.getElementById('valScore');
+        const valWin = document.getElementById('valWin');
+        const valRoi = document.getElementById('valRoi');
+        const estilosLista = document.getElementById('estilosLista');
+        const btnWsp = document.getElementById('btnWsp');
+
+        // AUTOCOMPLETE
+        brewerySearch.addEventListener('input', () => {
+            const val = brewerySearch.value.toLowerCase();
+            autocompleteList.innerHTML = '';
+            if(!val) { autocompleteList.style.display = 'none'; return; }
+            const matches = BREWERIES_DB.filter(b => b.n.toLowerCase().includes(val));
+            if(matches.length > 0) {
+                matches.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.textContent = m.n;
+                    div.onclick = () => { brewerySearch.value = m.n; autocompleteList.style.display = 'none'; };
+                    autocompleteList.appendChild(div);
+                });
+                autocompleteList.style.display = 'block';
+            } else {
+                autocompleteList.style.display = 'none';
+            }
+        });
+
+        btnAnalyze.addEventListener('click', () => {
+            const name = brewerySearch.value.trim();
+            const found = BREWERIES_DB.find(b => b.n.toLowerCase() === name.toLowerCase());
+            if(found) {
+                currentBrewery = found;
+                estadoAnalisis.textContent = \"Perfil de \" + found.n + \" cargado correctamente.\";
+                updateMetrics();
+            } else {
+                estadoAnalisis.textContent = \"Cervecería no encontrada. Usando perfil genérico.\";
+                currentBrewery = { n: name || \"Genérica\", s: 50, w: 5, r: 1.2, d: [40, 40, 40, 40, 40, 40], e: [{n:\"Estilo X\", l:\"POCO\", r:\"Sin datos\"}] };
+                updateMetrics();
+            }
+        });
+
+        // SLIDER LOGIC
+        let isDragging = false;
+        const updateSlider = (clientX) => {
+            const rect = sliderRail.getBoundingClientRect();
+            let pos = (clientX - rect.left) / rect.width;
+            pos = Math.max(0, Math.min(1, pos));
+            
+            // Snap to 4 positions
+            selectedTierIndex = Math.round(pos * 3);
+            const snappedPos = (selectedTierIndex / 3) * 100;
+            
+            sliderThumb.style.left = snappedPos + '%';
+            sliderFill.style.width = snappedPos + '%';
+            updateMetrics();
+        };
+
+        sliderThumb.addEventListener('mousedown', () => isDragging = true);
+        window.addEventListener('mousemove', (e) => { if(isDragging) updateSlider(e.clientX); });
+        window.addEventListener('mouseup', () => isDragging = false);
+        sliderRail.addEventListener('click', (e) => updateSlider(e.clientX));
+
+        // TOUCH SUPPORT
+        sliderThumb.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); }, {passive: false});
+        window.addEventListener('touchmove', (e) => { if(isDragging) updateSlider(e.touches[0].clientX); }, {passive: false});
+        window.addEventListener('touchend', () => isDragging = false);
+
+        // TIER BUTTONS
+        tierBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tierBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedPlan = btn.getAttribute('data-tier');
+                updateMetrics();
+            });
+        });
+
+        function updateMetrics() {
+            if(!currentBrewery) return;
+
+            const tierMultipliers = [1, 1.15, 1.3, 1.5]; // Essential, Pro, Elite, Visionary
+            const planMult = (selectedPlan === 'premium') ? 1.25 : 1;
+            const totalMult = tierMultipliers[selectedTierIndex] * planMult;
+
+            const finalScore = Math.min(100, Math.round(currentBrewery.s * totalMult * 0.95));
+            const finalWin = Math.min(65, Math.round(currentBrewery.w * totalMult * 1.4));
+            const finalRoi = (currentBrewery.r * totalMult).toFixed(1);
+
+            valScore.textContent = finalScore;
+            valWin.textContent = finalWin + \"%\";
+            valRoi.textContent = finalRoi + \"x\";
+
+            updateChart(totalMult);
+            updateEstilos();
+        }
+
+        function updateChart(mult) {
+            const labels = ['Técnica', 'Estilo', 'Mercado', 'Innovación', 'Limpieza', 'Branding'];
+            const baseData = currentBrewery.d;
+            const projectedData = baseData.map(v => Math.min(100, Math.round(v * mult)));
+
+            if(chart) {
+                chart.data.datasets[0].data = baseData;
+                chart.data.datasets[1].data = projectedData;
+                chart.update();
+            } else {
+                const ctx = document.getElementById('radarChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Perfil Actual',
+                                data: baseData,
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                borderColor: 'rgba(255, 255, 255, 0.5)',
+                                borderWidth: 2,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Proyección Alianza',
+                                data: projectedData,
+                                backgroundColor: 'rgba(228, 15, 99, 0.4)',
+                                borderColor: '#E40F63',
+                                borderWidth: 3,
+                                pointBackgroundColor: '#E40F63'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(255,255,255,0.1)' },
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                pointLabels: { color: '#CFDEE0', font: { size: 10, weight: '600' } },
+                                ticks: { display: false, max: 100, stepSize: 20 },
+                                min: 0,
+                                max: 100
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+                
+                // Custom Legend
+                const leg = document.getElementById('chartLegend');
+                leg.innerHTML = `
+                    <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:rgba(255,255,255,0.5)\"></div>Actual</div>
+                    <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:#E40F63\"></div>Proyectado</div>
+                `;
+            }
+        }
+
+        function updateEstilos() {
+            estilosLista.innerHTML = '';
+            currentBrewery.e.forEach(est => {
+                const item = document.createElement('div');
+                item.className = 'espacio-item';
+                item.innerHTML = `
+                    <div class=\"espacio-fila\">
+                        <span class=\"espacio-nombre\">\${est.n}</span>
+                        <span class=\"espacio-nivel \${est.l}\">\${est.l}</span>
+                    </div>
+                    <div class=\"espacio-rec\">Recomendación: \${est.r}</div>
+                `;
+                estilosLista.appendChild(item);
+            });
+        }
+
+        btnWsp.addEventListener('click', () => {
+            const msg = encodeURIComponent(\"Hola Podium Beer, quiero solicitar mi Plan Personalizado. Analicé mi cervecería \" + (currentBrewery ? currentBrewery.n : \"\") + \" en el simulador.\");
+            window.open(\"https://wa.me/569XXXXXXXX?text=\" + msg, \"_blank\");
+        });
+
+        // INIT
+        window.onload = () => {
+            brewerySearch.value = \"Kross\";
+            btnAnalyze.click();
+        };
+    </script>
+</body>
+</html>
