@@ -3,192 +3,229 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PodiumBeer | Intelligence Tool</title>
+<title>PodiumBeer – Inteligencia Competitiva</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js compatible -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 
 <style>
-body {margin:0;font-family:Arial;background:#0f172a;color:white;}
-.container {max-width:1100px;margin:auto;padding:16px;}
-h1,h2,h3{text-align:center;}
-
-.row{display:flex;flex-wrap:wrap;margin:-8px;}
-.col{padding:8px;width:100%;}
-@media(min-width:768px){.col-6{width:50%;}}
-@media(min-width:1024px){.col-4{width:33.33%;}}
-
-.card{background:#1e293b;padding:16px;border-radius:12px;margin-bottom:16px;}
-
-.kpi{font-size:20px;text-align:center;font-weight:bold;}
-
-select,input{width:100%;padding:10px;margin-top:8px;}
-
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f172a;color:#e5e7eb;}
+.container{max-width:980px;margin:0 auto;padding:16px;}
+header{text-align:center;padding:10px 0 14px 0;border-bottom:1px solid #1f2937;}
+.logo{width:120px;display:block;margin:0 auto 8px auto;}
+h1{font-size:22px;margin:6px 0;}
+h2{font-size:16px;color:#9ca3af;margin:0;}
+.section{margin-top:18px;background:#111827;border:1px solid #1f2937;border-radius:10px;padding:14px;}
+.section h3{margin:0 0 10px 0;font-size:16px;}
+.icon-title{width:18px;height:18px;vertical-align:middle;margin-right:8px;}
+.row{display:block;}
+.kpis{display:block;margin-top:10px;}
+.kpi{display:inline-block;width:48%;margin:1%;background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:10px;text-align:center;}
+.kpi b{font-size:20px;display:block;}
 .chart-container{position:relative;width:100%;height:300px;}
-@media(min-width:768px){.chart-container{height:380px;}}
-
-.resultado{text-align:center;font-size:18px;margin-top:10px;}
-.insight{margin-top:10px;font-size:16px;text-align:center;}
+@media (min-width:768px){.chart-container{height:380px;}}
+.input-box{width:100%;padding:10px;border-radius:6px;border:1px solid #374151;background:#0b1220;color:#e5e7eb;}
+.btn{margin-top:10px;padding:10px 14px;border-radius:6px;border:0;background:#2563eb;color:#fff;cursor:pointer;}
+.small{font-size:12px;color:#9ca3af;}
+.sim-box{margin-top:10px;background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:10px;}
+.result{font-size:20px;margin-top:6px;}
+.insight{margin-top:10px;background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:10px;}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-<h1>PodiumBeer</h1>
-<h2>Inteligencia Comercial Cervecera</h2>
+<header>
+  <img src="./assets/logo_podiumbeer.png" class="logo" alt="logo">
+  <h1>Inteligencia Competitiva Cervecera</h1>
+  <h2>Convierte medallas en decisiones comerciales</h2>
+</header>
 
-<!-- SELECTOR -->
-<div class="card">
-<h3>Selecciona tu cervecería</h3>
-<select id="cerveceriaSelect"></select>
+<!-- INPUT -->
+<div class="section">
+  <h3>
+    <img src="./assets/icon_valor.png" class="icon-title">
+    Ingresa tu cervecería
+  </h3>
+  <input id="cerveceriaInput" class="input-box" placeholder="Ej: Mi Cervecería">
+  <button class="btn" onclick="calcular()">Analizar</button>
+  <div class="small">Puedes escribir cualquier nombre. Si no existe, se usa un ejemplo base.</div>
 </div>
 
 <!-- KPIs -->
-<div class="row">
-<div class="col col-4"><div class="card kpi" id="kpiC"></div></div>
-<div class="col col-4"><div class="card kpi" id="kpiN"></div></div>
-<div class="col col-4"><div class="card kpi" id="kpiR"></div></div>
+<div class="section">
+  <h3>
+    <img src="./assets/icon_impacto.png" class="icon-title">
+    Impacto en tu negocio
+  </h3>
+
+  <div class="kpis">
+    <div class="kpi"><b id="kpiTotal">0</b>Medallas</div>
+    <div class="kpi"><b id="kpiConstruye">0</b>Construyen marca</div>
+    <div class="kpi"><b id="kpiNeutro">0</b>Neutras</div>
+    <div class="kpi"><b id="kpiRuido">0</b>Ruido</div>
+  </div>
 </div>
 
-<!-- GRAFICO -->
-<div class="card">
-<h3>Performance Competitivo 2025</h3>
-<div class="chart-container">
-<canvas id="chart"></canvas>
+<!-- GRÁFICO PRINCIPAL -->
+<div class="section">
+  <h3>
+    <img src="./assets/icon_valor.png" class="icon-title">
+    Chilean Competition Winners - 2025
+  </h3>
+  <div class="chart-container">
+    <canvas id="competitionChart"></canvas>
+  </div>
 </div>
+
+<!-- GRÁFICO ADICIONAL (ESFUERZO VS RETORNO) -->
+<div class="section">
+  <h3>
+    <img src="./assets/icon_inversion.png" class="icon-title">
+    Esfuerzo vs Retorno (según calidad)
+  </h3>
+  <div class="chart-container">
+    <canvas id="effortChart"></canvas>
+  </div>
 </div>
 
 <!-- SIMULADOR -->
-<div class="card">
-<h3>Producción anual (hL)</h3>
-<input type="range" id="prod" min="500" max="20000" step="500" value="1000">
-<p id="prodVal">1000 hL</p>
+<div class="section">
+  <h3>
+    <img src="./assets/icon_inversion.png" class="icon-title">
+    Simulador de impacto
+  </h3>
 
-<h3>Plan</h3>
-<select id="plan">
-<option value="1">Explorer</option>
-<option value="1.5">Podium</option>
-<option value="2.2">Champion</option>
-</select>
+  <div class="sim-box">
+    <div>Inversión mensual (CLP)</div>
+    <input id="inversion" class="input-box" value="500000">
+    <button class="btn" onclick="simular()">Simular</button>
 
-<div class="resultado" id="resultado"></div>
-<div class="insight" id="insight"></div>
+    <div class="result" id="resultado">$0</div>
+    <div class="small">El resultado depende de la calidad de tus medallas (KPIs).</div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="section">
+  <h3>
+    <img src="./assets/icon_impacto.png" class="icon-title">
+    Interpretación automática
+  </h3>
+  <div id="insight" class="insight">Ingresa tu cervecería para ver análisis.</div>
 </div>
 
 </div>
 
 <script>
+var chart1 = null;
+var chart2 = null;
 
-/* ===== DATA (SIMULA CSV REAL) ===== */
-const data = [
-{c:"Tamango",score:9.5},{c:"Tamango",score:9.2},{c:"Tamango",score:9.8},
-{c:"Tamango",score:9.1},{c:"Tamango",score:9.3},{c:"Tamango",score:9.0},
-{c:"Tamango",score:9.4},{c:"Tamango",score:9.6},
+// DATA BASE (ejemplo coherente)
+var data = [
+  {c:"Mi Cervecería", score:9},
+  {c:"Mi Cervecería", score:7},
+  {c:"Mi Cervecería", score:5},
+  {c:"Mi Cervecería", score:10},
+  {c:"Mi Cervecería", score:8},
+  {c:"Mi Cervecería", score:6},
 
-{c:"Luther",score:8.2},{c:"Luther",score:7.5},{c:"Luther",score:6.8},
-{c:"Luther",score:7.2},{c:"Luther",score:6.5},
-
-{c:"Kross",score:5.2},{c:"Kross",score:4.9},{c:"Kross",score:5.5},
-{c:"Kross",score:6.1}
+  {c:"Líder", score:10},
+  {c:"Líder", score:9},
+  {c:"Líder", score:9},
+  {c:"Líder", score:8},
+  {c:"Líder", score:10},
+  {c:"Líder", score:9}
 ];
 
-/* ===== SETUP ===== */
-const cervecerias = [...new Set(data.map(d=>d.c))];
-const select = document.getElementById("cerveceriaSelect");
+var currentKPIs = {total:0,construye:0,neutro:0,ruido:0};
 
-cervecerias.forEach(c=>{
-  let op=document.createElement("option");
-  op.value=c; op.text=c;
-  select.appendChild(op);
-});
+function calcular(){
+  var nombre = document.getElementById("cerveceriaInput").value;
+  if(!nombre){ nombre="Mi Cervecería"; }
 
-/* ===== KPI ===== */
-function calcularKPIs(cer){
-  let c=0,n=0,r=0;
-  data.filter(d=>d.c===cer).forEach(d=>{
-    if(d.score>=9)c++;
-    else if(d.score>=6)n++;
-    else r++;
+  var total=0,construye=0,neutro=0,ruido=0;
+
+  for(var i=0;i<data.length;i++){
+    if(data[i].c===nombre){
+      total++;
+      if(data[i].score>=9){construye++;}
+      else if(data[i].score>=6){neutro++;}
+      else{ruido++;}
+    }
+  }
+
+  if(total===0){
+    // fallback coherente
+    total=6; construye=2; neutro=2; ruido=2;
+  }
+
+  currentKPIs.total=total;
+  currentKPIs.construye=construye;
+  currentKPIs.neutro=neutro;
+  currentKPIs.ruido=ruido;
+
+  document.getElementById("kpiTotal").innerHTML=total;
+  document.getElementById("kpiConstruye").innerHTML=construye;
+  document.getElementById("kpiNeutro").innerHTML=neutro;
+  document.getElementById("kpiRuido").innerHTML=ruido;
+
+  graficos(construye,neutro,ruido);
+  insight(construye,total);
+}
+
+function graficos(c,n,r){
+  var ctx=document.getElementById("competitionChart").getContext("2d");
+  if(chart1){chart1.destroy();}
+  chart1=new Chart(ctx,{
+    type:"doughnut",
+    data:{
+      labels:["Construye","Neutro","Ruido"],
+      datasets:[{data:[c,n,r]}]
+    },
+    options:{legend:{labels:{fontColor:"#e5e7eb"}}}
   });
-  return {c,n,r};
+
+  var ctx2=document.getElementById("effortChart").getContext("2d");
+  if(chart2){chart2.destroy();}
+  chart2=new Chart(ctx2,{
+    type:"bar",
+    data:{
+      labels:["Bajo","Medio","Alto"],
+      datasets:[{data:[r,n,c]}]
+    },
+    options:{
+      scales:{
+        yAxes:[{ticks:{beginAtZero:true,fontColor:"#e5e7eb"}}],
+        xAxes:[{ticks:{fontColor:"#e5e7eb"}}]
+      },
+      legend:{display:false}
+    }
+  });
 }
 
-/* ===== CHART ===== */
-var ctx=document.getElementById("chart").getContext("2d");
+function simular(){
+  var inv=parseFloat(document.getElementById("inversion").value);
+  if(isNaN(inv)){inv=0;}
 
-var chart=new Chart(ctx,{
-type:'bar',
-data:{
-labels:cervecerias,
-datasets:[{
-label:'Medallas de alto valor',
-data:cervecerias.map(c=>calcularKPIs(c).c)
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false,
-legend:{labels:{fontColor:"white"}},
-scales:{
-yAxes:[{ticks:{beginAtZero:true,fontColor:"white"}}],
-xAxes:[{ticks:{fontColor:"white"}}]
-}
-}
-});
+  var calidad = 1 + (currentKPIs.construye * 0.1);
+  var retorno = inv * 3 * calidad;
 
-/* ===== SIMULADOR + INSIGHT ===== */
-function update(){
-
-let cer=select.value;
-let kpi=calcularKPIs(cer);
-
-document.getElementById("kpiC").innerText=kpi.c+" Construye";
-document.getElementById("kpiN").innerText=kpi.n+" Neutro";
-document.getElementById("kpiR").innerText=kpi.r+" Ruido";
-
-/* liderazgo */
-let max=Math.max(...cervecerias.map(c=>calcularKPIs(c).c));
-let lider=cervecerias.find(c=>calcularKPIs(c).c===max);
-
-let gap=max-kpi.c;
-
-/* simulador */
-let prod=parseInt(document.getElementById("prod").value);
-let factor=parseFloat(document.getElementById("plan").value);
-
-let inversion=prod*0.8*factor;
-let ajuste=1+(kpi.c*0.05); /* basado en desempeño real */
-let retorno=inversion*4.5*ajuste;
-
-document.getElementById("resultado").innerHTML=
-"Inversión mensual: $"+Math.round(inversion)+" USD<br>"+
-"Retorno anual: $"+Math.round(retorno)+" USD<br>"+
-"Impacto: "+Math.round((retorno/inversion)*100)+"%";
-
-/* insight dinámico */
-let texto="";
-
-if(cer===lider){
-texto="Eres líder del mercado en construcción de marca. Estás capturando el máximo valor competitivo.";
-}else{
-texto="Estás "+gap+" medallas de alto valor bajo "+lider+". Existe una brecha directa en posicionamiento y captura de valor.";
+  document.getElementById("resultado").innerHTML="$"+Math.round(retorno);
 }
 
-document.getElementById("insight").innerText=texto;
-
+function insight(c,total){
+  var txt="";
+  if(c===0){
+    txt="No tienes medallas que construyan marca. Estás perdiendo impacto comercial.";
+  }else if(c<total/2){
+    txt="Tienes base, pero debes aumentar medallas de alto valor para competir.";
+  }else{
+    txt="Buen posicionamiento. Estás cerca del nivel competitivo alto.";
+  }
+  document.getElementById("insight").innerHTML=txt;
 }
-
-/* eventos */
-select.addEventListener("change",update);
-document.getElementById("prod").addEventListener("input",function(){
-document.getElementById("prodVal").innerText=this.value+" hL";
-update();
-});
-document.getElementById("plan").addEventListener("change",update);
-
-update();
-
 </script>
 
 </body>
