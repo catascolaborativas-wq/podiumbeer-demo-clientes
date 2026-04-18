@@ -1,623 +1,467 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <title>Simulador de Alianza | Podium Beer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
-    .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
-    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
-    .app-container { width: 90%; max-width: none; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
-    .header { text-align: center; }
-    .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
-    .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
-    .h1-sim::-webkit-scrollbar { display: none; }
-    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
-    /* Bajada del header – más grande, 3 líneas permitidas */
-    .bajada-header { 
-      font-size: clamp(16px, 5vw, 20px); 
-      font-weight: 500; 
-      color: #FFFFFF; 
-      background: rgba(6,35,46,0.7); 
-      padding: 0.75rem 1rem; 
-      border-radius: 28px; 
-      margin-top: 1rem; 
-      line-height: 1.4; 
-      text-align: center; 
-      backdrop-filter: blur(4px); 
-    }
-    .glass-card, .metrics-card, .plan-selector-card, .chart-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s ease; padding: 1.5rem; }
-    .glass-card::before, .metrics-card::before, .plan-selector-card::before, .chart-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; background-position: center; opacity: 0.18; z-index: -1; pointer-events: none; }
-    .shift-content { margin-left: 2.5%; width: 97.5%; }
-    /* Títulos de sección generales (amarillos) */
-    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
-    .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
-    /* Bajada del slider (más grande) */
-    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
-    /* Título específico del gráfico (homólogo a PodiumBeer) */
-    .chart-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      border-left: 5px solid #e32c6c;
-      padding-left: 1rem;
-      color: #f7c32f;
-      text-transform: none;
-      letter-spacing: normal;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .chart-title img {
-      height: 24px;
-      vertical-align: middle;
-    }
-    /* SLIDER */
-    .slider-container { width: 100%; padding: 0 0.5rem; }
-    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2rem 0.5rem; }
-    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
-    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; transition: width 0.1s ease-out; }
-    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 0 0px rgba(255,255,255,0.3); transition: box-shadow 0.1s ease, left 0.15s ease; z-index: 3; }
-    .slider-thumb:active { cursor: grabbing; box-shadow: 0 0 0 6px rgba(255,255,255,0.25); }
-    .slider-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
-    .slider-labels span { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: #CFDEE0; line-height: 1.3; white-space: nowrap; }
-    /* SELECTOR DE PLANES */
-    .tier-buttons-container { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
-    .tier-item { flex: 1; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(0,0,0,0.7); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 60px; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 250ms ease; }
-    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 12px #811347, 0 4px 12px rgba(0,0,0,0.3); transform: scale(1.02) translateY(-2px); }
-    .tier-icon img { width: 24px; height: auto; display: block; }
-    .tier-label { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #FFFFFF; }
-    /* Bajadas debajo de cada botón (más grandes, 3 líneas si es necesario) */
-    .tier-bajada { font-size: 13px; font-weight: 500; color: #CFDEE0; text-align: center; line-height: 1.3; margin-top: 0.2rem; }
-    /* BLOQUE DE RESULTADOS */
-    .metric-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; }
-    .metric-row:last-child { margin-bottom: 0; }
-    .metric-icon-col { flex: 0 0 70px; text-align: center; }
-    .metric-icon-col img { width: 52px; height: auto; display: inline-block; }
-    .metric-text-col { flex: 2; text-align: center; }
-    .metric-name { font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
-    .metric-bajada { font-size: 10px; color: #CFDEE0; line-height: 1.3; }
-    .metric-value-col { flex: 1; text-align: right; }
-    .metric-value { font-size: 22px; font-weight: 800; color: #FFFFFF; white-space: nowrap; }
-    .credits { text-align: center; font-size: 18px; font-weight: 600; color: #f7c32f; background: rgba(0,0,0,0.5); padding: 0.75rem 1.5rem; border-radius: 60px; margin: 0.5rem auto; backdrop-filter: blur(4px); width: fit-content; max-width: 90%; }
-    .cta-wrapper { display: flex; justify-content: center; margin-top: 0.5rem; }
-    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 12px 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(228,15,99,0.5); transition: transform 0.1s ease, filter 0.1s ease; width: auto; min-width: 240px; }
-    .cta-button:active { transform: scale(0.97); filter: brightness(0.92); }
-    .cta-text { font-size: 15px; font-weight: 700; color: #FFFFFF; white-space: nowrap; }
-    /* GRÁFICO */
-    .chart-card { padding: 1rem; }
-    .chart-container { width: 100%; min-height: 450px; margin-top: 0; position: relative; }
-    canvas { touch-action: none; }
-    /* Leyenda: en móvil dos filas centradas, en desktop scroll horizontal */
-    .legend-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 2rem; padding: 0.5rem; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 1rem; }
-    @media (min-width: 992px) {
-      .legend-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
-      .legend-item { flex-shrink: 0; }
-      .slider-labels span { font-size: 14px; }
-      .tier-bajada { font-size: 13px; }
-      .section-desc { font-size: 15px; }
-    }
-    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 20px; transition: 0.2s; }
-    .legend-item:hover { background: rgba(0,0,0,0.8); }
-    .legend-color { width: 12px; height: 12px; border-radius: 2px; }
-    .legend-label { color: #fff; white-space: nowrap; }
-    .legend-item.hidden .legend-label { text-decoration: line-through; opacity: 0.5; }
-    .error-message { background: #e32c6c; color: white; padding: 0.5rem; border-radius: 1rem; text-align: center; font-size: 0.8rem; }
-    /* RESPONSIVE MÓVIL */
-    @media (max-width: 991px) {
-      .app-container { gap: 1.8rem; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1.2rem 1rem; }
-      .metric-value { font-size: 18px; }
-      .metric-icon-col { flex-basis: 60px; }
-      .metric-icon-col img { width: 44px; }
-      .metric-name { font-size: 14px; }
-      .metric-bajada { font-size: 9px; }
-      .h1-sim { white-space: normal; font-size: 28px; }
-      .bajada-header { font-size: 16px; }
-      .credits { font-size: 16px; }
-      .tier-btn { padding: 0.5rem 0.8rem; }
-      .tier-item { max-width: 140px; }
-      .tier-bajada { font-size: 12px; }
-      .section-desc { font-size: 14px; }
-      .slider-labels span { font-size: 12px; white-space: normal; }
-      .chart-title { font-size: 1.2rem; }
-      .chart-title img { height: 20px; }
-    }
-    @media (max-width: 380px) {
-      .app-container { width: 95%; }
-      .glass-card, .metrics-card, .plan-selector-card, .chart-card { padding: 1rem 0.8rem; }
-      .credits { font-size: 14px; }
-      .tier-item { max-width: 120px; }
-      .tier-bajada { font-size: 11px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Podium Beer | Business Intelligence Simulator</title>
+    //fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* === TUS ESTILOS BASE SAGRADOS (EL CORRECTO) === */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+        .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
+        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
+
+        .app-container { width: 90%; max-width: 1200px; margin: 1.5rem auto; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
+        .header { text-align: center; }
+        .logo-header { display: block; margin: 0 auto 1.5rem auto; width: 60%; max-width: 200px; height: auto; }
+        .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; }
+        .bajada-header { font-size: clamp(14px, 4vw, 18px); font-weight: 500; color: #FFFFFF; background: rgba(0,0,0,0.6); padding: 0.8rem 1.2rem; border-radius: 28px; margin-top: 1rem; line-height: 1.4; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
+
+        /* GLASSMORPHISM CON EFECTO ESPEJO SAGRADO */
+        .glass-card, .bi-card { position: relative; background: rgba(6,35,46,0.35); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.2); padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .glass-card::before, .bi-card::before { content: ''; position: absolute; left: 11px; top: -10px; width: 100%; height: 100%; border-radius: inherit; background-image: url('assets/espejo.png'); background-size: cover; opacity: 0.18; z-index: -1; pointer-events: none; }
+
+        .section-title { font-size: 1rem; font-weight: 700; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px; }
+        .section-subtitle { font-size: 1.4rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1rem; }
+
+        /* BUSCADOR TOP 15 - NO SCROLL */
+        .search-box { width: 100%; padding: 1rem; background: rgba(0,0,0,0.6); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 1.2rem; color: #fff; font-size: 1rem; outline: none; }
+        .suggestions { position: absolute; top: 100%; left: 0; width: 100%; background: #06232E; border-radius: 0.5rem; z-index: 100; display: none; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
+        .suggestion-item { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; color: #fff; }
+        .suggestion-item:hover { background: #f7c32f; color: #000; }
+
+        /* SLIDERS Y MEJORAS BI */
+        .slider-group { margin-bottom: 2rem; }
+        .slider-header { display: flex; justify-content: space-between; color: #fff; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .slider-val { font-weight: 800; color: #f7c32f; font-size: 1.1rem; }
+        .range-slider { -webkit-appearance: none; width: 100%; height: 8px; background: #1E3A4A; border-radius: 50px; outline: none; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; cursor: pointer; }
+
+        .bi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+        .metric-row { display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 1.2rem; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 1rem; }
+        .metric-icon { width: 44px; height: 44px; }
+        .metric-info { flex: 1; }
+        .metric-name { font-weight: 700; color: #fff; font-size: 14px; }
+        .metric-val { font-size: 1.3rem; font-weight: 800; color: #f7c32f; }
+
+        .chart-container { width: 100%; height: 320px; position: relative; }
+        .credits { text-align: center; color: #f7c32f; font-weight: 600; font-size: 0.9rem; padding: 1rem; background: rgba(0,0,0,0.5); border-radius: 40px; margin-top: 2rem; }
+
+        @media (max-width: 991px) { .bi-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
-  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Cervecería fondo"></div>
-  <div class="overlay-color"></div>
-  <div class="vignette"></div>
+    <div class="hero-bg"><img src="assets/bg_cerveceria.jpg"></div>
+    <div class="overlay-color"></div>
+    <div class="vignette"></div>
 
-  <div class="app-container">
-    <div class="header">
-      <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
-      <div class="h1-sim">Simulador de Alianza</div>
-      <div class="h2-sim">¿Cuál es tu producción anual?</div>
-      <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
+    <div class="app-container">
+        <div class="header">
+            <img src="assets/logo_podiumbeer.png" class="logo-header">
+            <h1 class="h1-sim">BI SIMULATOR</h1>
+            <div class="bajada-header">Auditamos tus medallas para convertirlas en prestigio y rentabilidad comercial.</div>
+        </div>
+
+        <!-- VISTA 1 -->
+        <div class="glass-card">
+            <div class="section-title">VISTA 1: PERFIL</div>
+            <div style="position: relative;">
+                <input type="text" id="brewerySearch" class="search-box" placeholder="Busca tu cervecería...">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+            <div id="scoreBlock" style="display: none; margin-top: 1.5rem;">
+                <div class="metric-row"><div class="metric-info"><div class="metric-name">Prestigio Acumulado (Authority Score)</div></div><div class="metric-val" id="scoreVal">0 pts</div></div>
+            </div>
+        </div>
+
+        <!-- VISTA 2 -->
+        <div class="glass-card">
+            <div class="section-title">VISTA 2: CONFIGURACIÓN</div>
+            <div class="slider-group">
+                <div class="slider-header"><span>Producción (hL Anual)</span><span class="slider-val" id="valA">1000 hL</span></div>
+                <input type="range" id="sliderA" class="range-slider" min="0" max="4" value="2">
+            </div>
+            <div class="slider-group">
+                <div class="slider-header"><span>Ventas (Millones CLP)</span><span class="slider-val" id="valB">$ 500M</span></div>
+                <input type="range" id="sliderB" class="range-slider" min="0" max="4" value="2">
+            </div>
+        </div>
+
+        <!-- VISTA 3 -->
+        <div class="bi-grid" id="biView" style="display: none;">
+            <div class="bi-card" style="grid-column: span 2;">
+                <div class="section-title">VISTA 3: RADAR BI</div>
+                <div class="chart-container">anvas id="radarBI"></canvas></div>
+            </div>
+            <div class="bi-card">
+                <div class="section-title">IMPACTO ESTIMADO</div>
+                <div class="metric-row"><img src="assets/icono_inversion.png" class="metric-icon"><div class="metric-info"><div class="metric-name">Inversión</div><div class="metric-val" id="resInv">$ 0</div></div></div>
+                <div class="metric-row"><img src="assets/icono_valor.png" class="metric-icon"><div class="metric-info"><div class="metric-name">Valor</div><div class="metric-val" id="resVal">$ 0</div></div></div>
+            </div>
+            <div class="bi-card">
+                <div class="section-title">ESTILOS CLAVE</div>
+                <div id="styleTable" style="color:#fff; font-size:13px; margin-top:1rem;"></div>
+            </div>
+        </div>
+
+        <div class="credits">Un desarrollo de Catas Colaborativas. 2015-2026</div>
     </div>
 
-    <div class="glass-card animate-item">
-      <div class="shift-content">
-        <div class="section-title">SLIDER</div>
-        <div class="section-subtitle">Escala de Producción</div>
-        <div class="section-desc">Tu volumen define tu estrategia. Este modelo adapta la inversión y el potencial de crecimiento según tu realidad productiva.</div>
-      </div>
-      <div class="slider-container shift-content">
-        <div class="slider-track-wrapper" id="sliderWrapper">
-          <div class="slider-rail" id="sliderRail"><div class="slider-fill" id="sliderFill"></div></div>
-          <div class="slider-thumb" id="sliderThumb"></div>
-        </div>
-        <div class="slider-labels">
-          <span>&lt;500 hl</span>
-          <span>501 - 1000 hl</span>
-          <span>1001 - 5000 hl</span>
-          <span>5001 - 10000 hl</span>
-          <span>≥20000 hl</span>
-        </div>
-      </div>
-    </div>
+    <script>
+        // === COMPATIBILIDAD IPAD ES5 ===
+        var allData = [];
+        var breweryList = [];
+        var hlLabels = ["< 500", "501-1000", "1001-5000", "5001-10000", "> 20000"];
+        var salesLabels = ["< 100M", "101-250M", "251-500M", "501-1000M", "> 1000M"];
+        var radar = null;
 
-    <!-- GRÁFICO Chilean Competition Wings - 2025 -->
-    <div class="chart-card animate-item" id="chartCard">
-      <div class="shift-content">
-        <div class="chart-title">
-          <img src="assets/bandera.png" alt="Bandera"> Chilean Competition Wings - 2025
-        </div>
-      </div>
-      <div class="chart-container shift-content">
-        <canvas id="breweryChart" width="800" height="400"></canvas>
-      </div>
-      <div class="legend-container shift-content" id="legendContainer"></div>
-    </div>
-
-    <div class="plan-selector-card animate-item">
-      <div class="shift-content">
-        <div class="section-title">SELECTOR DE PLANES</div>
-        <div class="section-subtitle">Nivel de Alianza Estratégica</div>
-        <div class="section-desc">Elige cómo quieres competir en el mercado: desde visibilidad inicial hasta posicionamiento como referente técnico.</div>
-      </div>
-      <div class="tier-buttons-container shift-content" id="tierButtonsContainer">
-        <div class="tier-item">
-          <div class="tier-btn" data-tier="explorer" id="tierExplorer">
-            <div class="tier-icon"><img src="assets/explorer.png" alt="Explorer"></div>
-            <div class="tier-label">Explorer</div>
-          </div>
-          <div class="tier-bajada">1° Nivel de Visibilidad<br>basada en datos reales</div>
-        </div>
-        <div class="tier-item">
-          <div class="tier-btn" data-tier="podium" id="tierPodium">
-            <div class="tier-icon"><img src="assets/podium.png" alt="Podium"></div>
-            <div class="tier-label">Podium</div>
-          </div>
-          <div class="tier-bajada">Optimización estratégica<br>para competir con ventaja.</div>
-        </div>
-        <div class="tier-item">
-          <div class="tier-btn active" data-tier="champion" id="tierChampion">
-            <div class="tier-icon"><img src="assets/champion.png" alt="Champion"></div>
-            <div class="tier-label">Champion</div>
-          </div>
-          <div class="tier-bajada">Dominio de mercado con<br>respaldo técnico y autoridad</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="metrics-card animate-item">
-      <div class="shift-content">
-        <div class="section-title">BLOQUE DE RESULTADOS</div>
-        <div class="section-subtitle">Impacto en tu negocio</div>
-        <div class="section-desc">Los indicadores clave para convertir data técnica en decisiones rentables. Así se ve, en números, lo que tus medallas realmente pueden hacer por tu negocio.</div>
-      </div>
-      <div class="shift-content">
-        <div class="metric-row">
-          <div class="metric-icon-col"><img src="assets/icono_inversion.png" alt="Inversión"></div>
-          <div class="metric-text-col"><div class="metric-name">Inversión Inteligente</div><div class="metric-bajada">Una inversión diseñada para generar retorno,<br>no gasto: alineada a tu escala y potencial comercial</div></div>
-          <div class="metric-value-col"><div class="metric-value" id="inversionValue">$1,200 USD</div></div>
-        </div>
-        <div class="metric-row">
-          <div class="metric-icon-col"><img src="assets/icono_valor.png" alt="Valor"></div>
-          <div class="metric-text-col"><div class="metric-name">Valor Recuperado</div><div class="metric-bajada">Lo que hoy pierdes en decisiones sin data,<br>lo recuperas con estrategia basada en información validada</div></div>
-          <div class="metric-value-col"><div class="metric-value" id="optimizacionValue">$14,500 USD</div></div>
-        </div>
-        <div class="metric-row">
-          <div class="metric-icon-col"><img src="assets/icono_impacto.png" alt="Impacto"></div>
-          <div class="metric-text-col"><div class="metric-name">Impacto en Rentabilidad</div><div class="metric-bajada">El retorno proyectado al transformar tus medallas<br>en una herramienta activa de ventas.</div></div>
-          <div class="metric-value-col"><div class="metric-value" id="roiValue">65%</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cta-wrapper animate-item">
-      <button class="cta-button" id="ctaBtn"><span class="cta-text">Agenda tu Diagnóstico Estratégico</span></button>
-    </div>
-
-    <div class="credits animate-item">
-      Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
-    </div>
-  </div>
-
-  <script>
-    // ======================== CARGA DE CSV (MISMA LÓGICA QUE PODIUMBEER) ========================
-    let allData = [];
-
-    function formatearTextoPresentacion(str) {
-      if (!str) return '';
-      return str.replace(/\b\w/g, l => l.toUpperCase());
-    }
-
-    function esBasura(valor) {
-      if (!valor) return true;
-      const limpio = valor.toString().toUpperCase().trim();
-      return limpio === "PENDIENTE" || limpio === "COMPLETAR" || limpio === "-";
-    }
-
-    async function cargarCSV() {
-      try {
-        const response = await fetch('BBDD_Medallero_Chile.csv');
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const texto = await response.text();
-        const lineas = texto.split('\n');
-        const encabezados = lineas[0].split(';').map(h => h.trim());
-        const datos = [];
-        for (let i = 1; i < lineas.length; i++) {
-          if (!lineas[i].trim()) continue;
-          const valores = lineas[i].split(';');
-          const fila = {};
-          encabezados.forEach((enc, idx) => {
-            let val = valores[idx] ? valores[idx].trim() : '';
-            if (enc === 'cerveceria' || enc === 'cerveza_ganadora' || enc === 'estilo' || enc === 'certamen') {
-              val = formatearTextoPresentacion(val);
-            }
-            fila[enc] = val;
-          });
-          if (esBasura(fila.medalla_base)) continue;
-          if (esBasura(fila.cerveceria)) continue;
-          datos.push(fila);
-        }
-        console.log(`✅ CSV cargado: ${datos.length} registros válidos`);
-        return datos;
-      } catch (err) {
-        console.error("Error cargando CSV:", err);
-        document.getElementById('chartCard').innerHTML += '<div class="error-message">⚠️ No se pudo cargar el archivo BBDD_Medallero_Chile.csv. Asegúrate de que esté en la raíz.</div>';
-        return [];
-      }
-    }
-
-    // ======================== GRÁFICO DE CERVEZAS (TOOLTIP NATIVO) ========================
-    let breweryChart;
-    const monthNames = ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-    const colorPalette = [
-      '#e32c6c', '#f7c32f', '#df0db1', '#d81891', '#f7b32f',
-      '#f198ee', '#8c52ff', '#5e17eb', '#1800ad', '#ff66c4',
-      '#cb6ce6', '#1eab9b', '#33ebd6', '#5170ff', '#a5f6ed'
-    ];
-
-    function renderBreweryChart(data) {
-      const chileData = data.filter(item => item.pais === 'Chile');
-      const data2025 = chileData.filter(item => {
-        const anio = item.anio || (item.fecha ? item.fecha.split('-')[0] : '');
-        return anio === '2025';
-      });
-      if (!data2025.length) return;
-
-      // Calcular total de medallas por cervecería (para el top 15)
-      const breweryTotal = {};
-      data2025.forEach(item => {
-        let brew = item.cerveceria ? item.cerveceria.trim() : '';
-        if (!brew) return;
-        breweryTotal[brew] = (breweryTotal[brew] || 0) + 1;
-      });
-      const sorted = Object.entries(breweryTotal).sort((a,b) => b[1] - a[1]);
-      const top15 = sorted.slice(0, 15).map(entry => entry[0]);
-      console.log('Top 15 cervecerías:', top15);
-
-      // Inicializar datos mensuales (total de medallas por mes)
-      const monthlyTotal = {};
-      top15.forEach(brew => { monthlyTotal[brew] = Array(10).fill(0); });
-
-      data2025.forEach(item => {
-        let brew = item.cerveceria ? item.cerveceria.trim() : '';
-        if (!top15.includes(brew)) return;
-        const fecha = item.fecha;
-        if (!fecha) return;
-        const partes = fecha.split('-');
-        if (partes.length < 2) return;
-        const mes = parseInt(partes[1], 10);
-        if (mes >= 3 && mes <= 12) {
-          const idx = mes - 3;
-          monthlyTotal[brew][idx]++;
-        }
-      });
-
-      // Construir datasets para Chart.js
-      const datasets = [];
-      top15.forEach((brew, idx) => {
-        datasets.push({
-          label: brew,
-          data: monthlyTotal[brew],
-          borderColor: colorPalette[idx % colorPalette.length],
-          backgroundColor: colorPalette[idx % colorPalette.length] + '33',
-          borderWidth: idx === 0 ? 2.5 : (idx < 5 ? 1.5 : 1),
-          tension: 0.4,
-          fill: true,
-          pointRadius: 4,
-          pointHoverRadius: 8,
-          pointHitRadius: 15,  // Para facilitar toque en móvil
-          hidden: false
-        });
-      });
-
-      const ctx = document.getElementById('breweryChart').getContext('2d');
-      if (breweryChart) breweryChart.destroy();
-
-      breweryChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: monthNames, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          layout: {
-            padding: {
-              top: 10,
-              bottom: 10,
-              left: 10,
-              right: 10
-            }
-          },
-          plugins: {
-            tooltip: {
-              mode: 'nearest',
-              intersect: true,
-              callbacks: {
-                label: function(context) {
-                  const label = context.dataset.label;
-                  const value = context.raw;
-                  return `${label}: ${value} medalla${value !== 1 ? 's' : ''}`;
+        function loadCSV() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'BBDD_Medallero_Chile.csv', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    processCSV(xhr.responseText);
                 }
-              }
-            },
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { color: '#fff', stepSize: 1 },
-              grid: { color: 'rgba(255,255,255,0.1)' },
-              title: { display: false }
-            },
-            x: {
-              ticks: { color: '#fff', maxRotation: 45, autoSkip: true },
-              grid: { display: false },
-              title: { display: false }
+            };
+            xhr.send();
+        }
+
+        function processCSV(text) {
+            var lines = text.split('\n');
+            var headers = lines[0].split(';').map(function(h){ return h.trim().toLowerCase(); });
+            var bSet = {};
+            for (var i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                var parts = lines[i].split(';');
+                var row = {};
+                for (var j = 0; j < headers.length; j++) { row[headers[j]] = parts[j] ? parts[j].trim() : ''; }
+                if (row.cerveceria && row.cerveceria !== '-' && row.cerveceria.toUpperCase() !== 'PENDIENTE') {
+                    allData.push(row); bSet[row.cerveceria] = true;
+                }
             }
-          }
+            breweryList = Object.keys(bSet).sort();
+            setupSearch();
         }
-      });
 
-      // Leyenda interactiva
-      const legendContainer = document.getElementById('legendContainer');
-      legendContainer.innerHTML = '';
-      datasets.forEach((ds, idx) => {
-        const div = document.createElement('div');
-        div.className = 'legend-item';
-        div.innerHTML = `<div class="legend-color" style="background: ${ds.borderColor};"></div><span class="legend-label">${ds.label}</span>`;
-        div.addEventListener('click', () => {
-          const meta = breweryChart.getDatasetMeta(idx);
-          meta.hidden = !meta.hidden;
-          div.classList.toggle('hidden', meta.hidden);
-          breweryChart.update();
-        });
-        legendContainer.appendChild(div);
-      });
-    }
-
-    // ======================== LÓGICA DEL SIMULADOR ========================
-    const metricsTable = [
-      { inversion: "$150 USD", optimizacion: "$1,800 USD", roi: "30%", suggestedTier: "explorer" },
-      { inversion: "$300 USD", optimizacion: "$3,600 USD", roi: "45%", suggestedTier: "explorer" },
-      { inversion: "$600 USD", optimizacion: "$7,200 USD", roi: "55%", suggestedTier: "podium" },
-      { inversion: "$1,200 USD", optimizacion: "$14,500 USD", roi: "65%", suggestedTier: "champion" },
-      { inversion: "$2,500 USD", optimizacion: "$30,000 USD", roi: "70%", suggestedTier: "champion" }
-    ];
-
-    const sliderRail = document.getElementById('sliderRail');
-    const sliderThumb = document.getElementById('sliderThumb');
-    const sliderFill = document.getElementById('sliderFill');
-    const tierExplorer = document.getElementById('tierExplorer');
-    const tierPodium = document.getElementById('tierPodium');
-    const tierChampion = document.getElementById('tierChampion');
-    const inversionEl = document.getElementById('inversionValue');
-    const optimizacionEl = document.getElementById('optimizacionValue');
-    const roiEl = document.getElementById('roiValue');
-
-    let currentRangeIndex = 3;
-    let currentTier = "champion";
-    let allowAutoTier = true;
-    let isDragging = false;
-    let wrapperWidth = 0;
-    const stepPositions = [0, 0.25, 0.5, 0.75, 1];
-
-    function updateSliderVisual(index) {
-      const percent = stepPositions[index] * 100;
-      sliderFill.style.width = `${percent}%`;
-      const thumbLeft = (percent / 100) * wrapperWidth;
-      sliderThumb.style.left = `${thumbLeft}px`;
-    }
-
-    function animateValue(element, startVal, endVal, isCurrency = true, suffix = "") {
-      const duration = 600;
-      const startTime = performance.now();
-      const startNum = parseFloat(String(startVal).replace(/[^0-9.-]+/g, ""));
-      let endNum = parseFloat(String(endVal).replace(/[^0-9.-]+/g, ""));
-      if (isNaN(startNum) || isNaN(endNum)) {
-        element.innerText = endVal;
-        return;
-      }
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        let progress = Math.min(1, elapsed / duration);
-        const easeOut = 1 - Math.pow(1 - progress, 2);
-        let currentNum = startNum + (endNum - startNum) * easeOut;
-        let formatted;
-        if (isCurrency) {
-          formatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(currentNum);
-          formatted = formatted.replace('$', '$ ') + (suffix ? " " + suffix : "");
-        } else {
-          formatted = Math.round(currentNum) + (suffix ? suffix : "");
+        function setupSearch() {
+            var input = document.getElementById('brewerySearch');
+            var list = document.getElementById('suggestions');
+            input.oninput = function() {
+                var q = this.value.toUpperCase();
+                list.innerHTML = '';
+                if (!q) { list.style.display = 'none'; return; }
+                var matches = breweryList.filter(function(b){ return b.toUpperCase().indexOf(q) !== -1; }).slice(0, 8);
+                if (matches.length) {
+                    matches.forEach(function(m){
+                        var div = document.createElement('div');
+                        div.className = 'suggestion-item'; div.innerText = m;
+                        div.onclick = function() { input.value = m; list.style.display = 'none'; runBI(m); };
+                        list.appendChild(div);
+                    });
+                    list.style.display = 'block';
+                } else { list.style.display = 'none'; }
+            };
+            document.getElementById('sliderA').oninput = document.getElementById('sliderB').oninput = refreshSim;
         }
-        element.innerText = formatted;
-        if (progress < 1) requestAnimationFrame(update);
-        else element.innerText = endVal;
-      }
-      requestAnimationFrame(update);
-    }
 
-    function getCurrentMetrics() { return metricsTable[currentRangeIndex]; }
-    function updateMetrics() {
-      const newVals = getCurrentMetrics();
-      const oldInversion = inversionEl.innerText;
-      const oldOptim = optimizacionEl.innerText;
-      const oldRoi = roiEl.innerText;
-      animateValue(inversionEl, oldInversion, newVals.inversion, true, "USD");
-      animateValue(optimizacionEl, oldOptim, newVals.optimizacion, true, "USD");
-      animateValue(roiEl, oldRoi, newVals.roi, false, "%");
-    }
-    function updateTierButtonsActive() {
-      const btns = { explorer: tierExplorer, podium: tierPodium, champion: tierChampion };
-      Object.keys(btns).forEach(tier => {
-        if (tier === currentTier) btns[tier].classList.add('active');
-        else btns[tier].classList.remove('active');
-      });
-    }
-    function autoSelectTierFromRange() {
-      if (allowAutoTier) {
-        const suggested = metricsTable[currentRangeIndex].suggestedTier;
-        if (suggested && suggested !== currentTier) {
-          currentTier = suggested;
-          updateTierButtonsActive();
+        function runBI(name) {
+            var data = allData.filter(function(d){ return d.cerveceria === name; });
+            var score = 0;
+            var w = {"World Beer Cup":5, "Brussels Beer Challenge":5, "Copa Cervezas de América":4};
+            data.forEach(function(d){ score += (w[d.certamen] || 2); });
+            document.getElementById('scoreVal').innerText = score + " pts";
+            document.getElementById('scoreBlock').style.display = 'block';
+            document.getElementById('biView').style.display = 'grid';
+            refreshSim();
+            drawRadar(data);
         }
-      }
-    }
-    function setRangeByIndex(index, fromUser = true) {
-      if (index === currentRangeIndex && fromUser) return;
-      currentRangeIndex = index;
-      updateSliderVisual(currentRangeIndex);
-      if (fromUser) {
-        allowAutoTier = true;
-        autoSelectTierFromRange();
-      }
-      updateMetrics();
+
+        function drawRadar(data) {
+            var styles = {};
+            data.forEach(function(d){ styles[d.estilo] = (styles[d.estilo] || 0) + 1; });
+            var keys = Object.keys(styles).sort(function(a,b){ return styles[b]-styles[a]; }).slice(0, 6);
+            var ctx = document.getElementById('radarBI').getContext('2d');
+            if (radar) radar.destroy();
+            radar = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: keys,
+                    datasets: [{ label: 'Premios', data: keys.map(function(k){ return styles[k]; }), borderColor: '#f7c32f', backgroundColor: 'rgba(247, 195, 47, 0.2)' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { display: false }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#CFDEE0', font: { size: 14 } } } } }
+            });
+            var html = '<table style="width:100%; border-collapse:collapse;">';
+            keys.forEach(function(k){ html += '<tr style="border-bottom:1px solid #333;"><td style="padding:6px;">'+k+'</td><td style="text-align:right; font-weight:800; color:#f7c32f;">'+styles[k]+'</td></tr>'; });
+            document.getElementById('styleTable').innerHTML = html + '</table>';
+        }
+
+        function refreshSim() {
+            var iA = parseInt(document.getElementById('sliderA').value);
+            var iB = parseInt(document.getElementById('sliderB').value);
+            document.getElementById('valA').innerText = hlLabels[iA] + " hL";
+            document.getElementById('valB').innerText = "$ " + salesLabels[iB];
+            var inv = [150, 350, 750, 1500, 3000][iA] * (1 + iB*0.2);
+            document.getElementById('resInv').innerText = "$ " + Math.round(inv).toLocaleString() + " USD";
+            document.getElementById('resVal').innerText = "$ " + Math.round(inv*14).toLocaleString() + " USD";
+        }
+<script>
+
+// ==========================================
+// PODIUM BEER — MOTOR COMPLETO + VISTAS
+// ==========================================
+
+// -------- CONFIG --------
+
+var CERTAMEN_SCORE = {
+  "World Beer Cup": 5,
+  "Brussels Beer Challenge": 5,
+  "Copa Cervezas de América": 4
+};
+
+// -------- KPI 1 --------
+
+function pb_score(row){
+
+  var score_certamen = CERTAMEN_SCORE[row.certamen] || 2;
+  var sat = row.saturacion || 2;
+  var dif = row.dificultad || 2;
+
+  var total = score_certamen + sat + dif;
+
+  var nivel = "BAJO";
+  if(total >= 9) nivel = "ALTO";
+  else if(total >= 6) nivel = "MEDIO";
+
+  return { score_total: total, valor: nivel };
+}
+
+// -------- KPI 2 --------
+
+function pb_estilos(data, cerveza){
+
+  var estilos = {};
+  var total = data.length;
+
+  for(var i=0;i<data.length;i++){
+
+    var r = data[i];
+    var e = r.estilo;
+
+    if(!estilos[e]){
+      estilos[e]={total:0,chile:0,alta:0,media:0};
     }
 
-    function getNearestStep(clientX) {
-      const rect = sliderRail.getBoundingClientRect();
-      let ratio = (clientX - rect.left) / rect.width;
-      ratio = Math.min(Math.max(ratio, 0), 1);
-      let distances = stepPositions.map(step => Math.abs(step - ratio));
-      return distances.indexOf(Math.min(...distances));
+    estilos[e].total++;
+
+    if(r.pais==="Chile") estilos[e].chile++;
+
+    if(r.cerveceria===cerveza){
+
+      var k = pb_score(r);
+
+      if(k.valor==="ALTO") estilos[e].alta++;
+      if(k.valor==="MEDIO") estilos[e].media++;
     }
-    function onDragStart(e) {
-      isDragging = true;
-      e.preventDefault();
-      window.addEventListener('mousemove', onDragMove);
-      window.addEventListener('mouseup', onDragEnd);
-      window.addEventListener('touchmove', onDragMove);
-      window.addEventListener('touchend', onDragEnd);
-      sliderThumb.style.cursor = 'grabbing';
+  }
+
+  var out=[];
+
+  for(var e in estilos){
+
+    var s = estilos[e];
+
+    var sat = s.total/total;
+    var pts_sat = sat>0.03?0:(sat>0.01?1:2);
+
+    var prop = s.chile/s.total;
+    var pts_ch = prop<0.1?2:(prop<0.3?1:0);
+
+    var pts_hist = s.alta>0?2:(s.media>0?1:0);
+
+    var score = pts_sat+pts_ch+pts_hist;
+
+    var nivel = score>=5?"ALTO":(score>=3?"MEDIO":"POCO");
+
+    out.push({estilo:e,score:score,nivel:nivel});
+  }
+
+  return out;
+}
+
+// -------- KPI 3 --------
+
+function pb_concursos(data, cerveza){
+
+  var map={};
+
+  for(var i=0;i<data.length;i++){
+
+    var r=data[i];
+
+    if(r.cerveceria!==cerveza) continue;
+
+    if(!map[r.certamen]){
+      map[r.certamen]={years:{},score:CERTAMEN_SCORE[r.certamen]||2,alta:0,media:0};
     }
-    function onDragMove(e) {
-      if (!isDragging) return;
-      let clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-      const rect = sliderRail.getBoundingClientRect();
-      let ratio = (clientX - rect.left) / rect.width;
-      ratio = Math.min(Math.max(ratio, 0), 1);
-      sliderFill.style.width = `${ratio * 100}%`;
-      let thumbX = ratio * wrapperWidth;
-      sliderThumb.style.left = `${thumbX}px`;
+
+    map[r.certamen].years[r.anio]=true;
+
+    var k=pb_score(r);
+
+    if(k.valor==="ALTO") map[r.certamen].alta++;
+    if(k.valor==="MEDIO") map[r.certamen].media++;
+  }
+
+  var arr=[];
+
+  for(var c in map){
+
+    var m=map[c];
+
+    var part=Object.keys(m.years).length;
+
+    var e=part*m.score;
+    var r=m.alta*2+m.media;
+
+    arr.push({certamen:c,e:e,r:r});
+  }
+
+  var minE=999,maxE=0,minR=999,maxR=0;
+
+  for(var i=0;i<arr.length;i++){
+    if(arr[i].e<minE)minE=arr[i].e;
+    if(arr[i].e>maxE)maxE=arr[i].e;
+    if(arr[i].r<minR)minR=arr[i].r;
+    if(arr[i].r>maxR)maxR=arr[i].r;
+  }
+
+  for(var i=0;i<arr.length;i++){
+
+    arr[i].esfuerzo = 1+9*((arr[i].e-minE)/(maxE-minE||1));
+    arr[i].retorno = 1+9*((arr[i].r-minR)/(maxR-minR||1));
+  }
+
+  return arr;
+}
+
+// -------- MOTOR --------
+
+function pb_run(data, cerveza){
+
+  var medallas=[];
+
+  for(var i=0;i<data.length;i++){
+    if(data[i].cerveceria===cerveza){
+      var k=pb_score(data[i]);
+      medallas.push(Object.assign({},data[i],k));
     }
-    function onDragEnd(e) {
-      if (!isDragging) return;
-      isDragging = false;
-      let clientX = e.clientX ?? (e.changedTouches ? e.changedTouches[0].clientX : 0);
-      if (clientX === undefined) {
-        const rect = sliderRail.getBoundingClientRect();
-        clientX = rect.left + rect.width / 2;
-      }
-      const newIndex = getNearestStep(clientX);
-      setRangeByIndex(newIndex, true);
-      updateSliderVisual(currentRangeIndex);
-      sliderThumb.style.cursor = 'grab';
-      window.removeEventListener('mousemove', onDragMove);
-      window.removeEventListener('mouseup', onDragEnd);
-      window.removeEventListener('touchmove', onDragMove);
-      window.removeEventListener('touchend', onDragEnd);
-    }
-    function initSlider() {
-      const updateSize = () => {
-        wrapperWidth = sliderRail.clientWidth;
-        updateSliderVisual(currentRangeIndex);
-      };
-      updateSize();
-      window.addEventListener('resize', updateSize);
-      sliderThumb.addEventListener('mousedown', onDragStart);
-      sliderThumb.addEventListener('touchstart', onDragStart);
-      sliderRail.addEventListener('click', (e) => {
-        if (isDragging) return;
-        const idx = getNearestStep(e.clientX);
-        setRangeByIndex(idx, true);
+  }
+
+  return {
+    medallas:medallas,
+    estilos:pb_estilos(data, cerveza),
+    concursos:pb_concursos(data, cerveza)
+  };
+}
+
+// ==========================================
+// 📊 VISTAS (CHART.JS 2.9.4)
+// ==========================================
+
+function pb_render_all(res){
+
+  // ---------- VISTA 1 (MAPA) ----------
+  var ctx1=document.getElementById("chart1");
+  if(ctx1){
+
+    var alto=0,bajo=0;
+
+    var data1=[];
+
+    for(var i=0;i<res.medallas.length;i++){
+
+      var m=res.medallas[i];
+
+      if(m.valor==="ALTO") alto++;
+      if(m.valor==="BAJO") bajo++;
+
+      data1.push({
+        x:i,
+        y:(m.valor==="ALTO"?3:(m.valor==="MEDIO"?2:1))
       });
     }
-    function bindTierEvents() {
-      tierExplorer.addEventListener('click', () => {
-        allowAutoTier = false;
-        if (currentTier !== 'explorer') { currentTier = 'explorer'; updateTierButtonsActive(); }
-      });
-      tierPodium.addEventListener('click', () => {
-        allowAutoTier = false;
-        if (currentTier !== 'podium') { currentTier = 'podium'; updateTierButtonsActive(); }
-      });
-      tierChampion.addEventListener('click', () => {
-        allowAutoTier = false;
-        if (currentTier !== 'champion') { currentTier = 'champion'; updateTierButtonsActive(); }
-      });
-    }
-    const ctaBtn = document.getElementById('ctaBtn');
-    ctaBtn.addEventListener('click', () => {
-      if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
-      alert("📞 Diagnóstico estratégico – Un asesor te contactará para potenciar tu negocio.");
+
+    new Chart(ctx1,{
+      type:"scatter",
+      data:{datasets:[{data:data1}]},
+      options:{legend:{display:false}}
     });
 
-    async function init() {
-      const data = await cargarCSV();
-      if (data.length) {
-        allData = data;
-        renderBreweryChart(data);
-      }
-      initSlider();
-      bindTierEvents();
-      currentRangeIndex = 3;
-      currentTier = "champion";
-      allowAutoTier = true;
-      updateSliderVisual(3);
-      updateTierButtonsActive();
-      updateMetrics();
+    var txt=document.getElementById("fallback1");
+    if(txt){
+      txt.innerHTML="Total: "+res.medallas.length+" | Alto: "+alto+" | Bajo: "+bajo;
     }
-    init();
-  </script>
+  }
+
+  // ---------- VISTA 2 (RADAR) ----------
+  var ctx2=document.getElementById("chart2");
+  if(ctx2){
+
+    var labels=[];
+    var data2=[];
+
+    for(var i=0;i<res.estilos.length;i++){
+      labels.push(res.estilos[i].estilo);
+      data2.push(res.estilos[i].score);
+    }
+
+    new Chart(ctx2,{
+      type:"radar",
+      data:{labels:labels,datasets:[{data:data2}]}
+    });
+  }
+
+  // ---------- VISTA 3 (ESFUERZO) ----------
+  var ctx3=document.getElementById("chart3");
+  if(ctx3){
+
+    var data3=[];
+
+    for(var i=0;i<res.concursos.length;i++){
+
+      data3.push({
+        x:res.concursos[i].esfuerzo,
+        y:res.concursos[i].retorno
+      });
+    }
+
+    new Chart(ctx3,{
+      type:"scatter",
+      data:{datasets:[{data:data3}]}
+    });
+  }
+}
+
+// ==========================================
+// 🚀 AUTO EJECUCIÓN SEGURA
+// ==========================================
+
+window.onload=function(){
+
+  if(typeof data==="undefined") return;
+  if(typeof nombreSeleccionado==="undefined") return;
+
+  var res=pb_run(data, nombreSeleccionado);
+
+  pb_render_all(res);
+};
+
+</script>
+        window.onload = loadCSV;
+    </script>
 </body>
 </html>
