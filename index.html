@@ -5,78 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Simulador | Podium Beer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
-  <!-- Chart.js 2.9.4: Estándar de oro para compatibilidad con iPad antiguo (iOS 12) -->
+  <!-- Chart.js 2.9.4: Única compatible 100% con motores antiguos como iOS 12 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/2.9.4/Chart.bundle.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', sans-serif; background: #06232E; color: #FFFFFF; overflow-x: hidden; min-height: 100vh; }
     
     .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: #000; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
-    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 100px rgba(0,0,0,0.7); z-index: -1; pointer-events: none; }
+    .hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 120px rgba(0,0,0,0.8); z-index: -1; pointer-events: none; }
 
-    .container { width: 92%; max-width: 1000px; margin: 1.5rem auto; position: relative; z-index: 10; padding-bottom: 2rem; }
+    .container { width: 92%; max-width: 1000px; margin: 1.5rem auto; position: relative; z-index: 10; padding-bottom: 3rem; }
     
-    .header { text-align: center; margin-bottom: 2rem; }
-    .logo { width: 180px; margin-bottom: 15px; }
-    .logo-bajada { font-size: 14px; font-weight: 500; margin-bottom: 20px; color: #eee; }
-    .h1-sim { font-size: 30px; font-weight: 800; color: #f7c32f; text-transform: uppercase; margin-bottom: 5px; }
-    .h2-sim { font-size: 18px; color: #CFDEE0; font-weight: 500; }
-    .bajada-box { background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 20px; font-size: 15px; border: 1px solid rgba(255,255,255,0.1); margin-top: 15px; line-height: 1.4; }
+    .header { text-align: center; margin-bottom: 2.5rem; }
+    .logo { width: 190px; margin-bottom: 12px; }
+    .logo-bajada { font-size: 14px; font-weight: 500; margin-bottom: 25px; color: #fff; line-height: 1.4; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .h1-sim { font-size: 32px; font-weight: 800; color: #f7c32f; text-transform: uppercase; letter-spacing: -0.5px; }
+    .h2-sim { font-size: 20px; color: #CFDEE0; font-weight: 500; margin-top: 5px; }
+    .bajada-box { background: rgba(0,0,0,0.65); padding: 1.5rem; border-radius: 20px; font-size: 15px; border: 1px solid rgba(255,255,255,0.15); margin-top: 20px; line-height: 1.5; }
 
-    .card { background: rgba(6,35,46,0.85); border-radius: 25px; border: 1px solid rgba(255,255,255,0.25); padding: 1.8rem; margin-top: 1.8rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .sec-t { color: #f7c32f; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 8px; text-transform: uppercase; }
-    .sec-s { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+    .card { background: rgba(6,35,46,0.9); border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); padding: 2rem; margin-top: 2rem; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+    .sec-t { color: #f7c32f; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 10px; text-transform: uppercase; }
+    .sec-s { font-size: 22px; font-weight: 700; margin-bottom: 15px; color: #fff; }
 
     /* Buscador */
-    .search-input { width: 100%; background: #000; border: 2px solid #555; border-radius: 40px; padding: 14px 22px; color: #fff; font-size: 17px; margin-bottom: 12px; outline: none; }
-    .search-btn { width: 100%; background: #f7c32f; color: #000; font-weight: 800; border: none; border-radius: 40px; padding: 14px; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+    .search-flex { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    @media (min-width: 600px) { .search-flex { flex-direction: row; } }
+    .search-input { flex: 1; background: #000; border: 2px solid #555; border-radius: 40px; padding: 15px 25px; color: #fff; font-size: 17px; outline: none; }
+    .search-btn { background: #f7c32f; color: #000; font-weight: 800; border: none; border-radius: 40px; padding: 15px 30px; cursor: pointer; text-transform: uppercase; font-size: 14px; }
 
-    /* Gráficos Responsivos */
+    /* Los 3 Gráficos */
     .row { display: flex; flex-direction: column; gap: 20px; }
-    @media (min-width: 850px) { .row { flex-direction: row; } .col { flex: 1; } }
-    .col { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 1.2rem; display: flex; flex-direction: column; align-items: center; }
+    @media (min-width: 850px) { .row { flex-direction: row; } .col { flex: 1; min-width: 0; } }
+    .col { background: rgba(0,0,0,0.35); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; }
     .c-label { font-size: 12px; font-weight: 800; color: #f7c32f; margin-bottom: 15px; text-transform: uppercase; width: 100%; text-align: center; }
-    .c-wrap { width: 100%; height: 260px; position: relative; }
+    .c-wrap { width: 100%; height: 280px; position: relative; }
 
     /* Termómetro */
-    .therm-track { width: 45px; height: 180px; background: #000; border-radius: 25px; border: 2px solid #555; position: relative; margin: 0 auto; overflow: hidden; }
-    .therm-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, #E40F63, #f7c32f); transition: height 0.7s; }
-    .therm-pot { position: absolute; bottom: 0; width: 100%; background: rgba(247, 195, 47, 0.2); border-top: 3px dashed #f7c32f; z-index: 2; transition: height 0.7s; }
+    .therm-wrapper { width: 50px; height: 180px; background: #111; border-radius: 25px; border: 2px solid #444; position: relative; overflow: hidden; }
+    .therm-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, #E40F63, #f7c32f); transition: height 0.8s ease-in-out; }
+    .therm-pot { position: absolute; bottom: 0; width: 100%; background: rgba(247, 195, 47, 0.2); border-top: 3px dashed #f7c32f; z-index: 2; transition: height 0.8s; }
 
-    /* Slider Producción */
-    .rail { width: 100%; height: 8px; background: #1E3A4A; border-radius: 4px; position: relative; margin: 2rem 0; cursor: pointer; }
-    .fill { position: absolute; height: 100%; background: #fff; border-radius: 4px; }
-    .thumb { position: absolute; width: 32px; height: 32px; background: #fff; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); border: 3px solid #06232E; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    /* Slider Escala */
+    .rail { width: 100%; height: 10px; background: #1E3A4A; border-radius: 5px; position: relative; margin: 2.5rem 0; cursor: pointer; }
+    .fill { position: absolute; height: 100%; background: #fff; border-radius: 5px; }
+    .thumb { position: absolute; width: 34px; height: 34px; background: #fff; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); border: 4px solid #06232E; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
     .labs { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #CFDEE0; }
 
     /* Planes */
-    .p-grid { display: flex; gap: 10px; margin: 15px 0; overflow-x: auto; padding-bottom: 5px; }
-    .p-btn { flex: 1; min-width: 140px; background: #000; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1.2rem; cursor: pointer; color: #fff; text-align: center; }
+    .p-grid { display: flex; gap: 10px; margin: 20px 0; overflow-x: auto; padding-bottom: 10px; }
+    .p-btn { flex: 1; min-width: 140px; background: #000; border: 2px solid rgba(255,255,255,0.15); border-radius: 15px; padding: 1.5rem 0.5rem; cursor: pointer; color: #fff; text-align: center; transition: 0.3s; }
     .p-btn.active { border-color: #f7c32f; background: rgba(247, 195, 47, 0.1); }
-    .p-val { color: #f7c32f; font-weight: 800; font-size: 1.3rem; margin-top: 5px; }
+    .p-val { color: #f7c32f; font-weight: 900; font-size: 22px; margin-top: 8px; }
 
-    /* Resultados */
-    .m-row { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-    .res-val { font-size: 24px; font-weight: 800; min-width: 130px; text-align: right; }
+    /* BLOQUE DE RESULTADOS */
+    .m-item { display: flex; align-items: center; gap: 1.2rem; margin-top: 1.8rem; }
+    .m-icon { width: 50px; height: auto; display: block; }
+    .m-txt { flex: 1; }
+    .m-name { font-weight: 800; font-size: 17px; margin-bottom: 4px; }
+    .m-baj { font-size: 13px; color: #CFDEE0; line-height: 1.3; }
+    .m-res { font-size: 26px; font-weight: 900; min-width: 140px; text-align: right; color: #f7c32f; }
 
-    .credits { text-align: center; font-size: 14px; color: #f7c32f; font-weight: 700; margin: 2rem 0; }
+    .btn-cta { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 40px; padding: 1.3rem 3rem; color: #fff; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 2rem; box-shadow: 0 8px 20px rgba(228, 15, 99, 0.4); text-transform: uppercase; }
+    .credits { text-align: center; font-size: 14px; color: #f7c32f; font-weight: 700; margin-top: 3rem; }
     
-    /* Overlay */
     .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; }
-    .modal { background: #06232E; border: 2px solid #f7c32f; border-radius: 30px; padding: 2.5rem; width: 85%; max-width: 450px; text-align: center; }
+    .modal { background: #06232E; border: 2px solid #f7c32f; border-radius: 35px; padding: 2.5rem; width: 90%; max-width: 450px; text-align: center; }
   </style>
 </head>
 <body>
-  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Fondo" onerror="this.src='https://picsum.photos/seed/brewery/1024/768'"></div>
+  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Fondo Brewery" onerror="this.src='https://picsum.photos/seed/brewery/1200/800'"></div>
   <div class="vignette"></div>
 
   <div class="container">
     <header class="header">
       <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo" onerror="this.style.display='none'">
-      <div class="logo-bajada">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca</div>
-      <div class="h1-sim">Simulador de Alianza</div>
-      <div class="h2-sim">¿Cuál es tu producción anual?</div>
+      <p class="logo-bajada">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca</p>
+      <h1 class="h1-sim">Simulador de Alianza</h1>
+      <h2 class="h2-sim">¿Cuál es tu producción anual?</h2>
       <div class="bajada-box">Proyecta cómo convertir tus medallas en resultados comerciales discretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </header>
 
@@ -84,31 +90,33 @@
     <div class="card">
       <div class="sec-t">CONSULTA PERSONALIZADA</div>
       <div class="sec-s">Analiza tu Medallero Real</div>
-      <input type="text" id="ipt" class="search-input" placeholder="Nombre de tu cervecería...">
-      <button id="sBtn" class="search-btn">Actualizar Proyección de Resultados</button>
-      <div id="stat" style="text-align:center; color:#f7c32f; font-size:12px; margin-top:10px; font-weight:700;"></div>
+      <div class="search-flex">
+        <input type="text" id="ipt" class="search-input" placeholder="Nombre de tu cervecería...">
+        <button id="sBtn" class="search-btn">Actualizar Simulador</button>
+      </div>
+      <div id="stat" style="text-align:center; color:#f7c32f; font-size:13px; margin-top:12px; font-weight:700;"></div>
     </div>
 
-    <!-- PROYECCIÓN DE RESULTADOS (3 GRÁFICOS) -->
+    <!-- PROYECCIÓN (3 GRÁFICOS) -->
     <div class="card">
       <div class="sec-t">PROYECCIÓN DE RESULTADOS</div>
       <div class="row">
         <div class="col">
-          <div class="c-label">Ranking de Impacto</div>
-          <div class="c-wrap"><canvas id="rGraf"></canvas></div>
-          <div id="rPos" style="color:#f7c32f; font-size:11px; margin-top:10px; cursor:pointer; display:none; text-decoration:underline;">Ver posición completa</div>
+          <div class="c-label">Ranking de Impacto (2025)</div>
+          <div class="c-wrap"><canvas id="rG"></canvas></div>
+          <p id="rPTip" style="color:#f7c32f; font-size:11px; margin-top:10px; cursor:pointer; display:none; text-decoration:underline;">Ver medallero completo</p>
         </div>
         <div class="col">
-          <div class="c-label">Termómetro Potencial</div>
-          <div class="therm-track">
-            <div id="tp" class="therm-pot" style="height:78%"></div>
-            <div id="tf" class="therm-fill" style="height:35%"></div>
+          <div class="c-label">Termómetro de Potencial</div>
+          <div class="therm-wrapper">
+            <div id="tP" class="therm-pot" style="height:78%"></div>
+            <div id="tF" class="therm-fill" style="height:35%"></div>
           </div>
-          <div style="text-align:center; margin-top:15px; font-size:13px;">Actual: <span id="v1">35%</span> → <strong style="color:#f7c32f;" id="v2">78%</strong></div>
+          <p style="text-align:center; margin-top:20px; font-size:14px;">Actual: <span id="vAct">35%</span> → <strong style="color:#f7c32f;" id="vPot">78%</strong></p>
         </div>
         <div class="col">
-          <div class="c-label">Momentum de Medallas</div>
-          <div class="c-wrap"><canvas id="tGraf"></canvas></div>
+          <div class="c-label">Timeline de Momentum</div>
+          <div class="c-wrap"><canvas id="tG"></canvas></div>
         </div>
       </div>
     </div>
@@ -116,179 +124,223 @@
     <!-- OPERACIÓN -->
     <div class="card">
       <div class="sec-t">OPERACIÓN</div>
-      <div class="sec-s">Tramo de Producción Anual</div>
+      <div class="sec-s">Escala de Producción</div>
       <div class="rail" id="rl"><div class="fill" id="fl"></div><div class="thumb" id="th"></div></div>
       <div class="labs"><span>&lt;500 hl</span><span>1000 hl</span><span>5000 hl</span><span>10000 hl</span><span>&gt;20000 hl</span></div>
     </div>
 
     <!-- PLANES -->
     <div class="card">
-      <div class="sec-t">SELECTOR DE ALIANZA</div>
+      <div class="sec-t">SELECTOR DE PLANES</div>
       <div class="p-grid">
-        <div class="p-btn" id="p-exp" onclick="setPl('explorer')"><div style="font-weight:700;">Explorer</div><div class="p-val" id="l-exp">$0</div></div>
-        <div class="p-btn active" id="p-pod" onclick="setPl('podium')"><div style="font-weight:700;">Podium</div><div class="p-val" id="l-pod">$0</div></div>
-        <div class="p-btn" id="p-cha" onclick="setPl('champion')"><div style="font-weight:700;">Champion</div><div class="p-val" id="l-cha">$0</div></div>
+        <div class="p-btn" id="p-exp" onclick="setPlan('explorer')"><div style="font-weight:800;">Explorer</div><div class="p-val" id="l-exp">$0</div></div>
+        <div class="p-btn active" id="p-pod" onclick="setPlan('podium')"><div style="font-weight:800;">Podium</div><div class="p-val" id="l-pod">$0</div></div>
+        <div class="p-btn" id="p-cha" onclick="setPlan('champion')"><div style="font-weight:800;">Champion</div><div class="p-val" id="l-cha">$0</div></div>
       </div>
-      <div style="text-align:center; font-size:24px; font-weight:900; color:#f7c32f; margin-top:20px; border-top:1px solid #333; padding-top:1rem;" id="vFinal">INVERSIÓN: $0 CLP / MES</div>
+      <h2 style="text-align:center; font-size:26px; font-weight:900; color:#f7c32f; margin-top:20px; border-top:1px solid #333; padding-top:1rem;" id="vFinal">INVERSIÓN: $0 CLP / MES</h2>
     </div>
 
     <!-- BLOQUE DE RESULTADOS -->
     <div class="card">
       <div class="sec-t">BLOQUE DE RESULTADOS</div>
       <div class="sec-s">Impacto en tu negocio</div>
-      <div class="m-row"><img src="assets/icono_inversion.png" style="width:45px;" onerror="this.src='https://heroicons.com/optimized/24/outline/presentation-chart-line.svg'"><div style="flex:1;"><strong>Inversión Inteligente</strong></div><div id="mi" class="res-val">$0</div></div>
-      <div class="m-row"><img src="assets/icono_valor.png" style="width:45px;" onerror="this.src='https://heroicons.com/optimized/24/outline/currency-dollar.svg'"><div style="flex:1;"><strong>Valor Recuperado</strong></div><div id="mv" class="res-val">$0</div></div>
-      <div class="m-row"><img src="assets/icono_impacto.png" style="width:45px;" onerror="this.src='https://heroicons.com/optimized/24/outline/arrow-trending-up.svg'"><div style="flex:1;"><strong>Impacto %</strong></div><div id="ma" class="res-val">65%</div></div>
+      <div class="m-item">
+        <img src="assets/icono_inversion.png" class="m-icon" onerror="this.src='https://api.iconify.design/heroicons/presentation-chart-line-20-solid.svg?color=%23f7c32f'">
+        <div class="m-txt"><strong>Inversión Inteligente</strong><p class="m-baj">Una inversión diseñada para generar retorno comercial.</p></div>
+        <div id="mi" class="m-res">$0</div>
+      </div>
+      <div class="m-item">
+        <img src="assets/icono_valor.png" class="m-icon" onerror="this.src='https://api.iconify.design/heroicons/currency-dollar-20-solid.svg?color=%23f7c32f'">
+        <div class="m-txt"><strong>Valor Recuperado</strong><p class="m-baj">Data técnica convertida en decisiones estratégicas rentables.</p></div>
+        <div id="mv" class="m-res">$0</div>
+      </div>
+      <div class="m-item">
+        <img src="assets/icono_impacto.png" class="m-icon" onerror="this.src='https://api.iconify.design/heroicons/arrow-trending-up-20-solid.svg?color=%23f7c32f'">
+        <div class="m-txt"><strong>Impacto en Rentabilidad</strong><p class="m-baj">El retorno proyectado al transformar tus medallas.</p></div>
+        <div id="ma" class="m-res">0%</div>
+      </div>
     </div>
 
-    <div style="text-align:center; margin-top:1rem;"><button style="background:linear-gradient(90deg,#E40F63,#C32263); border:none; border-radius:40px; padding:1.2rem 2.8rem; color:#fff; font-weight:800; font-size:16px; cursor:pointer;" onclick="alert('Diagnóstico solicitado.')">Agenda tu Diagnóstico Estratégico</button></div>
+    <div style="text-align:center;"><button class="btn-cta" onclick="alert('Un consultor de Podium Beer te contactará para agendar tu diagnóstico.')">Agenda tu Diagnóstico Estratégico</button></div>
     <div class="credits">Desarrollado por Catas Colaborativas | Desde 2015</div>
   </div>
 
-  <div id="ov" class="overlay" onclick="this.style.display='none'">
+  <div id="over" class="overlay" onclick="this.style.display='none'">
     <div class="modal">
-      <div style="float:right; font-size:30px; cursor:pointer;" onclick="document.getElementById('ov').style.display='none'">×</div>
-      <h2 id="mn" style="color:#f7c32f; margin-bottom:20px;">MARCA</h2>
+      <h2 id="modalBrand" style="color:#f7c32f; margin-bottom:20px;">MARCA</h2>
       <div style="display:flex; justify-content:space-around;">
-        <div><div id="mo" style="font-size:32px; font-weight:800; color:#f7c32f;">0</div><div>ORO</div></div>
-        <div><div id="mp" style="font-size:32px; font-weight:800; color:#ddd;">0</div><div>PLATA</div></div>
-        <div><div id="mb" style="font-size:32px; font-weight:800; color:#cd7f32;">0</div><div>BRONCE</div></div>
+        <div><div id="mGold" style="font-size:36px; font-weight:900; color:#f7c32f;">0</div><div style="font-size:12px;">ORO</div></div>
+        <div><div id="mSilver" style="font-size:36px; font-weight:900; color:#eee;">0</div><div style="font-size:12px;">PLATA</div></div>
+        <div><div id="mBronze" style="font-size:36px; font-weight:900; color:#cd7f32;">0</div><div style="font-size:12px;">BRONCE</div></div>
       </div>
     </div>
   </div>
 
   <script>
+    // Vanila JS Protegido para Motores Viejos (Safari iOS 12)
     var db = [];
-    var rCh, tCh;
-    var bSel = "";
-    var tramo = 3;
-    var plan = "podium";
-    var pricing = { explorer: 10000, podium: 25000, champion: 45000 };
-    var mTable = [{i:200,v:2500,a:35},{i:400,v:5000,a:45},{i:800,v:10000,a:55},{i:1500,v:18000,a:65},{i:3000,v:35000,a:75}];
+    var rGraf, tGraf;
+    var currentB = "";
+    var currentT = 3;
+    var currentPlan = "podium";
+    var pPrices = { explorer: 10000, podium: 25000, champion: 45000 };
+    var mMetrics = [
+      { i: 200, v: 2800, a: 35 },
+      { i: 450, v: 5500, a: 45 },
+      { i: 950, v: 11000, a: 55 },
+      { i: 1900, v: 24000, a: 65 },
+      { i: 3800, v: 48000, a: 75 }
+    ];
 
-    function load() {
-      var req = new XMLHttpRequest();
-      req.open("GET", "BBDD_Medallero_Chile.csv", true);
-      req.onreadystatechange = function() {
-        if(req.readyState === 4 && req.status === 200) {
-          var lines = req.responseText.split('\n');
-          var head = lines[0].split(';');
-          for(var i=1; i<lines.length; i++) {
-            if(!lines[i].trim()) continue;
-            var vals = lines[i].split(';');
-            var d = {};
-            for(var j=0; j<head.length; j++) d[head[j].trim()] = (vals[j] || "").trim();
-            db.push(d);
+    function loadCSV() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "BBDD_Medallero_Chile.csv", true);
+      xhr.onreadystatechange = function() {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+          var rows = xhr.responseText.split('\n');
+          var head = rows[0].split(';');
+          for(var i=1; i<rows.length; i++) {
+            if(!rows[i].trim()) continue;
+            var vals = rows[i].split(';');
+            var row = {};
+            for(var j=0; j<head.length; j++) row[head[j].trim()] = (vals[j] || "").trim();
+            db.push(row);
           }
-          bootUI();
+          initApp();
         }
       };
-      req.send();
-    }
-
-    function bootUI() {
-      var ctxR = document.getElementById('rGraf').getContext('2d');
-      rCh = new Chart(ctxR, {
-        type: 'horizontalBar',
-        data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-        options: {
-          legend: { display: false },
-          scales: { xAxes: [{ display:false }], yAxes: [{ ticks: { fontColor:'#fff', fontSize:11, fontStyle:'bold' } }] },
-          onClick: function(e, x) { if(x.length > 0) pop(rCh.data.labels[x[0]._index]); }
-        }
-      });
-      var ctxT = document.getElementById('tGraf').getContext('2d');
-      tCh = new Chart(ctxT, {
-        type: 'line',
-        data: { labels: ['MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'], datasets: [
-          { data: [5,10,18,30,45,60,78,95,110,125], borderColor: 'rgba(255,255,255,0.1)', fill: false, pointRadius: 0 },
-          { data: [], borderColor: '#f7c32f', backgroundColor: 'rgba(247,195,47,0.2)', fill: true }
-        ]},
-        options: { legend:{display:false}, scales:{yAxes:[{ticks:{display:false}}], xAxes:[{ticks:{fontColor:'#fff'}}]} }
-      });
-      go();
-      initS();
+      xhr.send();
     }
 
     function crunch() {
-      var m = {};
+      var map = {};
       for(var i=0; i<db.length; i++) {
         var d = db[i];
         if(d.anio !== "2025") continue;
         var n = d.cerveceria;
         if(!n || n === " - ") continue;
-        if(!m[n]) m[n] = { n:n, g:0, s:0, b:0, impact:0, monthly: [0,0,0,0,0,0,0,0,0,0] };
-        var med = (d.medalla_base || "").toLowerCase();
-        if(med.indexOf("oro") > -1) { m[n].g++; m[n].impact += 30; }
-        else if(med.indexOf("plata") > -1) { m[n].s++; m[n].impact += 20; }
-        else if(med.indexOf("bronce") > -1) { m[n].b++; m[n].impact += 10; }
+        if(!map[n]) map[n] = { n: n, oro: 0, plata: 0, bronce: 0, impact: 0, time: [0,0,0,0,0,0,0,0,0,0,0,0] };
+        var m = (d.medalla_base || "").toLowerCase();
+        if(m.indexOf("oro") > -1) { map[n].oro++; map[n].impact += 30; }
+        else if(m.indexOf("plata") > -1) { map[n].plata++; map[n].impact += 20; }
+        else if(m.indexOf("bronce") > -1) { map[n].bronce++; map[n].impact += 10; }
         if(d.fecha && d.fecha.indexOf("-") > -1) {
-          var ms = parseInt(d.fecha.split("-")[1]);
-          if(ms >= 3) m[n].monthly[ms-3]++;
+          var mes = parseInt(d.fecha.split("-")[1]);
+          if(!isNaN(mes)) map[n].time[mes-1]++;
         }
       }
-      return m;
+      return map;
     }
 
-    function go() {
-      var data = crunch();
-      var arr = []; for(var k in data) arr.push(data[k]);
+    function initApp() {
+      var ctxR = document.getElementById('rG').getContext('2d');
+      rGraf = new Chart(ctxR, {
+        type: 'horizontalBar',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
+        options: {
+          legend: { display: false },
+          scales: { xAxes: [{ display: false }], yAxes: [{ ticks: { fontColor: '#fff', fontSize: 11, fontStyle: 'bold' } }] },
+          onClick: function(e, x) { if(x.length > 0) pop(rGraf.data.labels[x[0]._index]); }
+        }
+      });
+      var ctxT = document.getElementById('tG').getContext('2d');
+      tGraf = new Chart(ctxT, {
+        type: 'line',
+        data: { labels: ['MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'], datasets: [
+          { data: [5,12,22,35,48,60,75,90,105,120], borderColor: 'rgba(255,255,255,0.1)', fill: false, pointRadius: 0 },
+          { data: [], borderColor: '#f7c32f', backgroundColor: 'rgba(247, 195, 47, 0.2)', fill: true }
+        ]},
+        options: { legend: { display: false }, scales: { yAxes: [{ ticks: { display: false } }], xAxes: [{ ticks: { fontColor: '#fff' } }] } }
+      });
+      sync();
+      setupSlider();
+    }
+
+    function sync() {
+      var stats = crunch();
+      var arr = []; for(var k in stats) arr.push(stats[k]);
       arr.sort(function(a,b){ return b.impact - a.impact; });
+
       var top = arr.slice(0, 10);
       var lbs = [], vls = [], cls = [];
-      var fnd = null;
-      if(bSel) {
-        for(var i=0; i<arr.length; i++) { if(arr[i].n.toLowerCase().indexOf(bSel.toLowerCase()) > -1) { fnd = arr[i]; bSel = fnd.n; break; } }
+      var target = null;
+
+      if(currentB) {
+        for(var i=0; i<arr.length; i++) {
+          if(arr[i].n.toLowerCase().indexOf(currentB.toLowerCase()) > -1) {
+            target = arr[i]; currentB = target.n; break;
+          }
+        }
       }
-      for(var j=0; j<top.length; j++) { lbs.push(top[j].n); vls.push(top[j].impact); cls.push(top[j].n === bSel ? '#f7c32f' : 'rgba(30,58,74,0.8)'); }
-      if(fnd && lbs.indexOf(fnd.n) === -1) { lbs[9] = fnd.n; vls[9] = fnd.impact; cls[9] = '#f7c32f'; document.getElementById('rPos').style.display='block'; }
-      else { document.getElementById('rPos').style.display='none'; }
-      rCh.data.labels = lbs; rCh.data.datasets[0].data = vls; rCh.data.datasets[0].backgroundColor = cls; rCh.update();
-      var flw = [0,0,0,0,0,0,0,0,0,0];
-      if(fnd) { var acc = 0; for(var z=0; z<10; z++){ acc += fnd.monthly[z]; flw[z] = acc; } }
-      tCh.data.datasets[1].data = flw; tCh.update();
-      var s = fnd ? Math.min(fnd.impact, 45) : 35;
-      var e = fnd ? Math.min(fnd.impact * 2.5, 95) : 78;
-      document.getElementById('tf').style.height = s + "%"; document.getElementById('tp').style.height = e + "%";
-      document.getElementById('v1').innerText = Math.round(s) + "%"; document.getElementById('v2').innerText = Math.round(e) + "%";
+
+      for(var j=0; j<top.length; j++) {
+        lbs.push(top[j].n); vls.push(top[j].impact);
+        cls.push(top[j].n === currentB ? '#f7c32f' : 'rgba(30,58,74,0.8)');
+      }
+
+      if(target && lbs.indexOf(target.n) === -1) {
+        lbs[9] = target.n; vls[9] = target.impact; cls[9] = '#f7c32f';
+        document.getElementById('rPTip').style.display='block';
+        document.getElementById('rPTip').innerText = 'Posición real: #' + (arr.indexOf(target)+1) + '. Toca para medallero.';
+      } else { document.getElementById('rPTip').style.display='none'; }
+
+      rGraf.data.labels = lbs; rGraf.data.datasets[0].data = vls; rGraf.data.datasets[0].backgroundColor = cls; rGraf.update();
+
+      // Timeline
+      var flow = [0,0,0,0,0,0,0,0,0,0];
+      if(target) { var acc = 0; for(var z=2; z<12; z++){ acc += target.time[z]; flow[z-2] = acc; } }
+      tGraf.data.datasets[1].data = flow; tGraf.update();
+
+      // Gauges
+      var s = target ? Math.min(target.impact, 45) : 35;
+      var e = target ? Math.min(target.impact * 2.5, 95) : 78;
+      document.getElementById('tF').style.height = s + "%"; document.getElementById('tP').style.height = e + "%";
+      document.getElementById('vAct').innerText = Math.round(s) + "%"; document.getElementById('vPot').innerText = Math.round(e) + "%";
     }
 
-    function setPl(p) { plan = p; var bs = ['exp','pod','cha']; for(var i=0; i<3; i++) document.getElementById('p-'+bs[i]).className = 'p-btn'+(bs[i]===p.slice(0,3)?' active':''); syncP(); }
-    function syncP() {
-      var m = [1, 1.5, 2, 3, 5][tramo];
+    function setPlan(p) {
+      currentPlan = p;
+      var ids = ['exp','pod','cha'];
+      for(var i=0; i<3; i++) document.getElementById('p-'+ids[i]).className = 'p-btn' + (ids[i]===p.slice(0,3)?' active':'');
+      updatePrice();
+    }
+
+    function updatePrice() {
+      var multis = [1, 1.5, 2, 3, 5];
+      var m = multis[currentT];
       document.getElementById('l-exp').innerText = "$" + (10000*m).toLocaleString();
       document.getElementById('l-pod').innerText = "$" + (25000*m).toLocaleString();
       document.getElementById('l-cha').innerText = "$" + (45000*m).toLocaleString();
-      var tot = pricing[plan] * m;
-      document.getElementById('vFinal').innerText = "INVERSIÓN: $" + tot.toLocaleString() + " CLP / MES";
-      var res = mTable[tramo];
-      document.getElementById('mi').innerText = "$" + (res.i*m).toLocaleString() + " USD";
-      document.getElementById('mv').innerText = "$" + (res.v*m).toLocaleString() + " USD";
+      var total = pPrices[currentPlan] * m;
+      document.getElementById('vFinal').innerText = "INVERSIÓN: $" + total.toLocaleString() + " CLP / MES";
+      var res = mMetrics[currentT];
+      document.getElementById('mi').innerText = "$" + (res.i*m).toLocaleString() + " CLP";
+      document.getElementById('mv').innerText = "$" + (res.v*m).toLocaleString() + " CLP";
       document.getElementById('ma').innerText = res.a + "%";
     }
 
-    function initS() {
-      var r = document.getElementById('rl'), t = document.getElementById('th'), f = document.getElementById('fl');
-      function updateS(idx) { tramo = idx; f.style.width=(idx/4)*100+"%"; t.style.left=(idx/4)*100+"%"; syncP(); }
-      var call = function(e) { var rect = r.getBoundingClientRect(); var x = (e.touches?e.touches[0].clientX:e.clientX); var p = (x-rect.left)/rect.width; p=Math.max(0,Math.min(1,p)); updateS(Math.round(p*4)); };
-      r.onmousedown = function(e){ call(e); window.onmousemove=call; window.onmouseup=function(){window.onmousemove=null;}; };
-      r.ontouchstart = call; updateS(3);
+    function setupSlider() {
+      var rl = document.getElementById('rl'), th = document.getElementById('th'), fl = document.getElementById('fl');
+      function syncS(idx) { currentT = idx; fl.style.width=(idx/4)*100+"%"; th.style.left=(idx/4)*100+"%"; updatePrice(); }
+      var proc = function(e) { var rect = rl.getBoundingClientRect(); var clientX = (e.touches?e.touches[0].clientX:e.clientX); var p = (clientX-rect.left)/rect.width; p=Math.max(0,Math.min(1,p)); syncS(Math.round(p*4)); };
+      rl.onmousedown = function(e){ proc(e); window.onmousemove=proc; window.onmouseup=function(){window.onmousemove=null;}; };
+      rl.ontouchstart = proc; syncS(3);
     }
 
     function pop(name) {
-      var map = crunch(); var b = map[name] || {n:name,g:0,s:0,b:0};
-      document.getElementById('mn').innerText = b.n.toUpperCase();
-      document.getElementById('mo').innerText = b.g; document.getElementById('mp').innerText = b.s; document.getElementById('mb').innerText = b.b;
-      document.getElementById('ov').style.display = 'flex';
+      var map = crunch(); var b = map[name] || {n:name,oro:0,plata:0,bronce:0};
+      document.getElementById('modalBrand').innerText = b.n.toUpperCase();
+      document.getElementById('mGold').innerText = b.oro; document.getElementById('mSilver').innerText = b.plata; document.getElementById('mBronze').innerText = b.bronce;
+      document.getElementById('over').style.display = 'flex';
     }
 
     document.getElementById('sBtn').onclick = function() {
       var v = document.getElementById('ipt').value.trim();
-      if(v) { bSel = v; document.getElementById('stat').innerText = "Cervecería vinculada: " + v; go(); }
+      if(v) { currentB = v; document.getElementById('stat').innerText = "Cervecería vinculada: " + v; sync(); }
     };
-    document.getElementById('rPos').onclick = function() { pop(bSel); };
+    document.getElementById('rPTip').onclick = function() { pop(currentB); };
 
-    load();
+    loadCSV();
   </script>
 </body>
 </html>
