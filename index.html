@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Simulador de Alianza | Podium Beer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/2.9.4/Chart.bundle.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Inter', sans-serif; background: #06232E; min-height: 100vh; display: -webkit-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-align: center; -ms-flex-align: center; -webkit-align-items: center; align-items: center; justify-content: center; }
+    
+    .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: #000; }
+    .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+    .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
+    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
+    
+    .app-container { width: 90%; max-width: 900px; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: block; }
+    
+    .header { text-align: center; margin-bottom: 1.8rem; }
+    .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
+    .h1-sim { font-size: 32px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; -webkit-overflow-scrolling: touch; }
+    .h2-sim { font-size: 22px; font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
+    
+    .bajada-header { 
+      font-size: 16px; 
+      font-weight: 500; 
+      color: #FFFFFF; 
+      background: rgba(6,35,46,0.7); 
+      padding: 0.75rem 1rem; 
+      border-radius: 28px; 
+      margin-top: 1rem; 
+      line-height: 1.4; 
+      text-align: center; 
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      margin-bottom: 1.8rem;
+    }
+
+    /* INPUT SECTION */
+    .search-title { color: #f7c32f; font-size: 14px; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; }
+    .input-group { display: -webkit-box; display: -ms-flexbox; display: flex; }
+    #breweryInput {
+      -webkit-box-flex: 1; -ms-flex: 1; flex: 1;
+      padding: 0.8rem 1.2rem;
+      border-radius: 30px 0 0 30px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+    #updateBtn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 0 30px 30px 0;
+      border: none;
+      background: #f7c32f;
+      color: #06232E;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #searchMessage { margin-top: 0.5rem; text-align: center; font-size: 13px; color: #f7c32f; font-weight: 600; min-height: 1.2rem; }
+
+    /* CHARTS */
+    .chart-container { width: 100%; height: 280px; margin-top: 1rem; }
+    .charts-flex { display: block; }
+    
+    /* TERMOMETRO */
+    .thermo-section { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; justify-content: center; padding: 1rem 0; }
+    .thermometer {
+      width: 40px;
+      height: 200px;
+      background: #1e3a4a;
+      border-radius: 20px;
+      position: relative;
+      border: 2px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+      margin-right: 1.5rem;
+    }
+    .thermo-max {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(247, 195, 47, 0.2);
+      transition: height 0.5s;
+    }
+    .thermo-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(to top, #E40F63, #f7c32f);
+      border-top: 2px solid #fff;
+      transition: height 0.8s;
+      z-index: 2;
+    }
+    .thermo-text { color: #fff; font-size: 15px; flex: 1; }
+    .thermo-val { color: #f7c32f; font-weight: 800; font-size: 24px; display: block; }
+
+    /* SLIDER */
+    .slider-labels { display: -webkit-box; display: -ms-flexbox; display: flex; justify-content: space-between; color: #CFDEE0; font-size: 10px; font-weight: 700; margin-bottom: -15px; }
+    .slider-rail { width: 100%; height: 12px; background: rgba(255,255,255,0.15); border-radius: 6px; position: relative; margin: 1.5rem 0; }
+    .slider-track { position: absolute; left: 0; top: 0; height: 100%; background: #f7c32f; border-radius: 6px; width: 0%; }
+    .slider-thumb { width: 34px; height: 34px; background: #FFF; border: 4px solid #f7c32f; border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%); z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+    /* PLANES */
+    .planes-container { display: -webkit-box; display: -ms-flexbox; display: flex; margin: 1.5rem 0; }
+    .plan-btn { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; padding: 1rem 0.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: #fff; margin: 0 4px; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .plan-btn.active { border-color: #f7c32f; background: rgba(247, 195, 47, 0.2); color: #f7c32f; }
+    .final-price { font-size: 28px; font-weight: 800; color: #fff; margin-top: 1rem; display: block; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; justify-content: center; display: none; }
+    .modal-content { background: #06232E; border: 2px solid #f7c32f; border-radius: 20px; padding: 2rem; width: 85%; max-width: 400px; text-align: center; color: #fff; }
+    .medal-grid { display: -webkit-box; display: -ms-flexbox; display: flex; justify-content: space-around; margin: 1.5rem 0; }
+    .medal-num { display: block; font-size: 24px; font-weight: 800; color: #f7c32f; }
+    .modal-close { margin-top: 1.5rem; color: #f7c32f; font-weight: 800; border: 1px solid #f7c32f; padding: 0.5rem 1rem; border-radius: 20px; display: inline-block; cursor: pointer; }
+
+    .tap-hint { border: 1px dashed #f7c32f; color:#f7c32f; padding: 0.5rem; border-radius: 15px; font-size: 12px; text-align: center; cursor: pointer; display: none; margin-top: 1rem; }
+
+    @media (max-width: 500px) {
+      .planes-container { flex-direction: column; }
+      .plan-btn { margin: 4px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Fondo" onerror="this.src='https://picsum.photos/seed/podium/1200/800'"></div>
+  <div class="overlay-color"></div>
+  <div class="vignette"></div>
+
+  <div class="app-container">
+    <div class="header">
+      <img src="assets/logo_podiumbeer.png" class="logo-header" alt="Podium Beer">
+      <h1 class="h1-sim">Simulador de Alianza</h1>
+      <h2 class="h2-sim">Visibilidad Estratégica 2025</h2>
+      <div class="bajada-header">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca.</div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="glass-card">
+      <div class="search-title">Consultar Cervecería</div>
+      <div class="input-group">
+        <input type="text" id="breweryInput" placeholder="Nombre de la cervecería...">
+        <button type="button" id="updateBtn">ACTUALIZAR</button>
+      </div>
+      <div id="searchMessage">Selecciona una marca para ver tus resultados.</div>
+    </div>
+
+    <!-- Ranking Emocional -->
+    <div class="glass-card">
+      <div class="search-title">Ranking de Impacto 2025</div>
+      <div class="chart-container">
+        <canvas id="rankingChart"></canvas>
+      </div>
+      <div id="btnDetalle" class="tap-hint" onclick="openModal()">Tap para ver tu posición completa</div>
+    </div>
+
+    <!-- Termómetro -->
+    <div class="glass-card">
+      <div class="search-title">Termómetro de Potencial</div>
+      <div class="thermo-section">
+        <div class="thermometer">
+          <div class="thermo-max" id="barMax" style="height: 0%"></div>
+          <div class="thermo-fill" id="barFill" style="height: 0%"></div>
+        </div>
+        <div class="thermo-text">
+          <span class="thermo-val" id="percMain">0%</span>
+          <p id="percDesc">Busca tu cervecería para ver el techo de crecimiento.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="glass-card">
+      <div class="search-title">Timeline de Momentum Acumulado</div>
+      <div class="chart-container">
+        <canvas id="timelineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Planes y Slider -->
+    <div class="glass-card" style="text-align: center;">
+      <div class="search-title" style="text-align: left;">Escala de Producción Anual</div>
+      <div class="slider-labels">
+        <span>&lt;500 HL</span>
+        <span>1000 HL</span>
+        <span>5000 HL</span>
+        <span>10000 HL</span>
+        <span>MÁS</span>
+      </div>
+      <div class="slider-rail" id="sRail">
+        <div class="slider-track" id="sTrack"></div>
+        <div class="slider-thumb" id="sThumb"></div>
+      </div>
+
+      <div class="planes-container">
+        <button class="plan-btn" id="pl_exp" onclick="setPlan('explorer')">Explorer</button>
+        <button class="plan-btn active" id="pl_pod" onclick="setPlan('podium')">Podium</button>
+        <button class="plan-btn" id="pl_cha" onclick="setPlan('champion')">Champion</button>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <h4 style="color: #f7c32f;">NIVEL DE ALIANZA ESTRATÉGICA</h4>
+        <p style="color: #fff; font-size: 12px;">Desbloquea tu potencial de mercado</p>
+        <span class="final-price" id="priceDisplay">$0 CLP</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 11px; padding: 1rem 0 3rem 0;">
+      © 2025 Podium Beer Analytics • Santiago de Chile
+    </div>
+
+  </div>
+
+  <!-- Modal Detallado -->
+  <div class="modal-overlay" id="modalUI" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h2 id="mName" style="color:#f7c32f; margin-bottom: 1.5rem;">Cervecería</h2>
+      <div class="medal-grid">
+        <div><span style="font-size:10px; color:#f7c32f">ORO</span><span class="medal-num" id="mG">0</span></div>
+        <div><span style="font-size:10px; color:#CFDEE0">PLATA</span><span class="medal-num" id="mS">0</span></div>
+        <div><span style="font-size:10px; color:#CD7F32">BRONCE</span><span class="medal-num" id="mB">0</span></div>
+      </div>
+      <p id="mRank" style="font-size: 14px; font-weight: 600; color: #CFDEE0;"></p>
+      <div class="modal-close" onclick="closeModal()">CERRAR VENTANA</div>
+    </div>
+  </div>
+
+  <script>
+    // VARS iOS 12 COMPATIBLE
+    var beerData = {};
+    var rankingOrder = [];
+    var currentSelection = null;
+    var maxTotal = 1;
+    var top5Ref = [0.1, 0.4, 1.1, 2.5, 3.8, 5.2, 7.1, 9.4, 11.2, 14.0]; // Referente top 5
+    
+    var chartRankHandle, chartTimeHandle;
+    var planBases = { explorer: 10000, podium: 25000, champion: 50000 };
+    var stepMults = [1, 1.5, 2, 3, 5];
+    var selPlan = 'podium';
+    var selStep = 0;
+
+    function init() {
+      loadCSV();
+      setupSlider();
+      updatePrice();
+      document.getElementById('updateBtn').onclick = function() {
+        var str = document.getElementById('breweryInput').value.trim();
+        if(str) doSearch(str);
+      };
+    }
+
+    function loadCSV() {
+      // Usando Absolute Path si es posible o asumiendo root en el servidor Vite
+      var url = '/BBDD_Medallero_Chile.csv';
+      var hr = new XMLHttpRequest();
+      hr.open('GET', url, true);
+      hr.onreadystatechange = function() {
+        if (hr.readyState === 4) {
+          if (hr.status === 200) {
+            parseCSV(hr.responseText);
+          } else {
+            // Reintento con path relativo si falla
+            var hr2 = new XMLHttpRequest();
+            hr2.open('GET', 'BBDD_Medallero_Chile.csv', true);
+            hr2.onreadystatechange = function() {
+                if(hr2.readyState === 4 && hr2.status === 200) parseCSV(hr2.responseText);
+                else if(hr2.readyState === 4) parseCSV(getBackup());
+            };
+            hr2.send();
+          }
+        }
+      };
+      hr.send();
+    }
+
+    function parseCSV(raw) {
+      if(!raw) return;
+      var lines = raw.split('\n');
+      for(var i=1; i < lines.length; i++) {
+        var c = lines[i].split(';');
+        if(c.length < 15) continue;
+        
+        var year = c[3];
+        var country = (c[15] || "").trim().toLowerCase();
+        // Solo registros 2025 de Chile
+        if(year !== "2025" || (country !== "chile" && country !== "chile")) continue;
+
+        var name = c[4].trim();
+        var med = (c[11] || "").trim().toLowerCase();
+        var dateStr = c[2] || "2025-03";
+        var mes = dateStr.split('-')[1] || "03";
+
+        if(!beerData[name]) {
+          beerData[name] = { name:name, g:0, s:0, b:0, t:0, imp:0, history:{} };
+        }
+        var b = beerData[name];
+        if(med === 'oro') { b.g++; b.imp += 3; }
+        else if(med === 'plata') { b.s++; b.imp += 1; }
+        else if(med === 'bronce') { b.b++; b.imp += 1; }
+        b.t++;
+        b.history[mes] = (b.history[mes] || 0) + 1;
+        if(b.t > maxTotal) maxTotal = b.t;
+      }
+
+      for(var k in beerData) rankingOrder.push(beerData[k]);
+      rankingOrder.sort(function(a,b){ return b.imp - a.imp; });
+      
+      updateAllView();
+    }
+
+    function doSearch(q) {
+      var entry = null;
+      var msg = document.getElementById('searchMessage');
+      for(var k in beerData) {
+        if(k.toLowerCase().indexOf(q.toLowerCase()) !== -1) { entry = beerData[k]; break; }
+      }
+      if(entry) {
+        currentSelection = entry;
+        msg.innerHTML = "CERVECERÍA: " + entry.name.toUpperCase();
+        msg.style.color = "#f7c32f";
+        updateAllView();
+        
+        var topIdx = -1;
+        for(var i=0; i<15; i++) { if(rankingOrder[i] && rankingOrder[i].name === entry.name) topIdx = i; }
+        document.getElementById('btnDetalle').style.display = topIdx === -1 ? 'block' : 'none';
+      } else {
+        msg.innerHTML = "Cervecería no encontrada en el medallero 2025.";
+        msg.style.color = "#ff4444";
+      }
+    }
+
+    function updateAllView() {
+      // Ranking
+      var ctxR = document.getElementById('rankingChart').getContext('2d');
+      var top15 = rankingOrder.slice(0, 15);
+      var L = [], D = [], C = [];
+      for(var i=0; i<top15.length; i++){
+        L.push(top15[i].name);
+        D.push(top15[i].imp);
+        C.push(currentSelection && currentSelection.name === top15[i].name ? '#f7c32f' : 'rgba(30, 58, 74, 0.8)');
+      }
+      if(chartRankHandle) chartRankHandle.destroy();
+      chartRankHandle = new Chart(ctxR, {
+        type: 'horizontalBar',
+        data: { labels: L, datasets: [{ data: D, backgroundColor: C }] },
+        options: { 
+          maintainAspectRatio: false, 
+          legend: {display:false}, 
+          scales: { 
+            xAxes: [{ticks:{fontColor:'#fff', beginAtZero:true}}], 
+            yAxes: [{ticks:{fontColor:'#fff', fontSize:9}}] 
+          } 
+        }
+      });
+
+      // Potencial
+      if(currentSelection) {
+        var pCurrent = Math.min(95, Math.round((currentSelection.t / maxTotal) * 100));
+        var pMax = Math.min(98, pCurrent + 40);
+        document.getElementById('barFill').style.height = pCurrent + "%";
+        document.getElementById('barMax').style.height = pMax + "%";
+        document.getElementById('percMain').innerHTML = pCurrent + "%";
+        document.getElementById('percDesc').innerHTML = "Impacto actual: " + pCurrent + "%. Máximo potencial vía Alianza Podium: " + pMax + "%.";
+      }
+
+      // Timeline
+      var ctxT = document.getElementById('timelineChart').getContext('2d');
+      var labelsM = ['MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+      var keysM = ['03','04','05','06','07','08','09','10','11','12'];
+      var userD = [];
+      var acc = 0;
+      for(var j=0; j<keysM.length; j++) {
+        acc += (currentSelection && currentSelection.history[keysM[j]]) ? currentSelection.history[keysM[j]] : 0;
+        userD.push(acc);
+      }
+      if(chartTimeHandle) chartTimeHandle.destroy();
+      chartTimeHandle = new Chart(ctxT, {
+        type: 'line',
+        data: {
+          labels: labelsM,
+          datasets: [
+            { label: 'Tu Marca', data: userD, borderColor: '#f7c32f', backgroundColor: 'rgba(247,195,47,0.2)', fill: true },
+            { label: 'Top 5', data: top5Ref, borderColor: 'rgba(255,255,255,0.3)', borderDash: [5,5], fill: false, pointRadius: 0 }
+          ]
+        },
+        options: { maintainAspectRatio: false, legend: {display:false}, scales: { xAxes:[{ticks:{fontColor:'#fff'}}], yAxes:[{ticks:{fontColor:'#fff', beginAtZero:true}}] } }
+      });
+    }
+
+    function setupSlider() {
+      var r = document.getElementById('sRail');
+      var t = document.getElementById('sThumb');
+      var k = document.getElementById('sTrack');
+      
+      function updatePos(x) {
+        var box = r.getBoundingClientRect();
+        var pos = (x - box.left) / box.width;
+        if(pos < 0) pos = 0; if(pos > 1) pos = 1;
+        var step = Math.round(pos * 4);
+        selStep = step;
+        var perc = (step / 4) * 100;
+        t.style.left = perc + "%";
+        k.style.width = perc + "%";
+        updatePrice();
+      }
+
+      r.onclick = function(e){ updatePos(e.clientX); };
+      t.ontouchmove = function(e){ e.preventDefault(); updatePos(e.touches[0].clientX); };
+    }
+
+    function setPlan(p) {
+      selPlan = p;
+      document.getElementById('pl_exp').className = 'plan-btn' + (p==='explorer'?' active':'');
+      document.getElementById('pl_pod').className = 'plan-btn' + (p==='podium'?' active':'');
+      document.getElementById('pl_cha').className = 'plan-btn' + (p==='champion'?' active':'');
+      updatePrice();
+    }
+
+    function updatePrice() {
+      var price = planBases[selPlan] * stepMults[selStep];
+      document.getElementById('priceDisplay').innerHTML = "$" + price.toLocaleString('es-CL') + " CLP";
+    }
+
+    function openModal() {
+      if(!currentSelection) return;
+      document.getElementById('mName').innerHTML = currentSelection.name;
+      document.getElementById('mG').innerHTML = currentSelection.g;
+      document.getElementById('mS').innerHTML = currentSelection.s;
+      document.getElementById('mB').innerHTML = currentSelection.b;
+      var rankNum = 0;
+      for(var i=0; i<rankingOrder.length; i++) { if(rankingOrder[i].name === currentSelection.name) rankNum = i+1; }
+      document.getElementById('mRank').innerHTML = "Posición en Ranking Nacional: #" + rankNum;
+      document.getElementById('modalUI').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('modalUI').style.display = 'none'; }
+
+    function getBackup() {
+      return "certamen;origen;fecha;anio;cerveceria;cerveza_ganadora;estilo;estilo_corregido;estilo_limpio;estilo_cliente;premio;medalla_base;tipo_premio;subcategoria;ciudad;pais\nAro Rojo;Chile;2025-05;2025;Kross;Golden;Ale;Ale;Ale;Ale;Oro;Oro;Beer;;Santiago;Chile\nCopa ACI;Chile;2025-07;2025;Tamango;Hazy;IPA;IPA;IPA;IPA;Oro;Oro;Beer;;Santiago;Chile";
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
