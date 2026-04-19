@@ -13,455 +13,681 @@
     .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
     .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.57; z-index: -1; }
     .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); pointer-events: none; z-index: 0; }
-    .app-container { width: 95%; max-width: 1200px; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
+    .app-container { width: 90%; max-width: 1200px; margin: 1.5rem auto; padding: 0 0.5rem; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 1.8rem; }
     
-    .header { text-align: center; }
-    .logo-header { display: block; margin: 0 auto 1rem auto; width: 60%; max-width: 200px; height: auto; }
+    .header { text-align: center; margin-bottom: 1rem; }
+    .logo-header { display: block; margin: 0 auto 0.5rem auto; width: 60%; max-width: 180px; height: auto; }
+    .logo-bajada { font-size: 14px; font-weight: 500; color: #FFFFFF; max-width: 300px; margin: 0 auto 1.5rem auto; line-height: 1.3; }
     .h1-sim { font-size: clamp(28px, 8vw, 44px); font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; }
+    .h2-sim { font-size: clamp(20px, 6vw, 32px); font-weight: 500; color: #CFDEE0; margin-top: 0.5rem; }
     .bajada-header { 
-      font-size: clamp(16px, 4vw, 19px); 
+      font-size: clamp(16px, 5vw, 18px); 
       font-weight: 500; 
       color: #FFFFFF; 
-      background: rgba(6,35,46,0.73); 
-      padding: 0.8rem 1.2rem; 
+      background: rgba(6,35,46,0.7); 
+      padding: 1rem 1.5rem; 
       border-radius: 28px; 
-      margin: 1rem auto 0; 
+      margin-top: 1rem; 
       line-height: 1.4; 
       text-align: center; 
-      backdrop-filter: blur(4px);
-      max-width: 800px;
+      backdrop-filter: blur(4px); 
     }
 
-    .glass-card, .metrics-card, .plan-selector-card { position: relative; background: rgba(6,35,46,0.4); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.3); padding: 1.5rem; }
-    .shift-content { padding: 0 1rem; }
-    .section-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 2px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .section-subtitle { font-size: 22px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; }
-    .section-desc { font-size: 14px; color: #CFDEE0; line-height: 1.5; margin-bottom: 1.5rem; }
-
-    /* SEARCH CARD */
-    .search-card { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .search-input { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; color: #fff; padding: 12px 20px; font-size: 16px; flex: 1; min-width: 200px; outline: none; }
-    .update-btn { background: #f7c32f; color: #000; font-weight: 800; padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
-    .update-btn:active { transform: scale(0.95); }
-
-    /* CHART GRID */
-    .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-    @media (min-width: 1024px) { .charts-grid { grid-template-columns: repeat(3, 1fr); } }
-    .chart-box { background: rgba(6,35,46,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.5rem; padding: 1.5rem; min-height: 380px; display: flex; flex-direction: column; align-items: center; }
-    .chart-label { color: #f7c32f; font-weight: 700; font-size: 13px; text-transform: uppercase; margin-bottom: 15px; width: 100%; text-align: center; }
-    .canvas-wrapper { width: 100%; flex: 1; position: relative; }
-
-    /* THERMOMETER */
-    .thermometer-container { width: 60px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; border: 3px solid rgba(255,255,255,0.2); overflow: hidden; margin: 10px auto; }
-    .thermo-fill-potential { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(247, 195, 47, 0.3); transition: height 1s ease-out; }
-    .thermo-fill-current { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(0deg, #1e3a4a, #f7c32f); transition: height 1s ease-out; border-top: 2px solid #fff; }
-    .thermo-text { color: #fff; text-align: center; font-size: 12px; margin-top: 10px; line-height: 1.4; font-weight: 500; }
-    .thermo-text strong { color: #f7c32f; display: block; font-size: 14px; }
-
-    /* OVERLAY/MODAL */
-    #impactOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
-    .modal-content { background: #06232E; border: 2px solid #f7c32f; border-radius: 2rem; padding: 2.5rem; text-align: center; max-width: 400px; width: 100%; }
-    .medal-counter { display: flex; justify-content: space-around; margin: 2rem 0; }
-    .medal-item img { height: 40px; }
-    .medal-item span { display: block; font-size: 24px; font-weight: 800; color: #fff; margin-top: 5px; }
-    .close-modal { margin-top: 20px; color: #f7c32f; cursor: pointer; font-weight: 700; text-decoration: underline; }
-
-    /* SLIDER */
-    .slider-container { width: 100%; padding: 0 0.5rem; }
-    .slider-track-wrapper { position: relative; margin: 1.5rem 0.5rem 2.5rem; height: 30px; }
-    .slider-rail { width: 100%; height: 8px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; top: 11px; }
-    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #112d3a 0%, #ffffff 100%); width: 0%; pointer-events: none; }
-    .slider-thumb { position: absolute; width: 28px; height: 28px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 3; }
-    .slider-labels { display: flex; justify-content: space-between; margin-top: 10px; }
-    .slider-labels span { font-size: 12px; font-weight: 600; color: #CFDEE0; flex: 1; text-align: center; }
-
-    /* PLAN SECTION */
-    .tier-buttons-container { display: flex; justify-content: center; gap: 1.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
-    .tier-item { flex: 1; max-width: 180px; display: flex; flex-direction: column; align-items: center; }
-    .tier-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2); border-radius: 60px; padding: 12px; cursor: pointer; transition: 0.3s; }
-    .tier-btn.active { background: linear-gradient(90deg, #E40F63, #C32263); border-color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(228,15,99,0.4); }
-    .tier-label { color: #fff; font-weight: 800; font-size: 13px; text-transform: uppercase; }
-    .tier-bajada { font-size: 12px; color: #CFDEE0; text-align: center; margin-top: 8px; line-height: 1.3; }
+    .glass-card, .metrics-card, .plan-selector-card, .chart-card { 
+      position: relative; 
+      background: rgba(6,35,46,0.35); 
+      backdrop-filter: blur(20px); 
+      border-radius: 2rem; 
+      border: 1px solid rgba(255,255,255,0.2); 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2); 
+      padding: 1.5rem; 
+    }
     
-    .tramo-selector { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
-    .tramo-btn { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; }
-    .tramo-btn.active { background: #f7c32f; color: #000; border-color: #f7c32f; font-weight: 700; }
+    /* Search Bar */
+    .search-card { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+    .search-input { 
+      flex: 1; max-width: 400px; min-width: 200px;
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.3); 
+      border-radius: 60px; padding: 0.8rem 1.5rem; color: #fff; font-size: 1rem; outline: none;
+    }
+    .search-btn { 
+      background: #f7c32f; color: #000; font-weight: 700; border: none; 
+      border-radius: 60px; padding: 0.8rem 2rem; cursor: pointer; transition: 0.2s;
+    }
+    .search-btn:active { transform: scale(0.95); }
 
-    .price-display { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 15px; margin-top: 25px; text-align: center; border: 1px solid #f7c32f; }
-    .price-final { font-size: 28px; font-weight: 800; color: #fff; }
-    .price-label { font-size: 11px; color: #f7c32f; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; text-align: left; }
+    .section-subtitle { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; text-align: left; }
+    .section-desc { font-size: 14px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; text-align: left; }
 
-    /* METRICS */
-    .metric-row { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .metric-icon-col img { width: 50px; }
-    .metric-text-col { flex: 1; }
-    .metric-name { color: #fff; font-weight: 800; font-size: 16px; margin-bottom: 4px; }
-    .metric-bajada { color: #CFDEE0; font-size: 10px; }
-    .metric-value-col { text-align: right; }
-    .metric-value { color: #fff; font-weight: 800; font-size: 20px; }
+    /* Slider Styles */
+    .slider-track-wrapper { position: relative; margin: 2rem 0.5rem 3rem 0.5rem; }
+    .slider-rail { width: 100%; height: 6px; background: #1E3A4A; border-radius: 50px; position: relative; cursor: pointer; }
+    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: linear-gradient(90deg, #06232E 0%, #FFFFFF 100%); width: 0%; pointer-events: none; }
+    .slider-thumb { position: absolute; width: 24px; height: 24px; background: #FFFFFF; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); cursor: grab; z-index: 3; border: 2px solid #06232E; }
+    .slider-labels { display: flex; justify-content: space-between; margin-top: 1rem; }
+    .slider-labels span { font-size: 12px; font-weight: 600; color: #CFDEE0; text-align: center; flex: 1; }
 
-    .cta-button { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 15px 40px; color: #fff; font-weight: 800; cursor: pointer; width: 100%; max-width: 400px; margin: 0 auto; display: block; box-shadow: 0 10px 20px rgba(228,15,99,0.3); }
-    .credits { text-align: center; color: #f7c32f; font-weight: 700; margin-top: 2rem; font-size: 16px; }
+    /* New 3-Chart Section */
+    .charts-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+    @media (min-width: 1024px) and (orientation: landscape) { .charts-grid { flex-direction: row; align-items: stretch; } .chart-item { flex: 1; } }
+    .chart-item { width: 100%; display: flex; flex-direction: column; }
+    .canvas-container { position: relative; width: 100%; height: 300px; background: rgba(0,0,0,0.2); border-radius: 1rem; padding: 10px; }
+    .chart-label { color: #f7c32f; font-weight: 700; margin-bottom: 0.5rem; font-size: 14px; text-transform: uppercase; text-align: center; }
+    
+    /* Gauge styles */
+    .gauge-wrapper { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+    .thermometer { width: 40px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; border: 2px solid rgba(255,255,255,0.2); overflow: hidden; }
+    .thermometer-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, #E40F63, #f7c32f); transition: height 1s ease-out; }
+    .thermometer-pot { position: absolute; bottom: 0; width: 100%; background: rgba(247, 195, 47, 0.3); border-top: 2px dashed #f7c32f; transition: height 1s ease-out; }
+    .gauge-text { color: #fff; font-size: 13px; text-align: center; }
 
-    /* iPad Fixes */
-    @media (orientation: portrait) { .charts-grid { grid-template-columns: 1fr; } }
-    canvas { touch-action: manipulation; }
+    /* Generic Styles */
+    .tier-buttons-container { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .tier-item { flex: 1; min-width: 140px; max-width: 200px; display: flex; flex-direction: column; gap: 0.5rem; }
+    .tier-btn { 
+      background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2); border-radius: 1.5rem; padding: 1rem;
+      cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;
+    }
+    .tier-btn.active { border-color: #f7c32f; background: rgba(247, 195, 47, 0.1); box-shadow: 0 0 15px rgba(247, 195, 47, 0.3); }
+    .tier-icon img { height: 32px; width: auto; }
+    .tier-name { color: #fff; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+    .tier-price { color: #f7c32f; font-weight: 800; font-size: 1.2rem; }
+
+    /* Results Block */
+    .metric-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .metric-icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+    .metric-icon img { width: 100%; height: auto; }
+    .metric-info { flex: 1; }
+    .metric-name { color: #fff; font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+    .metric-desc { color: #CFDEE0; font-size: 11px; line-height: 1.2; }
+    .metric-value { color: #fff; font-weight: 800; font-size: 20px; min-width: 100px; text-align: right; }
+
+    /* CTA & Credits */
+    .cta-wrapper { display: flex; justify-content: center; margin-top: 1rem; }
+    .cta-button { 
+      background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; 
+      padding: 1rem 3rem; cursor: pointer; color: #fff; font-weight: 700; font-size: 16px;
+      box-shadow: 0 4px 15px rgba(228, 15, 99, 0.4);
+    }
+    .credits { text-align: center; font-size: 14px; color: #f7c32f; font-weight: 600; margin-top: 2rem; opacity: 0.8; }
+
+    /* Overlay / Modal */
+    .overlay { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 2rem;
+    }
+    .modal-card { 
+      background: #06232E; border: 2px solid #f7c32f; border-radius: 2rem; padding: 2rem; width: 100%; max-width: 400px; text-align: center;
+      position: relative;
+    }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; color: #fff; cursor: pointer; font-size: 24px; font-weight: 800; }
+    .medal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+    .medal-count { font-size: 2.5rem; font-weight: 800; }
+    .medal-label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #CFDEE0; }
+
+    /* Pricing Section */
+    .pricing-footer-desc { margin-top: 1rem; color: #CFDEE0; font-size: 13px; font-weight: 500; text-align: center; }
+    .final-price-display { font-size: 1.8rem; font-weight: 800; color: #f7c32f; margin-top: 1rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+
+    @media (max-width: 768px) {
+      .app-container { width: 95%; margin: 1rem auto; gap: 1.2rem; }
+      .h1-sim { font-size: 30px; line-height: 1.1; }
+      .canvas-container { height: 250px; }
+      .tier-item { max-width: none; width: 100%; }
+      .slider-labels span { font-size: 10px; }
+    }
   </style>
 </head>
 <body>
-  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Fondo"></div>
+  <div class="hero-bg"><img src="https://picsum.photos/seed/brewery/1920/1080" alt="Cervecería" referrerPolicy="no-referrer"></div>
   <div class="overlay-color"></div>
   <div class="vignette"></div>
 
   <div class="app-container">
     <header class="header">
       <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="logo-header">
-      <h1 class="h1-sim">Simulador de Alianza Podium Beer</h1>
-      <div class="bajada-header">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca</div>
+      <div class="logo-bajada">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca</div>
+      <div class="h1-sim">Simulador de Alianza</div>
+      <div class="h2-sim">¿Cuál es tu producción anual?</div>
+      <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </header>
 
-    <!-- SEARCH BLOCK -->
-    <div class="glass-card">
+    <!-- BÚSQUEDA -->
+    <div class="glass-card animate-item" style="padding: 1.5rem;">
+      <div class="section-title">CONSULTA PERSONALIZADA</div>
+      <div class="section-subtitle">Analiza tu Cervecería</div>
+      <div class="section-desc">Ingresa el nombre de tu marca para ver tu impacto en el mercado 2025 y tu potencial proyectado.</div>
       <div class="search-card">
-        <input type="text" id="brandInput" class="search-input" placeholder="Ingresa el nombre de tu cervecería...">
-        <button type="button" id="updateBtn" class="update-btn">ACTUALIZAR</button>
+        <input type="text" id="brewerySearch" class="search-input" placeholder="Nombre de la cervecería...">
+        <button type="button" id="updateSearchBtn" class="search-btn">ACTUALIZAR</button>
+      </div>
+      <div id="searchMsg" style="text-align: center; margin-top: 0.5rem; font-size: 12px; color: #f7c32f;"></div>
+    </div>
+
+    <!-- 3 GRÁFICOS -->
+    <div class="chart-card animate-item">
+      <div class="section-title">REPORTE DE IMPACTO & MOMENTUM - 2025</div>
+      <div class="charts-grid">
+        <!-- Ranking -->
+        <div class="chart-item">
+          <div class="chart-label">Ranking de Impacto</div>
+          <div class="canvas-container">
+            <canvas id="rankingChart"></canvas>
+          </div>
+          <div id="posFullMsg" style="color: #f7c32f; font-size: 11px; text-align: center; margin-top: 5px; cursor: pointer; display: none;">Tap para ver tu posición completa</div>
+        </div>
+        <!-- Termómetro -->
+        <div class="chart-item">
+          <div class="chart-label">Termómetro de Potencial</div>
+          <div class="canvas-container">
+            <div class="gauge-wrapper">
+              <div class="thermometer">
+                <div id="gaugePot" class="thermometer-pot"></div>
+                <div id="gaugeFill" class="thermometer-fill"></div>
+              </div>
+              <div class="gauge-text">
+                <span id="gaugeLabel">Potencial actual</span><br>
+                <strong id="gaugeValues" style="color: #f7c32f; font-size: 1.1rem;">35% → 78%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Timeline -->
+        <div class="chart-item">
+          <div class="chart-label">Timeline de Momentum</div>
+          <div class="canvas-container">
+            <canvas id="timelineChart"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- CHARTS GRID -->
-    <div class="charts-grid">
-      <!-- 3a: IMPACT RANKING -->
-      <div class="chart-box">
-        <div class="chart-label">Ranking de Impacto (2024-25)</div>
-        <div class="canvas-wrapper">
-          <canvas id="impactChart"></canvas>
-        </div>
-        <div id="impactNote" style="color:#CFDEE0; font-size:10px; margin-top:10px; cursor:pointer;">Tap para ver tu posición completa</div>
-      </div>
-
-      <!-- 3b: POTENTIAL TERMOMETER -->
-      <div class="chart-box">
-        <div class="chart-label">Termómetro de Potencial</div>
-        <div class="thermometer-container">
-          <div class="thermo-fill-potential" id="thermoPotential" style="height: 0%"></div>
-          <div class="thermo-fill-current" id="thermoCurrent" style="height: 0%"></div>
-        </div>
-        <div class="thermo-text" id="thermoDescription">
-          Estás en <span id="txtCurrent">0%</span> de tu potencial.<br>
-          Con optimización estratégica → <strong><span id="txtPotential">0%</span></strong>
-        </div>
-      </div>
-
-      <!-- 3c: MOMENTUM TIMELINE -->
-      <div class="chart-box">
-        <div class="chart-label">Timeline de Momentum</div>
-        <div class="canvas-wrapper">
-          <canvas id="momentumChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- PRODUCTION SLIDER (KEEP ORIGINAL) -->
-    <div class="glass-card">
-      <div class="shift-content">
-        <div class="section-title">SLIDER</div>
-        <div class="section-subtitle">Escala de Producción</div>
-        <div class="section-desc">Tu volumen define tu estrategia comercial.</div>
-      </div>
+    <!-- SLIDER ORIGINAL -->
+    <div class="glass-card animate-item">
+      <div class="section-title">VOLUMEN DE OPERACIÓN</div>
+      <div class="section-subtitle">Tramo de Producción Anual</div>
+      <div class="section-desc">Selecciona tu nivel de producción actual para calibrar las métricas de inversión y rentabilidad.</div>
       <div class="slider-container">
-        <div class="slider-track-wrapper">
+        <div class="slider-track-wrapper" id="sliderWrapper">
           <div class="slider-rail" id="sliderRail"><div class="slider-fill" id="sliderFill"></div></div>
           <div class="slider-thumb" id="sliderThumb"></div>
         </div>
         <div class="slider-labels">
           <span>&lt;500 hl</span>
-          <span>501-1000 hl</span>
-          <span>1001-5000 hl</span>
-          <span>5001-10000 hl</span>
-          <span>≥20000 hl</span>
+          <span>501 - 1000 hl</span>
+          <span>1001 - 5000 hl</span>
+          <span>5001 - 10000 hl</span>
+          <span>&gt;20000 hl</span>
         </div>
       </div>
     </div>
 
-    <!-- PLAN & MULTIPLIER BLOCK -->
-    <div class="glass-card">
-      <div class="shift-content">
-        <div class="tier-buttons-container">
-          <div class="tier-item">
-            <button type="button" class="tier-btn active" data-plan="explorer">
-              <img src="assets/explorer.png" style="height:20px;"> <span class="tier-label">Explorer</span>
-            </button>
-            <div class="tier-bajada">1° Nivel de Visibilidad basada en datos reales</div>
-          </div>
-          <div class="tier-item">
-            <button type="button" class="tier-btn" data-plan="podium">
-              <img src="assets/podium.png" style="height:20px;"> <span class="tier-label">Podium</span>
-            </button>
-            <div class="tier-bajada">Optimización estratégica para competir con ventaja</div>
-          </div>
-          <div class="tier-item">
-            <button type="button" class="tier-btn" data-plan="champion">
-              <img src="assets/champion.png" style="height:20px;"> <span class="tier-label">Champion</span>
-            </button>
-            <div class="tier-bajada">Dominio de mercado con respaldo técnico</div>
-          </div>
+    <!-- SELECTOR DE PLANES COMPLETO -->
+    <div class="plan-selector-card animate-item">
+      <div class="section-title">NIVEL DE ALIANZA ESTRATÉGICA</div>
+      <div class="section-subtitle">Elige tu modelo de crecimiento</div>
+      <div class="section-desc">Desde visibilidad inicial hasta dominio de mercado. Haz clic en un plan para proyectar su costo y beneficios.</div>
+      
+      <div class="tier-buttons-container">
+        <!-- Explorer -->
+        <div class="tier-item">
+          <button type="button" class="tier-btn" id="planExplorer" data-plan="explorer">
+            <div class="tier-icon"><img src="heroicon/outline/sparkles.svg" alt="Exploer"></div>
+            <div class="tier-name">Explorer</div>
+            <div id="priceExplorer" class="tier-price">$10.000</div>
+          </button>
         </div>
-
-        <div style="text-align:center; margin: 30px 0;">
-          <div class="section-title">NIVEL DE ALIANZA ESTRATÉGICA</div>
-          <div class="section-subtitle">Elige tu modelo de crecimiento</div>
-          <p style="color:#CFDEE0; font-size:14px;">Desde visibilidad inicial hasta dominio de mercado.</p>
+        <!-- Podium -->
+        <div class="tier-item">
+          <button type="button" class="tier-btn active" id="planPodium" data-plan="podium">
+            <div class="tier-icon"><img src="heroicon/outline/trophy.svg" alt="Podium"></div>
+            <div class="tier-name">Podium</div>
+            <div id="pricePodium" class="tier-price">$25.000</div>
+          </button>
         </div>
-
-        <div class="tramo-selector">
-          <button type="button" class="tramo-btn active" data-mul="1">&lt;500 hl</button>
-          <button type="button" class="tramo-btn" data-mul="1.5">501-1000 hl</button>
-          <button type="button" class="tramo-btn" data-mul="2">1001-5000 hl</button>
-          <button type="button" class="tramo-btn" data-mul="3">5001-10000 hl</button>
-          <button type="button" class="tramo-btn" data-mul="5">≥20000 hl</button>
-        </div>
-
-        <div class="price-display">
-          <div class="price-label">Inversión Mensual Estimada</div>
-          <div class="price-final" id="finalPriceDisplay">$10.000 CLP</div>
+        <!-- Champion -->
+        <div class="tier-item">
+          <button type="button" class="tier-btn" id="planChampion" data-plan="champion">
+            <div class="tier-icon"><img src="heroicon/outline/fire.svg" alt="Champion"></div>
+            <div class="tier-name">Champion</div>
+            <div id="priceChampion" class="tier-price">$45.000</div>
+          </button>
         </div>
       </div>
+      <div class="pricing-footer-desc">
+        <strong>NIVEL DE ALIANZA ESTRATÉGICA</strong><br>
+        Elige tu modelo de crecimiento<br>
+        Desde visibilidad inicial hasta dominio de mercado.
+      </div>
+      <div class="final-price-display" id="calculatedTotalDisplay">PRECIO FINAL: $25.000 CLP / MES</div>
     </div>
 
-    <!-- RESULTS (KEEP ORIGINAL) -->
-    <div class="metrics-card">
+    <!-- MÉTRICAS ORIGINALES -->
+    <div class="metrics-card animate-item">
+      <div class="section-title">BLOQUE DE RESULTADOS</div>
+      <div class="section-subtitle">Impacto en tu negocio</div>
+      <div class="section-desc">Cómo tus medallas se traducen en activos comerciales reales.</div>
       <div class="metric-row">
-        <div class="metric-icon-col"><img src="assets/icono_inversion.png"></div>
-        <div class="metric-text-col">
+        <div class="metric-icon"><img src="assets/icono_inversion.png" alt="Inversión"></div>
+        <div class="metric-info">
           <div class="metric-name">Inversión Inteligente</div>
-          <div class="metric-bajada">Diseñada para generar retorno.</div>
+          <div class="metric-desc">Alineada a tu escala y potencial comercial.</div>
         </div>
-        <div class="metric-value-col"><div class="metric-value" id="inversionVal">$1,200 USD</div></div>
+        <div class="metric-value" id="valInversion">$1.200 USD</div>
       </div>
       <div class="metric-row">
-        <div class="metric-icon-col"><img src="assets/icono_valor.png"></div>
-        <div class="metric-text-col">
+        <div class="metric-icon"><img src="assets/icono_valor.png" alt="Valor"></div>
+        <div class="metric-info">
           <div class="metric-name">Valor Recuperado</div>
-          <div class="metric-bajada">Lo que hoy pierdes sin data estratégica.</div>
+          <div class="metric-desc">Estrategia basada en información validada.</div>
         </div>
-        <div class="metric-value-col"><div class="metric-value" id="valorVal">$14,500 USD</div></div>
+        <div class="metric-value" id="valValor">$14.500 USD</div>
       </div>
       <div class="metric-row">
-        <div class="metric-icon-col"><img src="assets/icono_impacto.png"></div>
-        <div class="metric-text-col">
+        <div class="metric-icon"><img src="assets/icono_impacto.png" alt="Impacto"></div>
+        <div class="metric-info">
           <div class="metric-name">Impacto en Rentabilidad</div>
-          <div class="metric-bajada">Retorno proyectado sobre ventas activas.</div>
+          <div class="metric-desc">El retorno proyectado de tus activos.</div>
         </div>
-        <div class="metric-value-col"><div class="metric-value" id="roiVal">65%</div></div>
+        <div class="metric-value" id="valImpacto">65%</div>
       </div>
     </div>
 
-    <button type="button" class="cta-button">Agenda tu Diagnóstico Estratégico</button>
-    <div class="credits">Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015</div>
+    <div class="cta-wrapper animate-item">
+      <button type="button" class="cta-button" id="mainCta">Agenda tu Diagnóstico Estratégico</button>
+    </div>
+
+    <div class="credits">
+      Un desarrollo de Catas Colaborativas. Difundiendo Cultura Cervecera desde 2015
+    </div>
   </div>
 
-  <!-- OVERLAY IMPACT -->
-  <div id="impactOverlay">
-    <div class="modal-content">
-      <h2 id="modalBrand" style="color:#f7c32f; margin-bottom:10px;">Cervecería X</h2>
-      <p style="color:#fff; font-size:14px;">Medallas Acumuladas 2025</p>
-      <div class="medal-counter">
+  <!-- Overlay para Medallas -->
+  <div id="medalOverlay" class="overlay">
+    <div class="modal-card">
+      <div class="modal-close" id="closeOverlay">×</div>
+      <div class="section-title" id="medalModalTitle">Cervecería</div>
+      <div class="section-subtitle">Medallero 2025</div>
+      <div class="medal-grid">
         <div class="medal-item">
-          <img src="https://cdn-icons-png.flaticon.com/512/179/179249.png" alt="Oro">
-          <span id="goldVal">0</span>
+          <div id="countGold" class="medal-count" style="color: #f7c32f;">0</div>
+          <div class="medal-label">Oros</div>
         </div>
         <div class="medal-item">
-          <img src="https://cdn-icons-png.flaticon.com/512/179/179251.png" alt="Plata">
-          <span id="silverVal">0</span>
+          <div id="countSilver" class="medal-count" style="color: #E0E0E0;">0</div>
+          <div class="medal-label">Platas</div>
         </div>
         <div class="medal-item">
-          <img src="https://cdn-icons-png.flaticon.com/512/179/179250.png" alt="Bronce">
-          <span id="bronzeVal">0</span>
+          <div id="countBronze" class="medal-count" style="color: #CD7F32;">0</div>
+          <div class="medal-label">Bronces</div>
         </div>
       </div>
-      <div class="close-modal" id="closeModal">Cerrar Detalle</div>
+      <div style="margin-top: 1.5rem; font-size: 12px; color: #CFDEE0;">Impacto estratégico validado por Podium Beer</div>
     </div>
   </div>
 
   <script>
-    // --- DATA ---
-    const MOCK_BREWERIES = {
-      "kross": { impact: 92, medals: [8, 12, 5], current: 75, potential: 98, history: [10, 15, 22, 28, 35, 45, 55, 68, 80, 92] },
-      "kunstmann": { impact: 88, medals: [5, 10, 8], current: 60, potential: 90, history: [8, 12, 18, 25, 32, 40, 50, 62, 75, 88] },
-      "tubinger": { impact: 85, medals: [4, 7, 10], current: 55, potential: 88, history: [5, 10, 15, 22, 30, 38, 48, 58, 70, 85] },
-      "granizo": { impact: 95, medals: [12, 6, 4], current: 40, potential: 95, history: [15, 25, 35, 48, 60, 75, 85, 90, 93, 95] },
-      "default": { impact: 35, medals: [1, 2, 3], current: 15, potential: 78, history: [2, 5, 8, 12, 15, 18, 22, 28, 32, 35] }
-    };
+    // Variables Globales
+    let allData = [];
+    let rankingChart, timelineChart;
+    let selectedBrewery = "";
+    
+    // Configuración Precios & Multiplicadores
+    const basePrices = { explorer: 10000, podium: 25000, champion: 45000 };
+    const multipliers = [1, 1.5, 2, 3, 5];
+    let selectedPlan = "podium";
+    let selectedTramoIdx = 3;
 
-    const TOP_15_LABELS = ["Granizo", "Kross", "Kunstmann", "Tübinger", "Tamango", "Bundor", "Rothhammer", "Cuello Negro", "Hasta Pronto", "Prinston", "Alameda", "Szot", "Mestra", "Jester", "Rústico"];
-    const TOP_15_VALUES = [95, 92, 88, 85, 82, 79, 76, 73, 70, 67, 64, 61, 58, 55, 52];
-    const TOP_5_AVG = [15, 22, 30, 40, 50, 65, 78, 88, 92, 95];
+    // Métricas Simulación
+    const metricsTable = [
+      { inv: 150, val: 1800, imp: 30 },
+      { inv: 300, val: 3600, imp: 45 },
+      { inv: 600, val: 7200, imp: 55 },
+      { inv: 1200, val: 14500, imp: 65 },
+      { inv: 2500, val: 30000, imp: 70 }
+    ];
 
-    let impactChart, momentumChart;
+    // Dummy Data si no hay CSV
+    const dummyBreweries = ["Kross", "Kunstmann", "Granizo", "Jester", "Tamango", "Tübinger", "Alameda", "Hasta Pronto", "Intrinsical", "Spoh", "Vericcio", "Bundor", "Cuello Negro", "Lo Vilu", "Mauco"];
 
-    // --- CHART FUNCTIONS ---
+    function getBreweryData(name) {
+      // Simulación basada en nombre para que sea determinista en el demo
+      const seed = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return {
+        impact: 40 + (seed % 60),
+        gold: seed % 5,
+        silver: (seed % 7),
+        bronze: (seed % 9),
+        potential_start: 20 + (seed % 20),
+        potential_end: 60 + (seed % 35),
+        momentum: Array.from({length: 10}, (_, i) => Math.round(i * (seed % 2) + (seed % 5)))
+      };
+    }
+
+    // Procesamiento de datos del CSV
+    function processAllData() {
+      if (!allData || allData.length === 0) return null;
+      
+      const breweries = {};
+      
+      // Filtrar solamentse registros de 2025 para el ranking e impacto actual
+      const data2025 = allData.filter(item => item.anio === "2025");
+      
+      data2025.forEach(item => {
+        const name = item.cerveceria;
+        if (!name || name === " - ") return;
+        
+        if (!breweries[name]) {
+          breweries[name] = {
+            name: name,
+            gold: 0,
+            silver: 0,
+            bronze: 0,
+            medalsByMonth: Array(12).fill(0),
+            impact: 0
+          };
+        }
+        
+        const b = breweries[name];
+        const medalla = item.medalla_base ? item.medalla_base.toLowerCase() : "";
+        
+        if (medalla.includes("oro")) { b.gold++; b.impact += 30; }
+        else if (medalla.includes("plata")) { b.silver++; b.impact += 20; }
+        else if (medalla.includes("bronce")) { b.bronze++; b.impact += 10; }
+        
+        // Extraer mes de 'fecha' (formato YYYY-MM)
+        if (item.fecha && item.fecha.includes("-")) {
+          const partes = item.fecha.split("-");
+          const mes = parseInt(partes[1]);
+          if (!isNaN(mes) && mes >= 1 && mes <= 12) {
+            b.medalsByMonth[mes - 1]++;
+          }
+        }
+      });
+      
+      return breweries;
+    }
+
+    async function cargarCSV() {
+      try {
+        const response = await fetch('BBDD_Medallero_Chile.csv');
+        if (!response.ok) throw new Error('File not found');
+        const text = await response.text();
+        const rows = text.split('\n').filter(row => row.trim().length > 0);
+        const headers = rows[0].split(';').map(h => h.trim());
+        allData = rows.slice(1).map(row => {
+          const values = row.split(';');
+          const item = {};
+          headers.forEach((h, i) => item[h] = values[i] ? values[i].trim() : "");
+          return item;
+        });
+        console.log("CSV Loaded: ", allData.length);
+        
+        // Trigger initial charts update with real data
+        if (rankingChart) updateCharts();
+      } catch (e) {
+        console.warn("Using Dummy Data Engine:", e);
+        allData = [];
+      }
+    }
+
+    // Inicialización de Gráficos
     function initCharts() {
-      const ctxImpact = document.getElementById('impactChart').getContext('2d');
-      const grad = ctxImpact.createLinearGradient(0, 0, 400, 0);
-      grad.addColorStop(0, '#06232E');
-      grad.addColorStop(1, '#f7c32f');
+      const ctxRanking = document.getElementById('rankingChart').getContext('2d');
+      const ctxTimeline = document.getElementById('timelineChart').getContext('2d');
 
-      impactChart = new Chart(ctxImpact, {
+      rankingChart = new Chart(ctxRanking, {
         type: 'bar',
         data: {
-          labels: TOP_15_LABELS,
+          labels: [],
           datasets: [{
-            data: TOP_15_VALUES,
-            backgroundColor: TOP_15_LABELS.map(() => grad),
-            borderRadius: 5
+            data: [],
+            backgroundColor: 'rgba(30, 58, 74, 0.8)'
           }]
         },
         options: {
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { 
-            x: { display: false }, 
-            y: { ticks: { color: '#fff', font: { size: 10 } }, grid: { display: false } }
-          },
-          onClick: (e, items) => { if(items.length > 0) showModal(TOP_15_LABELS[items[0].index]); }
+          plugins: { legend: { display: false }, tooltip: { enabled: true } },
+          scales: { x: { display: false }, y: { ticks: { color: '#fff', font: { size: 10 } } } },
+          onClick: (e, elements) => {
+            if (elements.length > 0) {
+              const idx = elements[0].index;
+              const name = rankingChart.data.labels[idx];
+              openMedalOverlay(name);
+            }
+          }
         }
       });
 
-      const ctxMomentum = document.getElementById('momentumChart').getContext('2d');
-      momentumChart = new Chart(ctxMomentum, {
+      timelineChart = new Chart(ctxTimeline, {
         type: 'line',
         data: {
-          labels: ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+          labels: ['MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
           datasets: [
-            { label: 'Promedio Top 5', data: TOP_5_AVG, borderColor: '#444', borderDash: [5, 5], fill: false, pointRadius: 0 },
-            { label: 'Tu Cervecería', data: MOCK_BREWERIES.default.history, borderColor: '#f7c32f', backgroundColor: 'rgba(247,195,47,0.2)', fill: true, tension: 0.4 }
+            {
+              label: 'Promedio Mercado',
+              data: [2, 4, 6, 8, 12, 15, 18, 22, 25, 30],
+              borderColor: 'rgba(255,255,255,0.2)',
+              borderDash: [5, 5],
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0
+            },
+            {
+              label: 'Tu Cervecería',
+              data: Array(10).fill(0),
+              borderColor: '#f7c32f',
+              backgroundColor: 'rgba(247, 195, 47, 0.2)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 5,
+              pointHoverRadius: 10
+            }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { 
-            legend: { display: false },
-            tooltip: { 
-              padding: 15, bodySpacing: 10, cornerRadius: 10,
-              bodyFont: { size: 14 },
-              callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} medallas` }
-            }
-          },
-          scales: {
-            x: { ticks: { color: '#fff' }, grid: { display: false } },
-            y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+          plugins: { legend: { display: false } },
+          scales: { 
+            y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { ticks: { color: '#fff' }, grid: { display: false } }
           }
         }
       });
+      
+      updateCharts();
     }
 
-    function updateLogic(brandName) {
-      const query = brandName.toLowerCase().trim();
-      const data = MOCK_BREWERIES[query] || MOCK_BREWERIES.default;
-      const displayBrand = brandName || "Tu Cervecería";
-
-      // Impact Chart highlight
-      const idx = TOP_15_LABELS.findIndex(l => l.toLowerCase() === query);
-      impactChart.data.datasets[0].backgroundColor = TOP_15_LABELS.map((l, i) => {
-        return (i === idx) ? '#f7c32f' : '#1e3a4a';
-      });
-      impactChart.update();
-
-      // Thermometer
-      document.getElementById('thermoCurrent').style.height = data.current + '%';
-      document.getElementById('thermoPotential').style.height = data.potential + '%';
-      document.getElementById('txtCurrent').innerText = data.current + '%';
-      document.getElementById('txtPotential').innerText = data.potential + '%';
-
-      // Momentum
-      momentumChart.data.datasets[1].data = data.history;
-      momentumChart.data.datasets[1].label = displayBrand;
-      momentumChart.update();
-
-      if (!MOCK_BREWERIES[query] && query !== "") {
-        alert("Cervecería no encontrada en base de datos. Mostrando proyección estimada basada en perfil.");
+    function updateCharts() {
+      const bMap = processAllData();
+      
+      let rankingNames = [];
+      let rankingValues = [];
+      
+      if (bMap) {
+        const sorted = Object.values(bMap).sort((a, b) => b.impact - a.impact);
+        const top15 = sorted.slice(0, 15);
+        rankingNames = top15.map(b => b.name);
+        rankingValues = top15.map(b => b.impact);
+      } else {
+        rankingNames = [...dummyBreweries];
+        rankingValues = rankingNames.map((_, i) => 100 - (i * 5));
       }
+      
+      let searchData = null;
+      if (selectedBrewery && bMap) {
+        // Encontrar por nombre EXACTO o parcial (sensible a mayúsculas)
+        const nameKey = Object.keys(bMap).find(k => k.toLowerCase() === selectedBrewery.toLowerCase()) || 
+                        Object.keys(bMap).find(k => k.toLowerCase().includes(selectedBrewery.toLowerCase()));
+        
+        if (nameKey) {
+          const b = bMap[nameKey];
+          searchData = {
+            impact: b.impact,
+            gold: b.gold,
+            silver: b.silver,
+            bronze: b.bronze,
+            potential_start: Math.min(b.impact, 40),
+            potential_end: Math.min(b.impact * 2, 95),
+            momentum: b.medalsByMonth.slice(2, 12).map((v, i, arr) => {
+              // Acumulativo para el timeline
+              let acc = 0;
+              for(let j=0; j<=i; j++) acc += arr[j];
+              return acc;
+            })
+          };
+          
+          if (!rankingNames.includes(nameKey)) {
+             rankingNames[rankingNames.length - 1] = nameKey;
+             rankingValues[rankingNames.length - 1] = b.impact;
+             document.getElementById('posFullMsg').style.display = 'block';
+             document.getElementById('posFullMsg').innerText = `Estás en posición #${Object.values(bMap).sort((a,b) => b.impact - a.impact).findIndex(x => x.name === nameKey) + 1}. Tap para ver detalles.`;
+          } else {
+             document.getElementById('posFullMsg').style.display = 'none';
+          }
+          selectedBrewery = nameKey; // Normalizar nombre
+        } else {
+          document.getElementById('searchMsg').innerText = "Cervecería no encontrada en los registros 2025.";
+        }
+      }
+
+      rankingChart.data.labels = rankingNames;
+      rankingChart.data.datasets[0].data = rankingValues;
+      rankingChart.data.datasets[0].backgroundColor = rankingNames.map(name => name === selectedBrewery ? '#f7c32f' : 'rgba(30, 58, 74, 0.8)');
+      rankingChart.update();
+
+      // Gauge
+      const start = searchData ? searchData.potential_start : 35;
+      const end = searchData ? searchData.potential_end : 78;
+      document.getElementById('gaugeFill').style.height = start + '%';
+      document.getElementById('gaugePot').style.height = end + '%';
+      document.getElementById('gaugeValues').innerText = `${start}% → ${end}%`;
+
+      // Timeline
+      const momentumData = searchData ? searchData.momentum : [2, 3, 5, 7, 10, 11, 14, 18, 22, 25];
+      timelineChart.data.datasets[1].data = momentumData;
+      timelineChart.update();
     }
 
-    function showModal(brand) {
-      const query = brand.toLowerCase().trim();
-      const data = MOCK_BREWERIES[query] || MOCK_BREWERIES.default;
-      document.getElementById('modalBrand').innerText = brand;
-      document.getElementById('goldVal').innerText = data.medals[0];
-      document.getElementById('silverVal').innerText = data.medals[1];
-      document.getElementById('bronzeVal').innerText = data.medals[2];
-      document.getElementById('impactOverlay').style.display = 'flex';
+    // Modal Medallas
+    function openMedalOverlay(name) {
+      let data = null;
+      const bMap = processAllData();
+      
+      if (bMap && bMap[name]) {
+        const b = bMap[name];
+        data = { gold: b.gold, silver: b.silver, bronze: b.bronze };
+      } else {
+        data = getBreweryData(name);
+      }
+      
+      document.getElementById('medalModalTitle').innerText = name.toUpperCase();
+      document.getElementById('countGold').innerText = data.gold;
+      document.getElementById('countSilver').innerText = data.silver;
+      document.getElementById('countBronze').innerText = data.bronze;
+      document.getElementById('medalOverlay').style.display = 'flex';
     }
 
-    // --- PRICE CALCULATION ---
-    let currentBase = 10000;
-    let currentMultiplier = 1;
+    // Slider Logic
+    function initSlider() {
+      const rail = document.getElementById('sliderRail');
+      const thumb = document.getElementById('sliderThumb');
+      const fill = document.getElementById('sliderFill');
+      const wrapper = document.getElementById('sliderWrapper');
 
-    function updatePrice() {
-      const total = Math.round(currentBase * currentMultiplier);
-      document.getElementById('finalPriceDisplay').innerText = '$' + total.toLocaleString('es-CL') + ' CLP';
+      function update(index) {
+        selectedTramoIdx = index;
+        const percent = (index / 4) * 100;
+        fill.style.width = percent + '%';
+        thumb.style.left = percent + '%';
+        
+        // Update Metrics Originales
+        const m = metricsTable[index];
+        document.getElementById('valInversion').innerText = `$${m.inv.toLocaleString()} USD`;
+        document.getElementById('valValor').innerText = `$${m.val.toLocaleString()} USD`;
+        document.getElementById('valImpacto').innerText = `${m.imp}%`;
+        
+        // Update Prices
+        updateCalculatedPrice();
+      }
+
+      function handleMove(e) {
+        const rect = rail.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let p = (clientX - rect.left) / rect.width;
+        p = Math.max(0, Math.min(1, p));
+        const index = Math.round(p * 4);
+        update(index);
+      }
+
+      thumb.addEventListener('mousedown', () => {
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', () => window.removeEventListener('mousemove', handleMove), {once: true});
+      });
+      thumb.addEventListener('touchstart', () => {
+        window.addEventListener('touchmove', handleMove);
+        window.addEventListener('touchend', () => window.removeEventListener('touchmove', handleMove), {once: true});
+      });
+      rail.addEventListener('click', handleMove);
+
+      update(3); // Default
     }
 
-    // --- EVENTS ---
-    document.getElementById('updateBtn').addEventListener('click', () => {
-      updateLogic(document.getElementById('brandInput').value);
+    // Pricing Logic
+    function updateCalculatedPrice() {
+      // Multiplicador del tramo
+      const m = multipliers[selectedTramoIdx];
+      // Precios de los botones
+      document.getElementById('priceExplorer').innerText = `$${Math.round(basePrices.explorer * m).toLocaleString()}`;
+      document.getElementById('pricePodium').innerText = `$${Math.round(basePrices.podium * m).toLocaleString()}`;
+      document.getElementById('priceChampion').innerText = `$${Math.round(basePrices.champion * m).toLocaleString()}`;
+
+      const final = basePrices[selectedPlan] * m;
+      document.getElementById('calculatedTotalDisplay').innerText = `PRECIO FINAL: $${Math.round(final).toLocaleString()} CLP / MES`;
+    }
+
+    // Event Listeners
+    document.getElementById('updateSearchBtn').addEventListener('click', () => {
+      const input = document.getElementById('brewerySearch');
+      if (input.value.trim().length > 0) {
+        selectedBrewery = input.value.trim();
+        document.getElementById('searchMsg').innerText = `Analizando proyección para: ${selectedBrewery}...`;
+        updateCharts();
+      } else {
+        document.getElementById('searchMsg').innerText = "Por favor ingresa un nombre.";
+      }
+    });
+
+    document.getElementById('closeOverlay').addEventListener('click', () => {
+      document.getElementById('medalOverlay').style.display = 'none';
     });
 
     document.querySelectorAll('.tier-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const plan = btn.getAttribute('data-plan');
-        if(plan === 'explorer') currentBase = 10000;
-        else if(plan === 'podium') currentBase = 25000;
-        else currentBase = 50000;
-        updatePrice();
+        selectedPlan = btn.getAttribute('data-plan');
+        updateCalculatedPrice();
       });
     });
+    
+    document.getElementById('posFullMsg').addEventListener('click', () => openMedalOverlay(selectedBrewery));
 
-    document.querySelectorAll('.tramo-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tramo-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentMultiplier = parseFloat(btn.getAttribute('data-mul'));
-        updatePrice();
-      });
+    document.getElementById('mainCta').addEventListener('click', () => {
+      alert("Agenda solicitada. Un especialista de Podium Beer te contactará pronto.");
     });
 
-    document.getElementById('closeModal').onclick = () => document.getElementById('impactOverlay').style.display = 'none';
-    document.getElementById('impactNote').onclick = () => showModal(document.getElementById('brandInput').value || "Tu Cervecería");
-
-    // Slider Original Logic (Minimal)
-    const thumb = document.getElementById('sliderThumb');
-    const rail = document.getElementById('sliderRail');
-    const fill = document.getElementById('sliderFill');
-    let isDragging = false;
-
-    function updateSlider(x) {
-      const rect = rail.getBoundingClientRect();
-      let pos = (x - rect.left) / rect.width;
-      pos = Math.max(0, Math.min(1, pos));
-      const step = Math.round(pos * 4) / 4;
-      thumb.style.left = (step * 100) + '%';
-      fill.style.width = (step * 100) + '%';
-    }
-
-    rail.addEventListener('mousedown', (e) => { isDragging = true; updateSlider(e.clientX); });
-    window.addEventListener('mousemove', (e) => { if(isDragging) updateSlider(e.clientX); });
-    window.addEventListener('mouseup', () => { isDragging = false; });
-    rail.addEventListener('touchstart', (e) => { isDragging = true; updateSlider(e.touches[0].clientX); });
-    window.addEventListener('touchmove', (e) => { if(isDragging) updateSlider(e.touches[0].clientX); });
-    window.addEventListener('touchend', () => { isDragging = false; });
-
-    // Init
-    window.onload = () => {
+    // Start
+    (async () => {
+      await cargarCSV();
       initCharts();
-      updateLogic("");
-      updatePrice();
-    };
+      initSlider();
+      updateCalculatedPrice();
+    })();
   </script>
 </body>
 </html>
