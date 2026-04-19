@@ -1,265 +1,484 @@
-* {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Simulador de Alianza Podium Beer - 3 Gráficos Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+/* RESET & BASE */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Inter', sans-serif; background: #001219; color: #fff; min-height: 100vh; overflow-x: hidden; }
+code
+Código
+/* BACKGROUNDS */
+.bg-main { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(135deg, #001219 0%, #002533 100%); }
+.bg-image { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; object-fit: cover; }
 
-    body {
-        font-family: 'Inter', sans-serif;
-        background: var(--navy);
-        background-image: radial-gradient(circle at top right, #0a3a4d, #06232e);
-        color: var(--text-main);
-        min-height: 100vh;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+/* CONTAINERS */
+.app-wrapper { width: 100%; max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem; }
 
-    .app-container {
-        width: 100%;
-        max-width: 1200px;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
+/* GLASSMORPHISM */
+.glass-card { 
+  background: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(15px); 
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  border-radius: 24px; 
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
 
-    header {
-        text-align: center;
-        padding: 20px 0;
-    }
+/* SEARCH SECTION */
+.search-container { display: flex; gap: 1rem; margin-bottom: 0.5rem; justify-content: center; width: 100%; }
+.search-input { 
+  flex: 1; max-width: 400px; padding: 12px 20px; border-radius: 50px; 
+  border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff; font-size: 16px; outline: none;
+}
+.btn-update { 
+  padding: 12px 24px; border-radius: 50px; border: none; 
+  background: linear-gradient(90deg, #F7C32F, #C99E25); color: #000; font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.btn-update:active { transform: scale(0.95); }
 
-    h1 {
-        font-size: clamp(24px, 5vw, 40px);
-        font-weight: 800;
-        margin-bottom: 10px;
-        background: linear-gradient(90deg, #fff, var(--gold));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+/* GRID FOR GRAPHS */
+.graphs-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+/* Landscape iPad 12.5.8 & Desktop */
+@media (min-width: 1024px) {
+  .graphs-grid { flex-direction: row; }
+  .graph-item { flex: 1; min-height: 400px; }
+}
+.graph-item { display: flex; flex-direction: column; align-items: center; }
+.graph-title { font-size: 14px; font-weight: 700; color: #F7C32F; text-transform: uppercase; margin-bottom: 1rem; text-align: center; }
 
-    .glass-card {
-        background: rgba(6, 35, 46, 0.6);
-        backdrop-filter: blur(15px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
+/* PRICES BLOCK */
+.prices-grid { display: grid; grid-template-columns: repeat(auto-fit, min-minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.price-selector { display: flex; flex-direction: column; gap: 1rem; align-items: center; text-align: center; }
+.plan-btn { 
+  width: 100%; max-width: 280px; padding: 15px; border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; transition: 0.2s;
+}
+.plan-btn.active { border-color: #F7C32F; background: rgba(247, 195, 47, 0.1); box-shadow: 0 0 15px rgba(247, 195, 47, 0.2); }
+.final-price-box { font-size: 32px; font-weight: 800; color: #F7C32F; margin: 1rem 0; }
 
-    /* Input Brewery Section */
-    .search-section {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 10px;
-    }
+/* SLIDER STYLES */
+.slider-box { width: 100%; margin: 2rem 0; }
+.range-slider { 
+  width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; outline: none; appearance: none; -webkit-appearance: none;
+}
+.range-slider::-webkit-slider-thumb {
+  appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #F7C32F; cursor: pointer; box-shadow: 0 0 10px rgba(247, 195, 47, 0.5);
+}
+.slider-labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.6); }
 
-    input[type="text"] {
-        flex: 1;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--glass-border);
-        padding: 14px 20px;
-        border-radius: 12px;
-        color: white;
-        font-size: 16px;
-        outline: none;
-    }
+/* TOOLTIP OVERLAY */
+#overlay-medalists { 
+   position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); 
+   display: none; z-index: 100; align-items: center; justify-content: center; text-align: center;
+}
+.overlay-content { background: #001219; border: 2px solid #F7C32F; border-radius: 30px; padding: 2rem; width: 80%; max-width: 400px; box-shadow: 0 0 40px rgba(247, 195, 47, 0.3); }
 
-    button.primary-btn {
-        background: var(--pink);
-        color: white;
-        border: none;
-        padding: 14px 28px;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 0.2s, filter 0.2s;
-    }
+/* CTA & CREDITS */
+.cta-btn { 
+  width: 100%; padding: 20px; border-radius: 50px; background: linear-gradient(90deg, #E40F63, #C32263); 
+  color: #fff; font-size: 18px; font-weight: 800; border: none; cursor: pointer; margin-top: 1rem; box-shadow: 0 10px 20px rgba(195, 34, 99, 0.3);
+}
+.credits { margin-top: 2rem; font-size: 12px; color: rgba(255,255,255,0.4); text-align: center; }
 
-    button.primary-btn:active {
-        transform: scale(0.95);
-    }
-
-    /* Charts Grid */
-    .charts-row {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    @media screen and (min-width: 1024px) and (orientation: landscape) {
-        .charts-row {
-            flex-direction: row;
-        }
-        .chart-item {
-            flex: 1;
-        }
-    }
-
-    .chart-item {
-        min-height: 350px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .chart-item h3 {
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--gold);
-        margin-bottom: 15px;
-        border-left: 3px solid var(--pink);
-        padding-left: 10px;
-    }
-
-    .canvas-container {
-        flex: 1;
-        position: relative;
-    }
-
-    /* Pricing Section */
-    .pricing-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    @media (min-width: 768px) {
-        .pricing-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    .plan-option {
-        padding: 20px;
-        border: 2px solid transparent;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.03);
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .plan-option.active {
-        border-color: var(--pink);
-        background: rgba(228, 15, 99, 0.1);
-    }
-
-    .plan-name { font-weight: 800; font-size: 18px; margin-bottom: 5px; }
-    .plan-price { font-size: 14px; color: var(--text-dim); }
-
-    .multiplier-selector {
-        margin-top: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-    }
-
-    .mult-btn {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--glass-border);
-        padding: 8px 12px;
-        border-radius: 8px;
-        color: var(--text-dim);
-        font-size: 12px;
-        cursor: pointer;
-    }
-
-    .mult-btn.active {
-        background: var(--gold);
-        color: var(--navy);
-        font-weight: 700;
-    }
-
-    .final-price-display {
-        margin-top: 20px;
-        text-align: center;
-        padding-top: 15px;
-        border-top: 1px solid var(--glass-border);
-    }
-
-    .final-price-display .label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; }
-    .final-price-display .value { font-size: 32px; font-weight: 800; color: var(--gold); }
-
-    /* Slider Block */
-    .slider-section {
-        margin-top: 10px;
-    }
-    
-    input[type="range"] {
-        width: 100%;
-        height: 8px;
-        border-radius: 5px;
-        background: #1E3A4A;
-        accent-color: var(--gold);
-        margin: 15px 0;
-    }
-
-    .slider-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 11px;
-        color: var(--text-dim);
-    }
-
-    /* Results Metrics */
-    .metrics-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    @media (min-width: 600px) {
-        .metrics-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    .metric-card {
-        text-align: center;
-    }
-
-    .metric-title { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
-    .metric-val { font-size: 20px; font-weight: 700; color: white; }
-
-    footer {
-        text-align: center;
-        padding: 20px;
-        font-size: 14px;
-        color: var(--gold);
-    }
-
-    /* Overlay Styles for Mobile/iPad */
-    .medal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.85);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        padding: 20px;
-    }
-
-    .medal-content {
-        background: var(--navy);
-        padding: 30px;
-        border-radius: 20px;
-        border: 2px solid var(--gold);
-        text-align: center;
-        max-width: 300px;
-        width: 100%;
-    }
-
-    .medal-item {
-        margin: 15px 0;
-        display: flex;
-        justify-content: space-between;
-        font-size: 18px;
-    }
+.chart-container { position: relative; width: 100%; height: 350px; }
 </style>
+</head>
+<body>
+<div class="bg-main"></div>
+<img src="https://picsum.photos/seed/beer/1920/1080?blur=10" class="bg-image" alt="fondo" referrerPolicy="no-referrer">
+<div class="app-wrapper">
+<!-- Encabezado -->
+<header style="text-align:center;">
+<img src="https://podiumbeer.cl/wp-content/uploads/2023/06/Logo-Podium-Beer-White.png" alt="Logo Podium Beer" style="height:60px; margin-bottom:1rem;">
+<h1 style="font-size:2rem; font-weight:800; color:#F7C32F;">Simulador de Alianza Podium Beer</h1>
+</header>
+code
+Código
+<!-- Search Section -->
+<section class="glass-card">
+  <h2 style="font-size:14px; color:#F7C32F; text-transform:uppercase; margin-bottom:1rem;">Busca tu Cervecería</h2>
+  <div class="search-container">
+    <input type="text" id="breweryInput" class="search-input" placeholder="Ej: Cervecería Kross...">
+    <button class="btn-update" id="btnUpdate">ACTUALIZAR</button>
+  </div>
+  <p id="searchStatus" style="font-size:12px; margin-top:0.5rem; text-align:center; color:rgba(255,255,255,0.5);"></p>
+</section>
+
+<!-- Graphs Section -->
+<section class="graphs-grid">
+  <div class="glass-card graph-item">
+    <h3 class="graph-title">Ranking de Impacto</h3>
+    <div class="chart-container">
+      <canvas id="chartImpact"></canvas>
+    </div>
+    <p id="rankHint" style="font-size:11px; margin-top:8px; color:#F7C32F; cursor:pointer; display:none;">Tap para ver tu posición completa</p>
+  </div>
+  
+  <div class="glass-card graph-item">
+    <h3 class="graph-title">Termómetro de Potencial</h3>
+    <div class="chart-container" style="height:350px; width:120px;">
+      <canvas id="chartGauge"></canvas>
+    </div>
+    <div style="margin-top:1rem; text-align:center;">
+      <p id="gaugeHoy" style="font-weight:700; color:#fff;">Hoy: 35%</p>
+      <p id="gaugeMax" style="font-weight:700; color:#F7C32F;">Potencial máximo: 78%</p>
+    </div>
+  </div>
+
+  <div class="glass-card graph-item">
+    <h3 class="graph-title">Timeline de Momentum (2025)</h3>
+    <div class="chart-container">
+      <canvas id="chartMomentum"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing & Selection Section -->
+<section class="glass-card">
+  <h2 style="font-size:14px; color:#F7C32F; text-transform:uppercase; margin-bottom:1rem;">Simulador de Tarifario Dinámico</h2>
+  
+  <!-- Producers Slider -->
+  <div class="slider-box">
+    <p style="font-size:14px; margin-bottom:1rem; color:rgba(255,255,255,0.8);">Tramo de Producción Anual (HL)</p>
+    <input type="range" min="0" max="4" step="1" value="0" class="range-slider" id="prodSlider">
+    <div class="slider-labels">
+      <span><500</span>
+      <span>501-1000</span>
+      <span>1001-5000</span>
+      <span>5001-10000</span>
+      <span>≥20000</span>
+    </div>
+  </div>
+
+  <div class="prices-grid">
+    <div class="price-selector">
+      <button class="plan-btn" data-plan="explorer" data-price="10000">
+        <h4 style="color:#C99E25;">EXPLORER</h4>
+        <p style="font-size:12px; margin-top:4px;">Visibilidad base y gestión de datos</p>
+      </button>
+      <button class="plan-btn active" data-plan="podium" data-price="25000">
+        <h4 style="color:#F7C32F;">PODIUM</h4>
+        <p style="font-size:12px; margin-top:4px;">Optimización estratégica activa</p>
+      </button>
+      <button class="plan-btn" data-plan="champion" data-price="50000">
+        <h4 style="color:#E40F63;">CHAMPION</h4>
+        <p style="font-size:12px; margin-top:4px;">Liderazgo total de mercado</p>
+      </button>
+    </div>
+
+    <div style="text-align:center; padding:2rem; background:rgba(0,0,0,0.2); border-radius:30px;">
+      <p style="font-size:14px; color:rgba(255,255,255,0.6);">Valor Mensual estimado</p>
+      <div class="final-price-box" id="finalPriceLabel">$ 25.000 CLP</div>
+      <p style="font-size:11px; color:rgba(255,255,255,0.4);">* Sujeto a validación técnica de integración</p>
+      <button class="cta-btn">SELECCIONAR PLAN</button>
+    </div>
+  </div>
+</section>
+
+<footer class="credits">
+  Simulador desarrollado por Alianza Podium Beer. © 2026 Registro V.1.0.<br>
+  Optimizado para visualización en iPad y dispositivos de alta gama.
+</footer>
+</div>
+<!-- Superposición de medallas -->
+<div id="overlay-medalists">
+<div class="overlay-content">
+<h3 id="overlayName" style="color:#F7C32F; margin-bottom:1rem;">Cervecería</h3>
+<div style="display:flex; justify-content:space-around; margin:1.5rem 0;">
+<div><p style="font-size:32px;">🥇</p><p id="countOro" style="font-size:18px; font-weight:800;">0</p></div>
+<div><p style="font-size:32px;">🥈</p><p id="countPlata" style="font-size:18px; font-weight:800;">0</p></div>
+<div><p style="font-size:32px;">🥉</p><p id="countBronce" style="font-size:18px; font-weight:800;">0</p></div>
+</div>
+<button onclick="document.getElementById('overlay-medalists').style.display='none'" style="background:transparent; border:1px solid #fff; color:#fff; padding:8px 20px; border-radius:50px; cursor:pointer;">Cerrar</button>
+</div>
+</div>
+<script>
+// --- BASE DE DATOS Y LÓGICA ---
+let csvData = [];
+let selectedBrewery = "";
+
+// Multiplicadores para precios
+const prodMultipliers = [1, 1.5, 2, 3, 5];
+let currentMultiplier = 1;
+let basePlanPrice = 25000;
+
+// Referencias de gráficos
+let chartImpact, chartGauge, chartMomentum;
+
+async function loadCSV() {
+try {
+const response = await fetch('BBDD_Medallero_Chile.csv');
+const text = await response.text();
+const rows = text.split('\n').filter(r => r.trim() !== "");
+const headers = rows[0].split(';');
+
+csvData = rows.slice(1).map(line => {
+const values ​​= line.split(';');
+const obj = {};
+headers.forEach((h, i) => obj[h.trim()] = values[i] ? values[i].trim() : "");
+return obj;
+});
+
+console.log("CSV cargado con éxito. Registros:", csvData.length);
+processInitialData();
+} catch (err) {
+console.error("Error cargando CSV:", err);
+}
+}
+
+function calculateImpactScore(brewName) {
+const brewMedals = csvData.filter(d => d.cerveceria.toLowerCase() === brewName.toLowerCase());
+const total = brewMedals.length;
+const premium = brewMedals.filter(d => d.medalla_base.toLowerCase() === 'oro').length;
+return (total * 0.6) + (premium * 0.4);
+}
+
+function updateCharts() {
+// 1. RANKING DE IMPACTO
+const breweryImpactMap = {};
+csvData.forEach(d => {
+const name = d.cerveceria;
+if (!name) return;
+if (!breweryImpactMap[name]) {
+const medals = csvData.filter(m => m.cerveceria === name);
+const total = medals.length;
+const gold = medals.filter(m => m.medalla_base.toLowerCase() === 'oro').length;
+breweryImpactMap[name] = (total * 0.6) + (gold * 0.4);
+}
+});
+
+const topList = Object.entries(breweryImpactMap)
+.sort((a, b) => b[1] - a[1])
+.slice(0, 15);
+
+const labels = topList.map(t => t[0]);
+const dataValues ​​= topList.map(t => t[1]);
+
+// Comprobar si selected está en los 15 primeros
+const selectedIndex = labels.findIndex(l => l.toLowerCase() === selectedBrewery.toLowerCase());
+const colors = labels.map((l, i) => (l.toLowerCase() === selectedBrewery.toLowerCase()) ? '#F7C32F' : 'rgba(5, 76, 92, 0.8)');
+
+if (chartImpact) chartImpact.destroy();
+const ctx1 = document.getElementById('chartImpact').getContext('2d');
+chartImpact = new Chart(ctx1, {
+type: 'bar',
+data: {
+labels: labels,
+datasets: [{
+data: dataValues,
+backgroundColor: colors,
+borderRadius: 5,
+borderSkipped: false
+}]
+},
+options: {
+indexAxis: 'y',
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false },
+tooltip: {
+backgroundColor: '#001219',
+titleFont: { size: 16 },
+bodyFont: { size: 14 },
+padding: 15,
+displayColors: false,
+callbacks: {
+label: (ctx) => `Puntuación de impacto: ${ctx.parsed.x.toFixed(1)}` }
+}
+}
+,
+scales: {
+x: { display: false },
+y: { ticks: { color: '#fff', font: { size: 10 } }, grid: { display: false } }
+},
+onClick: (e, activeEls) => {
+if (activeEls.length > 0) {
+const idx = activeEls[0].index;
+showMedalOverlay(labels[idx]);
+} }
+}
+}
+);
+
+document.getElementById('rankHint').style.display = (selectedIndex === -1 && selectedBrewery !== "") ? 'block' : 'none';
+
+// 2. TERMÓMETRO DE CALENTAMIENTO
+let currentPot = 0;
+let maxPot = 0;
+if (selectedBrewery) {
+const medals = csvData.filter(d => d.cerveceria.toLowerCase() === selectedBrewery.toLowerCase());
+currentPot = Math.min(100, medals.length * 5 + 15); // Lógica fake
+maxPot = Math.min(100, currentPot + 40);
+} else {
+currentPot = 35; maxPot = 78;
+}
+
+document.getElementById('gaugeHoy').innerText = `Hoy: ${currentPot}%`;
+document.getElementById('gaugeMax').innerText = `Potencial máximo: ${maxPot}%`;
+
+if (chartGauge) chartGauge.destroy();
+const ctx2 = document.getElementById('chartGauge').getContext('2d');
+chartGauge = new Chart(ctx2, {
+type: 'bar',
+data: {
+labels:['Potencial'],
+conjuntos de datos: [
+{ data: [currentPot], backgroundColor: '#E40F63', barThickness: 40 },
+{ data: [maxPot - currentPot], backgroundColor: 'rgba(247, 195, 47, 0.3)', barThickness: 40 }
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: { legend: { display: false }, tooltip: { enabled: false } },
+scales: {
+x: { stacked: true, display: false },
+y: { stacked: true, min: 0, max: 100, ticks: { color: '#fff' } } } }
+}
+)
+;
+
+// 3. CRONOLOGÍA DE MOMENTUM
+const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+let breweryCounts = new Array(12).fill(0);
+let avgCounts = new Array(12).fill(0);
+
+// Promedio de los 5 mejores
+const top5Names = Object.entries(breweryImpactMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(e=>e[0]);
+top5Names.forEach(name => {
+const meds = csvData.filter(d => d.cerveceria === name && d.anio === '2025');
+meds.forEach(m => {
+const monthIdx = parseInt(m.fecha.split('-')[1]) - 1;
+if (monthIdx >= 0) avgCounts[monthIdx]++;
+});
+});
+// Acumular promedio
+for(let i=1; i<12; i++) avgCounts[i] += avgCounts[i-1];
+avgCounts = avgCounts.map(v => v / 5);
+
+if (selectedBrewery) {
+const meds = csvData.filter(d => d.cerveceria.toLowerCase() === selectedBrewery.toLowerCase() && d.anio === '2025');
+meds.forEach(m => {
+const monthIdx = parseInt(m.fecha.split('-')[1]) - 1;
+if (monthIdx >= 0) breweryCounts[monthIdx]++;
+});
+for(let i=1; i<12; i++) breweryCounts[i] += breweryCounts[i-1];
+}
+
+if (chartMomentum) chartMomentum.destroy();
+const ctx3 = document.getElementById('chartMomentum').getContext('2d');
+chartMomentum = new Chart(ctx3, {
+type: 'line',
+data: {
+labels: months,
+datasets: [
+{
+label: selectedBrewery || 'Tu Cervecería',
+data: breweryCounts,
+borderColor: '#F7C32F',
+backgroundColor: 'rgba(247, 195, 47, 0.2)',
+fill:verdadero,
+tensión: 0.4,
+radio del punto: 6,
+radio de desplazamiento del punto: 10
+},
+{
+label: 'Podio de referencia',
+data: avgCounts,
+borderColor: 'rgba(255,255,255,0.2)',
+borderDash: [5, 5],
+pointRadius: 0,
+fill: false,
+tension: 0.4
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false },
+tooltip: {
+backgroundColor: '#001219',
+padding: 12,
+titleFont: { size: 14 },
+bodyFont: { size: 14 },
+mode: 'index',
+intersect: false
+}
+},
+scales: {
+y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+x: { ticks: { color: '#fff' }, grid: { display: false } }
+}
+}
+});
+}
+
+function showMedalOverlay(name) {
+const medals = csvData.filter(d => d.cerveceria === name);
+document.getElementById('overlayName').innerText = name;
+document.getElementById('countOro').innerText = medals.filter(m => m.medalla_base.toLowerCase() === 'oro').length;
+document.getElementById('countPlata').innerText = medals.filter(m => m.medalla_base.toLowerCase() === 'plata').length;
+document.getElementById('countBronce').innerText = medals.filter(m => m.medalla_base.toLowerCase() === 'bronce').length;
+document.getElementById('overlay-medalists').style.display = 'flex';
+}
+
+function updatePrice() {
+const finalPrice = basePlanPrice * currentMultiplier;
+document.getElementById('finalPriceLabel').innerText = `$ ${finalPrice.toLocaleString('de-DE')} CLP`;
+}
+
+// --- EVENTOS INTERACTIVOS ---
+
+document.getElementById('btnUpdate').addEventListener('click', () => {
+const val = document.getElementById('breweryInput').value.trim();
+if (val === "") return;
+
+const found = csvData.some(d => d.cerveceria.toLowerCase() === val.toLowerCase());
+if (found) {
+selectedBrewery = val;
+document.getElementById('searchStatus').innerText = `✅ Visualizando datos de:${val}`;
+actualizarCharts();
+} else {
+document.getElementById('searchStatus').innerText = `⚠️ Cervecería no encontrada en BBDD_Medallero_Chile.csv`;
+alert("Lo sentimos, '" + val + "' no figura en el medallero oficial 2025. ¿Deseas probar con otro nombre?");
+}
+});
+
+document.getElementById('prodSlider').addEventListener('input', (e) => {
+currentMultiplier = prodMultipliers[e.target.value];
+updatePrice();
+});
+
+document.querySelectorAll('.plan-btn').forEach(btn => {
+btn.addEventListener('click', function() {
+document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+this.classList.add('active');
+basePlanPrice = parseInt(this.dataset.price);
+updatePrice();
+});
+});
+
+document.getElementById('rankHint').addEventListener('click', () => {
+if (selectedBrewery) showMedalOverlay(selectedBrewery);
+});
+
+function processInitialData() {
+updateCharts();
+updatePrice();
+}
+
+// Inicializar
+loadCSV();
+
+</script>
+</body>
+</html>
