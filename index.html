@@ -2,359 +2,526 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Simulador de Alianza | Podium Beer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- Chart.js 2.9.4: Indispensable para compatibilidad con iPad iOS 12.5.8 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Simulador de Alianza | Podium Beer - iPad 12.5.8</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <!-- Chart.js 2.9.4: La única versión que garantiza gráficos táctiles en iPad 2018 con iOS 12 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/2.9.4/Chart.bundle.min.js"></script>
   <style>
-    /* RESET PROFESIONAL */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { 
-      background: #000; font-family: 'Inter', -apple-system, sans-serif; color: #fff; 
-      min-height: 100vh; overflow-x: hidden; scroll-behavior: smooth;
-    }
-
-    /* CAPAS DE FONDO Y GLASSMORPHISM RICA */
+    body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; overflow-x: hidden; color: #fff; }
     .hero-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: #000; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
-    .hero-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.65; z-index: -1; }
-    .hero-vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 200px rgba(0,0,0,0.85); pointer-events: none; z-index: 0; }
-
-    .main-wrap { width: 92%; max-width: 1200px; margin: 3rem auto; position: relative; z-index: 10; padding-bottom: 6rem; }
-
-    /* CABECERA ESTRATÉGICA */
-    .header { text-align: center; margin-bottom: 4rem; }
-    .img-logo { width: 230px; display: block; margin: 0 auto 1.5rem auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
-    .logo-desc { font-size: 16px; font-weight: 500; color: #fff; max-width: 450px; margin: 0 auto 2.5rem auto; line-height: 1.5; opacity: 0.9; }
-    .h1-hero { font-size: 42px; font-weight: 900; color: #f7c32f; text-transform: uppercase; letter-spacing: -1.5px; margin-bottom: 12px; text-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-    .h2-hero { font-size: 26px; font-weight: 500; color: #CFDEE0; margin-bottom: 2.5rem; letter-spacing: -0.5px; }
-    .intro-block { 
-      background: rgba(6,35,46,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      padding: 2rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.18); 
-      font-size: 17px; line-height: 1.7; text-align: center; max-width: 900px; margin: 0 auto;
+    .hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+    .overlay-color { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06232E; opacity: 0.6; z-index: -1; }
+    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 150px rgba(0,0,0,0.8); pointer-events: none; z-index: 0; }
+    
+    .app-container { width: 92%; max-width: 1200px; margin: 2rem auto; position: relative; z-index: 2; padding-bottom: 5rem; }
+    
+    .header { text-align: center; margin-bottom: 3rem; }
+    .logo-header { display: block; margin: 0 auto 1.5rem auto; width: 220px; height: auto; }
+    .logo-bajada { font-size: 15px; font-weight: 500; color: #FFFFFF; max-width: 400px; margin: 0 auto 1.5rem auto; line-height: 1.4; opacity: 0.95; }
+    .h1-sim { font-size: 38px; font-weight: 800; color: #f7c32f; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 10px; }
+    .h2-sim { font-size: 24px; font-weight: 500; color: #CFDEE0; }
+    .bajada-header { 
+      font-size: 17px; font-weight: 500; color: #FFFFFF; background: rgba(6,35,46,0.85); 
+      padding: 1.5rem; border-radius: 25px; margin-top: 2rem; line-height: 1.6; border: 1px solid rgba(255,255,255,0.15); 
     }
 
-    /* TARJETAS GLASSMORPHISM EXTENDIDAS */
     .glass-card { 
-      background: rgba(6,35,46,0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      border-radius: 2.5rem; border: 1px solid rgba(255,255,255,0.22); 
-      padding: 3rem; margin-top: 3rem; box-shadow: 0 25px 55px rgba(0,0,0,0.65); 
+      background: rgba(6,35,46,0.35); 
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 2.2rem; border: 1px solid rgba(255,255,255,0.2); 
+      padding: 2.5rem; margin-top: 2.5rem; box-shadow: 0 15px 45px rgba(0,0,0,0.5); 
     }
-    .tag-title { font-size: 14px; font-weight: 800; color: #f7c32f; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px; }
-    .card-h { font-size: 28px; font-weight: 800; margin-bottom: 12px; color: #fff; letter-spacing: -0.5px; }
-    .card-p { font-size: 16px; color: #CFDEE0; line-height: 1.6; margin-bottom: 2.5rem; max-width: 800px; }
-
-    /* CUADRO DE BÚSQUEDA DORADO */
-    .search-unit { 
-      background: #f7c32f; border-radius: 80px; display: flex; align-items: center; padding: 7px; gap: 10px; 
-      margin-top: 2rem; box-shadow: 0 15px 35px rgba(247, 195, 47, 0.4); border: 2px solid rgba(255,255,255,0.1);
-    }
-    .search-ipt { 
-      flex: 1; height: 55px; background: #000; border: none; border-radius: 80px; 
-      padding: 0 30px; color: #fff; font-size: 18px; outline: none; font-weight: 500;
-    }
-    .search-btn { 
-      height: 55px; background: transparent; color: #000; font-weight: 900; border: none; 
-      border-radius: 80px; padding: 0 35px; cursor: pointer; text-transform: uppercase; font-size: 16px; 
-    }
-    .search-status { text-align: center; margin-top: 18px; color: #f7c32f; font-weight: 800; font-size: 15px; }
-
-    /* GRID DE LOS 3 GRÁFICOS */
-    .grid-charts { display: flex; flex-direction: column; gap: 25px; margin-top: 3rem; }
-    @media (min-width: 992px) { .grid-charts { flex-direction: row; } .col-chart { flex: 1; } }
-    .col-chart { 
-      background: rgba(0,0,0,0.38); border-radius: 2.2rem; padding: 2.2rem; 
-      border: 1px solid rgba(255,255,255,0.12); display: flex; flex-direction: column; align-items: center; 
-    }
-    .chart-label { color: #f7c32f; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; text-align: center; width: 100%; }
-    .canvas-box { width: 100%; height: 320px; position: relative; }
-
-    /* TERMÓMETRO DINÁMICO */
-    .therm-wrap { width: 60px; height: 220px; background: #000; border: 2px solid #555; border-radius: 40px; position: relative; overflow: hidden; }
-    .therm-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, #E40F63, #f7c32f); transition: height 1.2s; }
-    .therm-target { position: absolute; bottom: 0; width: 100%; background: rgba(247,195,47,0.25); border-top: 4px dashed #f7c32f; z-index: 5; transition: height 1.2s; }
-    .therm-info { text-align: center; margin-top: 25px; font-size: 16px; font-weight: 500; }
-
-    /* SLIDER OPERACIÓN */
-    .slider-track { width: 100%; height: 12px; background: #1E3A4A; border-radius: 50px; position: relative; margin: 4.5rem 0; cursor: pointer; }
-    .slider-bar { position: absolute; height: 100%; background: #fff; border-radius: 50px; transition: width 0.35s ease; width: 0%; }
-    .slider-knob { position: absolute; width: 44px; height: 44px; background: #fff; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); border: 5px solid #06232E; box-shadow: 0 10px 25px rgba(0,0,0,0.7); z-index: 30; }
-    .slider-ticks { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; color: #CFDEE0; padding-top: 1.2rem; }
-
-    /* PLANES */
-    .plans-container { display: flex; gap: 20px; margin: 3rem 0; overflow-x: auto; padding-bottom: 15px; }
-    .plan-card { flex: 1; min-width: 280px; background: rgba(0,0,0,0.45); border: 2px solid rgba(255,255,255,0.2); border-radius: 2rem; padding: 2.5rem 2rem; cursor: pointer; text-align: center; transition: 0.3s; }
-    .plan-card.active { border-color: #f7c32f; background: rgba(247,195,47,0.18); transform: translateY(-5px); }
-    .plan-name { font-weight: 900; font-size: 18px; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-    .plan-summary { font-size: 14px; color: #CFDEE0; line-height: 1.5; opacity: 0.85; }
     
-    .strategic-alliance-box { text-align: center; margin-top: 2rem; }
-    .alliance-title { font-size: 20px; font-weight: 900; color: #f7c32f; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-    .alliance-subtitle { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 10px; }
-    .alliance-desc { font-size: 14px; color: #CFDEE0; line-height: 1.4; max-width: 600px; margin: 0 auto; }
-    
-    .total-display { text-align: center; font-size: 36px; font-weight: 950; color: #f7c32f; margin-top: 3.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2.5rem; text-transform: uppercase; text-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+    .section-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 1.5px; color: #f7c32f; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .section-subtitle { font-size: 22px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
+    .section-desc { font-size: 15px; color: #CFDEE0; line-height: 1.4; margin-bottom: 1.5rem; }
 
-    /* BLOQUE DE RESULTADOS */
-    .result-row { display: flex; align-items: center; gap: 2rem; margin-top: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 2rem; }
-    .ico-box { width: 75px; height: auto; flex-shrink: 0; }
-    .res-data { flex: 1; }
-    .res-h { font-size: 22px; font-weight: 850; color: #fff; margin-bottom: 8px; }
-    .res-p { font-size: 15px; color: #CFDEE0; line-height: 1.4; opacity: 0.9; }
-    .res-val { font-size: 34px; font-weight: 950; color: #f7c32f; min-width: 180px; text-align: right; }
+    .search-box { 
+      background: #f7c32f; border-radius: 60px; display: flex; gap: 10px; margin-top: 1rem; padding: 5px; box-shadow: 0 4px 15px rgba(247, 195, 47, 0.3);
+    }
+    .search-input { 
+      flex: 1; min-width: 250px; background: #000; border: none; 
+      border-radius: 60px; padding: 14px 25px; color: #fff; font-size: 17px; outline: none;
+    }
+    .update-btn { 
+      background: transparent; color: #000; font-weight: 900; border: none; 
+      border-radius: 60px; padding: 14px 25px; cursor: pointer; text-transform: uppercase; font-size: 15px;
+    }
 
-    /* MODAL */
-    .ovl { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; display: none; align-items: center; justify-content: center; }
-    .ovl-modal { background: #06232E; border: 2px solid #f7c32f; border-radius: 3rem; padding: 4rem; width: 92%; max-width: 550px; text-align: center; position: relative; }
-    .medal-viz { display: flex; justify-content: space-around; margin-top: 3.5rem; }
-    .m-num { font-size: 52px; font-weight: 950; line-height: 1; margin-bottom: 8px; }
-    .m-txt { font-size: 14px; font-weight: 800; opacity: 0.75; letter-spacing: 1px; }
+    .charts-flex { display: flex; flex-direction: column; gap: 20px; margin-top: 2rem; }
+    @media (min-width: 992px) { .charts-flex { flex-direction: row; } .chart-col { flex: 1; } }
+    .chart-col { background: rgba(0,0,0,0.3); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1); }
+    .chart-header { color: #f7c32f; font-weight: 800; font-size: 13px; text-transform: uppercase; text-align: center; margin-bottom: 1.5rem; }
+    .canvas-container { width: 100%; height: 280px; position: relative; }
 
-    .btn-cta { background: linear-gradient(93deg, #E40F63, #C32263); border: none; border-radius: 80px; padding: 1.6rem 4rem; color: #fff; font-weight: 950; font-size: 20px; cursor: pointer; margin-top: 3.5rem; box-shadow: 0 12px 35px rgba(228, 15, 99, 0.45); text-transform: uppercase; letter-spacing: 1px; }
-    .footer-credits { text-align: center; font-size: 16px; color: #f7c32f; font-weight: 700; margin-top: 5rem; letter-spacing: 0.5px; padding-bottom: 2rem; }
+    .gauge-box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 15px; }
+    .therm-track { width: 50px; height: 180px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; border: 2px solid #555; overflow: hidden; }
+    .therm-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, #E40F63, #f7c32f); transition: height 0.5s ease-out; }
+    .therm-pot { position: absolute; bottom: 0; width: 100%; background: rgba(247, 195, 47, 0.2); border-top: 3px dashed #f7c32f; z-index: 1; transition: height 0.5s ease-out; }
+
+    .slider-rail { width: 100%; height: 8px; background: #1E3A4A; border-radius: 50px; position: relative; margin: 3.5rem 0; cursor: pointer; }
+    .slider-fill { position: absolute; height: 100%; border-radius: 50px; background: #fff; width: 0%; pointer-events: none; }
+    .slider-thumb { position: absolute; width: 36px; height: 36px; background: #fff; border-radius: 50%; top: 50%; transform: translate(-50%, -50%); border: 4px solid #06232E; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 10; cursor: grab; }
+    .slider-labels { display: flex; justify-content: space-between; margin-top: 1.5rem; font-size: 13px; font-weight: 700; color: #CFDEE0; }
+
+    .metric-row { display: flex; align-items: center; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .metric-img { width: 60px; height: auto; }
+    .metric-content { flex: 1; }
+    .metric-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 5px; }
+    .metric-desc { font-size: 13px; color: #CFDEE0; line-height: 1.3; }
+    .metric-result { font-size: 28px; font-weight: 900; color: #f7c32f; text-align: right; min-width: 155px; }
+
+    .plans-row { display: flex; gap: 15px; margin: 2rem 0; overflow-x: auto; padding-bottom: 10px; }
+    .plan-card-btn { flex: 1; min-width: 160px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.2); border-radius: 1.5rem; padding: 1.5rem; cursor: pointer; text-align: center; color: #fff; }
+    .plan-card-btn.active { border-color: #f7c32f; background: rgba(247, 195, 47, 0.15); }
+    .p-title { font-weight: 800; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; }
+    .p-price { color: #f7c32f; font-weight: 950; font-size: 1.6rem; }
+    .final-total { text-align: center; font-size: 30px; font-weight: 950; color: #f7c32f; margin-top: 2.5rem; border-top: 1px solid #444; padding-top: 1.5rem; text-transform: uppercase; }
+
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    .modal-box { background: #06232E; border: 2px solid #f7c32f; border-radius: 2.5rem; padding: 3rem; width: 85%; max-width: 500px; text-align: center; }
+    .medal-counts { display: flex; justify-content: space-around; margin-top: 2rem; }
+    .medal-val { font-size: 42px; font-weight: 900; }
+
+    .cta-main { background: linear-gradient(90deg, #E40F63, #C32263); border: none; border-radius: 60px; padding: 1.5rem 3.5rem; color: #fff; font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 2.5rem; box-shadow: 0 10px 25px rgba(228, 15, 99, 0.4); text-transform: uppercase; }
+    .footer-note { text-align: center; font-size: 15px; color: #f7c32f; font-weight: 700; margin-top: 4rem; }
+
+    /* Fallback para iOS 12: si backdrop-filter falla, usamos fondo sólido */
+    @supports not (backdrop-filter: blur(20px)) {
+      .glass-card { background: rgba(6,35,46,0.85); }
+    }
   </style>
 </head>
 <body>
-  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Wallpaper" onerror="this.src='https://picsum.photos/seed/brewery_dark/1200/800'"></div>
-  <div class="hero-overlay"></div>
-  <div class="hero-vignette"></div>
+  <div class="hero-bg"><img src="assets/bg_cerveceria.jpg" alt="Fondo Brewery" onerror="this.src='https://picsum.photos/seed/brewery/1200/800'"></div>
+  <div class="overlay-color"></div>
+  <div class="vignette"></div>
 
-  <div class="main-wrap">
+  <div class="app-container">
     <header class="header">
-      <img src="assets/logo_podiumbeer.png" alt="Podium Beer" class="img-logo" onerror="this.style.display='none'">
-      <p class="logo-desc">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca</p>
-      <h1 class="h1-hero">Simulador de Alianza</h1>
-      <h2 class="h2-hero">¿Cuál es tu producción anual?</h2>
-      <div class="intro-block">Proyecta cómo convertir tus medallas en resultados comerciales discretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad para tu cervecería.</div>
+      <img src="assets/logo_podiumbeer.png" alt="Logo Podium Beer" class="logo-header" onerror="this.style.display='none'">
+      <div class="logo-bajada">No todas las medallas valen lo mismo. Nosotros te mostramos cuáles construyen tu marca</div>
+      <h1 class="h1-sim">Simulador de Alianza</h1>
+      <h2 class="h2-sim">¿Cuál es tu producción anual?</h2>
+      <div class="bajada-header">Proyecta cómo convertir tus medallas en resultados comerciales concretos. Ajusta tu nivel de producción y visualiza el impacto real en ventas, posicionamiento y rentabilidad.</div>
     </header>
 
     <div class="glass-card">
-      <div class="tag-title">REPORTE ESTRATÉGICO</div>
-      <div class="card-h">Analiza tu Impacto Industrial</div>
-      <div class="card-p">Vincula tu cervecería para cargar automáticamente tu medallería 2024-2025 y comparar tu rendimiento con el mercado.</div>
-      <div class="search-unit">
-        <input type="text" id="iptBrewery" class="search-ipt" placeholder="Escribe el nombre de tu marca (Ej: Nothus, Kross)...">
-        <button id="btnUpdate" class="search-btn">ACTUALIZAR DATOS</button>
+      <div class="section-title">CONSULTA PERSONALIZADA</div>
+      <div class="section-subtitle">Analiza tu Medallero Estratégico</div>
+      <div class="section-desc">Vincula tu cervecería a nuestra base de datos para ver tu impacto en 2025.</div>
+      <div class="search-box">
+        <input type="text" id="iptSearch" class="search-input" placeholder="Ej: Cervecería Kross, Austral, Kunstmann...">
+        <button id="btnSearch" class="update-btn">ACTUALIZAR DATOS</button>
       </div>
-      <p id="searchFeedback" class="search-status"></p>
+      <div id="brewMsg" style="text-align:center; color:#f7c32f; font-size:13px; margin-top:15px; font-weight:700;"></div>
     </div>
 
     <div class="glass-card">
-      <div class="tag-title">PROYECCIÓN DE RESULTADOS</div>
-      <div class="grid-charts">
-        <div class="col-chart">
-          <div class="chart-label">Ranking de Impacto (2025)</div>
-          <div class="canvas-box"><canvas id="chrRank"></canvas></div>
-          <p id="tapPosition" style="color:#f7c32f; font-size:12px; margin-top:15px; cursor:pointer; text-decoration:underline; display:none;">Tap para ver tu posición completa</p>
+      <div class="section-title">PROYECCIÓN DE RESULTADOS</div>
+      <div class="charts-flex">
+        <div class="chart-col">
+          <div class="chart-header">Ranking de Impacto (2025)</div>
+          <div class="canvas-container"><canvas id="cRank"></canvas></div>
+          <p id="tipRank" style="color:#f7c32f; font-size:12px; text-align:center; margin-top:10px; cursor:pointer; text-decoration:underline; display:none;">Tap para ver tu posición completa</p>
         </div>
-        <div class="col-chart">
-          <div class="chart-label">Potencial de Crecimiento</div>
-          <div class="therm-wrap">
-            <div id="gaugeLimit" class="therm-target" style="height:78%"></div>
-            <div id="gaugeLevel" class="therm-fill" style="height:35%"></div>
+        <div class="chart-col">
+          <div class="chart-header">Potencial Proyectado</div>
+          <div class="gauge-box">
+            <div class="therm-track">
+              <div id="gP" class="therm-pot" style="height:78%"></div>
+              <div id="gF" class="therm-fill" style="height:35%"></div>
+            </div>
+            <div style="text-align:center; font-size:14px;">Actual: <span id="v1">35%</span> → <strong style="color:#f7c32f;" id="v2">78%</strong></div>
           </div>
-          <div class="therm-info">Actual: <span id="lblAct">35%</span> → <strong style="color:#f7c32f;" id="lblPro">78%</strong></div>
         </div>
-        <div class="col-chart">
-          <div class="chart-label">Momentum de Medallas</div>
-          <div class="canvas-box"><canvas id="chrMomentum"></canvas></div>
+        <div class="chart-col">
+          <div class="chart-header">Timeline de Momentum</div>
+          <div class="canvas-container"><canvas id="cTime"></canvas></div>
         </div>
       </div>
     </div>
 
     <div class="glass-card">
-      <div class="tag-title">OPERACIÓN</div>
-      <div class="card-h">Tramo de Producción Anual (HL)</div>
-      <div class="card-p">El escalamiento de los beneficios de la Alianza se adapta proporcionalmente al volumen de tu operación cervecera.</div>
-      <div class="slider-track" id="rl"><div class="slider-bar" id="bar"></div><div class="slider-knob" id="knob"></div></div>
-      <div class="slider-labels slider-ticks"><span>&lt;500 hl</span><span>501 - 1000 hl</span><span>1001 - 5000 hl</span><span>5001 - 10000 hl</span><span>&gt;10000 hl</span></div>
+      <div class="section-title">OPERACIÓN</div>
+      <div class="section-subtitle">Tramo de Producción Anual</div>
+      <div class="slider-rail" id="sRail"><div class="slider-fill" id="sFill"></div><div class="slider-thumb" id="sThumb"></div></div>
+      <div class="slider-labels"><span>&lt;500 hl</span><span>501-1000 hl</span><span>1001-5000 hl</span><span>5001-10000 hl</span><span>≥20000 hl</span></div>
     </div>
 
     <div class="glass-card">
-      <div class="tag-title">SELECTOR DE PLANES</div>
-      <div class="plans-container" id="plansGroup">
-        <div class="plan-card" id="p-explorer" onclick="pickPlan('explorer')"><div class="plan-name">Explorer</div><p class="plan-summary">Visibilidad inicial y reporte básico de competitividad nacional.</p></div>
-        <div class="plan-card active" id="p-podium" onclick="pickPlan('podium')"><div class="plan-name">Podium</div><p class="plan-summary">Crecimiento estratégico y análisis profundo de tendencias de mercado.</p></div>
-        <div class="plan-card" id="p-champion" onclick="pickPlan('champion')"><div class="plan-name">Champion</div><p class="plan-summary">Liderazgo absoluto y consultoría técnica personalizada de alto impacto.</p></div>
+      <div class="section-title">SELECTOR DE PLANES</div>
+      <div class="section-subtitle">Nivel de Alianza Estratégica</div>
+      <div class="plans-row">
+        <div class="plan-card-btn" id="p-e" data-plan="explorer"><div class="p-title">Explorer</div></div>
+        <div class="plan-card-btn active" id="p-p" data-plan="podium"><div class="p-title">Podium</div></div>
+        <div class="plan-card-btn" id="p-c" data-plan="champion"><div class="p-title">Champion</div></div>
       </div>
-      <div class="strategic-alliance-box"><p class="alliance-title">NIVEL DE ALIANZA ESTRATÉGICA</p><p class="alliance-subtitle">Elige tu modelo de crecimiento</p><p class="alliance-desc">Desde visibilidad inicial hasta liderazgo de mercado, diseñamos el camino para que tus medallas hablen por tu marca.</p></div>
-      <h2 class="total-display" id="totalDisp">INVERSIÓN: $0 CLP / MES</h2>
+      <div style="text-align:center; margin-top: 1rem; font-size: 14px; color: #CFDEE0;">
+        <strong>NIVEL DE ALIANZA ESTRATÉGICA</strong><br>
+        Elige tu modelo de crecimiento<br>
+        Desde visibilidad inicial hasta dominio de mercado.
+      </div>
+      <div class="final-total" id="v_TotalDisp">INVERSIÓN: $25.000 CLP / MES</div>
     </div>
 
     <div class="glass-card">
-      <div class="tag-title">BLOQUE DE RESULTADOS</div>
-      <div class="card-h">Impacto Estimado en tu Negocio</div>
-      <div class="result-row"><img src="https://api.iconify.design/heroicons/presentation-chart-line-20-solid.svg?color=%23f7c32f" class="ico-box" alt="I"><div class="res-data"><div class="res-h">Inversión Inteligente</div><p class="res-p">Asignación de recursos diseñada para maximizar el retorno sobre la medallería.</p></div><div id="m_inv" class="res-val">$0</div></div>
-      <div class="result-row"><img src="https://api.iconify.design/heroicons/banknotes-20-solid.svg?color=%23f7c32f" class="ico-box" alt="V"><div class="res-data"><div class="res-h">Valor Recuperado</div><p class="res-p">Capital liberado mediante la optimización de procesos técnicos de cata.</p></div><div id="m_val" class="res-val">$0</div></div>
-      <div class="result-row"><img src="https://api.iconify.design/heroicons/rocket-launch-20-solid.svg?color=%23f7c32f" class="ico-box" alt="A"><div class="res-data"><div class="res-h">Impacto en Rentabilidad</div><p class="res-p">Incremento proyectado anual basado en la aceleración de momentum de marca.</p></div><div id="m_imp" class="res-val">35%</div></div>
+      <div class="section-title">BLOQUE DE RESULTADOS</div>
+      <div class="section-subtitle">Impacto Estimado en tu Negocio</div>
+      <div class="metric-row">
+        <img src="assets/icono_inversion.png" class="metric-img" alt="I" onerror="this.src='https://api.iconify.design/heroicons/presentation-chart-line-20-solid.svg?color=%23f7c32f'">
+        <div class="metric-content"><strong>Inversión Inteligente</strong><p class="metric-desc">Asignación estratégica diseñada para generar retorno comercial.</p></div>
+        <div id="m_inv" class="metric-result">$0</div>
+      </div>
+      <div class="metric-row">
+        <img src="assets/icono_valor.png" class="metric-img" alt="V" onerror="this.src='https://api.iconify.design/heroicons/currency-dollar-20-solid.svg?color=%23f7c32f'">
+        <div class="metric-content"><strong>Valor Recuperado</strong><p class="metric-desc">Ahorro proyectado mediante la optimización de data técnica de catas.</p></div>
+        <div id="m_val" class="metric-result">$0</div>
+      </div>
+      <div class="metric-row">
+        <img src="assets/icono_impacto.png" class="metric-img" alt="A" onerror="this.src='https://api.iconify.design/heroicons/arrow-trending-up-20-solid.svg?color=%23f7c32f'">
+        <div class="metric-content"><strong>Impacto en Rentabilidad</strong><p class="metric-desc">El retorno proyectado basado en tu momentum de marca acumulado.</p></div>
+        <div id="m_imp" class="metric-result">0%</div>
+      </div>
     </div>
 
-    <div style="text-align:center;"><button class="btn-cta" onclick="alert('Solicitud enviada exitosamente.')">Agenda Diagnóstico Estratégico</button></div>
-    <div class="footer-credits">Desarrollado por Catas Colaborativas | Desde 2015</div>
+    <div style="text-align:center;"><button class="cta-main" onclick="alert('Un consultor estratégico te contactará para agendar tu diagnóstico.')">Agenda Diagnóstico</button></div>
+    <div class="footer-note">Un desarrollo de Catas Colaborativas | Desde 2015</div>
   </div>
 
-  <div id="ovlBox" class="ovl" onclick="this.style.display='none'"><div class="ovl-modal"><div style="position:absolute; top:30px; right:40px; font-size:40px; cursor:pointer;" onclick="document.getElementById('ovlBox').style.display='none'">×</div><h2 id="ovlBrand" style="color:#f7c32f; margin-bottom:15px; font-size:32px; font-weight:950;">BREWERY NAME</h2><div class="medal-viz"><div><div id="ovlG" class="m-num" style="color:#f7c32f;">0</div><div class="m-txt">ORO</div></div><div><div id="ovlS" class="m-num" style="color:#eee;">0</div><div class="m-txt">PLATA</div></div><div><div id="ovlB" class="m-num" style="color:#cd7f32;">0</div><div class="m-txt">BRONCE</div></div></div><p style="margin-top:3.5rem; font-size:14px; opacity:0.8; font-weight:500;">Datos consolidados del Medallero Histórico Chile.</p></div></div>
+  <div id="modalBox" class="overlay" onclick="this.style.display='none'">
+    <div class="modal-box">
+      <div style="float:right; font-size:35px; cursor:pointer;" onclick="document.getElementById('modalBox').style.display='none'">×</div>
+      <h2 id="modalBrand" style="color:#f7c32f; margin-bottom:25px;">MARCA</h2>
+      <div class="medal-counts">
+        <div><div id="mG" class="medal-val" style="color:#f7c32f;">0</div><div>ORO</div></div>
+        <div><div id="mS" class="medal-val" style="color:#eee;">0</div><div>PLATA</div></div>
+        <div><div id="mB" class="medal-val" style="color:#cd7f32;">0</div><div>BRONCE</div></div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    var dataRows = [];
-    var cRank, cMomentum;
-    var currentBrewery = "";
-    var currentTramo = 3;
-    var currentPlan = "podium";
-
-    var dummyStats = {
-      "Kross": { n: "Kross", g: 8, s: 12, b: 15, pts: 650, ms: [2,5,8,12,15,18,22,25,28,32] },
-      "Tamango": { n: "Tamango", g: 6, s: 10, b: 12, pts: 520, ms: [1,3,6,9,12,14,18,20,24,28] },
-      "7 Vidas": { n: "7 Vidas", g: 5, s: 8, b: 10, pts: 480, ms: [1,4,7,10,13,16,19,22,25,28] },
-      "Nothus": { n: "Nothus", g: 4, s: 6, b: 9, pts: 420, ms: [1,2,5,8,11,14,17,20,23,26] },
-      "Alameda": { n: "Alameda", g: 3, s: 5, b: 7, pts: 350, ms: [1,2,4,7,10,13,16,19,22,25] }
-    };
-
+    // ======================== CÓDIGO OPTIMIZADO PARA IPAD iOS 12.5.8 ========================
+    var allData = [];
+    var chartRank, chartTime;
+    var selectedBrewery = "";
+    var tramoIdx = 3;          // 0..4
+    var planId = "podium";
+    
+    // Precios base para tramo <500 hl (multiplicador 1)
     var basePrices = { explorer: 10000, podium: 25000, champion: 45000 };
-    var baseMetrics = [{ inv: 250, val: 2800, imp: 35 },{ inv: 600, val: 7200, imp: 45 },{ inv: 1400, val: 18500, imp: 55 },{ inv: 2800, val: 35000, imp: 65 },{ inv: 6200, val: 82000, imp: 75 }];
-
-    function loadData() {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "BBDD_Medallero_Chile.csv", true);
-      xhr.onreadystatechange = function() {
-        if(xhr.readyState === 4) {
-          if(xhr.status === 200) {
-            var text = xhr.responseText;
-            var rows = text.split('\n');
-            var headers = rows[0].split(';');
-            for(var i=1; i<rows.length; i++) {
-              if(!rows[i].trim()) continue;
-              var vals = rows[i].split(';');
-              var obj = {};
-              for(var j=0; j<headers.length; j++) obj[headers[j].trim()] = (vals[j] || "").trim();
-              dataRows.push(obj);
+    var multipliers = [1, 1.5, 2, 3, 5];
+    
+    // Métricas base por tramo (inversión, valor recuperado, impacto %) - se multiplican por el multiplicador
+    var baseMetrics = [
+      { inv: 300, val: 4000, imp: 35 },
+      { inv: 650, val: 7500, imp: 45 },
+      { inv: 1300, val: 16000, imp: 55 },
+      { inv: 2600, val: 32000, imp: 65 },
+      { inv: 5500, val: 65000, imp: 75 }
+    ];
+    
+    // Datos dummy de respaldo (por si el CSV no carga)
+    var dummyBreweries = [
+      { nombre: "Kross", oro: 12, plata: 8, bronce: 5, timeline: [2,3,5,7,9,11,13,15,18,20] },
+      { nombre: "Austral", oro: 9, plata: 6, bronce: 4, timeline: [1,2,4,6,8,10,12,14,16,18] },
+      { nombre: "Kunstmann", oro: 7, plata: 5, bronce: 4, timeline: [1,2,3,5,7,9,11,13,15,17] },
+      { nombre: "Jester", oro: 6, plata: 5, bronce: 3, timeline: [0,1,2,4,6,8,10,12,14,16] },
+      { nombre: "Tübinger", oro: 5, plata: 4, bronce: 3, timeline: [0,1,2,3,5,7,9,11,13,15] },
+      { nombre: "Guayacán", oro: 4, plata: 3, bronce: 2, timeline: [0,0,1,2,4,6,8,10,12,14] },
+      { nombre: "Volcanes", oro: 4, plata: 3, bronce: 2, timeline: [0,0,1,2,3,5,7,9,11,13] },
+      { nombre: "Patagonia", oro: 3, plata: 2, bronce: 2, timeline: [0,0,0,1,2,4,6,8,10,12] },
+      { nombre: "Düben", oro: 3, plata: 2, bronce: 1, timeline: [0,0,0,1,2,3,5,7,9,11] },
+      { nombre: "Mestra", oro: 2, plata: 2, bronce: 1, timeline: [0,0,0,0,1,2,4,6,8,10] },
+      { nombre: "Granizo", oro: 2, plata: 1, bronce: 1, timeline: [0,0,0,0,1,2,3,5,7,9] },
+      { nombre: "Tamango", oro: 1, plata: 1, bronce: 1, timeline: [0,0,0,0,0,1,2,4,6,8] }
+    ];
+    
+    function cargarCSV() {
+      var req = new XMLHttpRequest();
+      req.open("GET", "BBDD_Medallero_Chile.csv", true);
+      req.onreadystatechange = function() {
+        if(req.readyState === 4) {
+          if(req.status === 200) {
+            var tx = req.responseText;
+            var ls = tx.split('\n');
+            var head = ls[0].split(';');
+            for(var i=1; i<ls.length; i++) {
+              if(!ls[i].trim()) continue;
+              var vs = ls[i].split(';');
+              var r = {};
+              for(var j=0; j<head.length; j++) r[head[j].trim()] = (vs[j] || "").trim();
+              allData.push(r);
             }
+            console.log("CSV cargado: " + allData.length + " registros");
+          } else {
+            console.warn("No se pudo cargar CSV, usando datos dummy");
+            usarDummyData();
           }
-          initialize();
+          initApp();
         }
       };
-      xhr.send();
+      req.send();
     }
-
-    function getStats() {
-      var map = {};
-      if(dataRows.length === 0) return dummyStats;
-      for(var i=0; i<dataRows.length; i++) {
-        var d = dataRows[i];
-        if(d.anio !== "2025" && d.anio !== "2024") continue;
-        var b = d.cerveceria;
-        if(!b || b === " - ") continue;
-        if(!map[b]) map[b] = { n: b, g: 0, s: 0, b: 0, pts: 0, ms: [0,0,0,0,0,0,0,0,0,0] };
-        var m = (d.medalla_base || "").toLowerCase();
-        if(m.indexOf("oro") > -1) { map[b].g++; map[b].pts += 30; }
-        else if(m.indexOf("plata") > -1) { map[b].s++; map[b].pts += 20; }
-        else if(m.indexOf("bronce") > -1) { map[b].b++; map[b].pts += 10; }
-        if(d.fecha && d.fecha.indexOf("-") > -1) {
-          var mo = parseInt(d.fecha.split("-")[1]);
-          if(mo >= 3 && mo <= 12) map[b].ms[mo-3]++;
+    
+    function usarDummyData() {
+      // Convertir dummyBreweries al formato allData (simulación de CSV)
+      for(var i=0; i<dummyBreweries.length; i++) {
+        var b = dummyBreweries[i];
+        // Crear registros de medallas individuales para simular CSV
+        for(var j=0; j<b.oro; j++) allData.push({ cerveceria: b.nombre, medalla_base: "Oro", anio: "2025", fecha: "2025-03-15" });
+        for(var j=0; j<b.plata; j++) allData.push({ cerveceria: b.nombre, medalla_base: "Plata", anio: "2025", fecha: "2025-04-10" });
+        for(var j=0; j<b.bronce; j++) allData.push({ cerveceria: b.nombre, medalla_base: "Bronce", anio: "2025", fecha: "2025-05-20" });
+      }
+    }
+    
+    function getBreweryStats(brewName) {
+      var stats = { oro:0, plata:0, bronce:0, timeline: [0,0,0,0,0,0,0,0,0,0], totalMedallas:0 };
+      if(!brewName) return stats;
+      for(var i=0; i<allData.length; i++) {
+        var d = allData[i];
+        if(d.anio !== "2025") continue;
+        var nombre = d.cerveceria ? d.cerveceria.trim() : "";
+        if(nombre.toLowerCase() !== brewName.toLowerCase()) continue;
+        var medalla = (d.medalla_base || "").toLowerCase();
+        if(medalla.indexOf("oro") !== -1) { stats.oro++; stats.totalMedallas++; }
+        else if(medalla.indexOf("plata") !== -1) { stats.plata++; stats.totalMedallas++; }
+        else if(medalla.indexOf("bronce") !== -1) { stats.bronce++; stats.totalMedallas++; }
+        // timeline por mes (fecha)
+        if(d.fecha && d.fecha.indexOf("-") !== -1) {
+          var mes = parseInt(d.fecha.split("-")[1]);
+          if(mes >= 3 && mes <= 12) {
+            var idx = mes - 3;
+            stats.timeline[idx]++;
+          }
         }
       }
-      return map;
+      // Acumular timeline
+      for(var m=1; m<10; m++) stats.timeline[m] += stats.timeline[m-1];
+      return stats;
     }
-
-    function initialize() {
-      var ctxR = document.getElementById('chrRank').getContext('2d');
-      cRank = new Chart(ctxR, {
+    
+    function getAllBreweriesStats() {
+      var map = {};
+      for(var i=0; i<allData.length; i++) {
+        var d = allData[i];
+        if(d.anio !== "2025") continue;
+        var nombre = d.cerveceria ? d.cerveceria.trim() : "";
+        if(!nombre) continue;
+        if(!map[nombre]) map[nombre] = { nombre: nombre, oro:0, plata:0, bronce:0, total:0 };
+        var medalla = (d.medalla_base || "").toLowerCase();
+        if(medalla.indexOf("oro") !== -1) { map[nombre].oro++; map[nombre].total++; }
+        else if(medalla.indexOf("plata") !== -1) { map[nombre].plata++; map[nombre].total++; }
+        else if(medalla.indexOf("bronce") !== -1) { map[nombre].bronce++; map[nombre].total++; }
+      }
+      var arr = [];
+      for(var k in map) arr.push(map[k]);
+      // Calcular índice de impacto: total medallas + oro*2
+      for(var j=0; j<arr.length; j++) arr[j].impacto = arr[j].total + arr[j].oro * 2;
+      arr.sort(function(a,b){ return b.impacto - a.impacto; });
+      return arr;
+    }
+    
+    function initCharts() {
+      var ctxR = document.getElementById('cRank').getContext('2d');
+      chartRank = new Chart(ctxR, {
         type: 'horizontalBar',
         data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
         options: {
           legend: { display: false },
-          scales: { xAxes: [{ display: false }], yAxes: [{ ticks: { fontColor: '#fff', fontSize: 11, fontStyle: 'bold' } }] },
-          onClick: function(e, items) { if(items.length > 0) openModal(cRank.data.labels[items[0]._index]); }
+          scales: { xAxes: [{ display: false }], yAxes: [{ ticks: { fontColor: '#fff', fontSize: 11 } }] },
+          onClick: function(e, bars) {
+            if(bars.length > 0) {
+              var idx = bars[0]._index;
+              var name = chartRank.data.labels[idx];
+              openMedalOverlay(name);
+            }
+          },
+          tooltips: { bodyFontSize: 14, titleFontSize: 14, backgroundColor: 'rgba(0,0,0,0.8)' }
         }
       });
-      var ctxM = document.getElementById('chrMomentum').getContext('2d');
-      cMomentum = new Chart(ctxM, {
+      
+      var ctxT = document.getElementById('cTime').getContext('2d');
+      chartTime = new Chart(ctxT, {
         type: 'line',
-        data: { labels: ['MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'], datasets: [{ data: [10,25,50,85,125,175,230,300,380,480], borderColor: 'rgba(255,255,255,0.08)', fill: false, pointRadius: 0 },{ data: [], borderColor: '#f7c32f', backgroundColor: 'rgba(247,195,47,0.15)', fill: true }]},
-        options: { legend: { display: false }, scales: { yAxes: [{ ticks: { display: false } }], xAxes: [{ ticks: { fontColor: '#fff', fontSize: 10 } }] } }
+        data: {
+          labels: ['MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
+          datasets: [
+            { data: [5,15,30,45,65,85,105,125,145,170], borderColor: 'rgba(255,255,255,0.2)', borderDash: [5,5], fill: false, pointRadius: 0, label: 'Promedio Top 5' },
+            { data: [], borderColor: '#f7c32f', backgroundColor: 'rgba(247, 195, 47, 0.2)', fill: true, pointRadius: 5, pointHoverRadius: 10, label: 'Tu cervecería' }
+          ]
+        },
+        options: {
+          legend: { display: false },
+          tooltips: { mode: 'index', intersect: false, bodyFontSize: 14, titleFontSize: 14, backgroundColor: 'rgba(0,0,0,0.8)' },
+          scales: { yAxes: [{ ticks: { display: false } }], xAxes: [{ ticks: { fontColor: '#fff' } }] }
+        }
       });
-      refreshUI();
-      initProductionControl();
     }
-
-    function refreshUI() {
-      var statsMap = getStats();
-      var list = [];
-      for(var k in statsMap) list.push(statsMap[k]);
-      list.sort(function(a,b){ return b.pts - a.pts; });
-      var limit = 12;
-      var topItems = list.slice(0, limit);
-      var lbs = [], vls = [], cls = [];
-      var match = null;
-      if(currentBrewery) {
-        for(var i=0; i<list.length; i++) {
-          if(list[i].n.toLowerCase().indexOf(currentBrewery.toLowerCase()) > -1) { match = list[i]; currentBrewery = match.n; break; }
+    
+    function updateAll(breweryName) {
+      var allStats = getAllBreweriesStats();
+      var selectedStats = getBreweryStats(breweryName);
+      var foundIndex = -1;
+      for(var i=0; i<allStats.length; i++) {
+        if(allStats[i].nombre.toLowerCase() === breweryName.toLowerCase()) {
+          foundIndex = i;
+          break;
         }
       }
-      for(var j=0; j<topItems.length; j++) {
-        lbs.push(topItems[j].n); vls.push(topItems[j].pts);
-        cls.push(topItems[j].n === currentBrewery ? '#f7c32f' : 'rgba(30,58,74,0.7)');
+      
+      // Ranking: top 15
+      var top15 = allStats.slice(0, 15);
+      var labels = [], data = [], colors = [];
+      for(var j=0; j<top15.length; j++) {
+        labels.push(top15[j].nombre);
+        data.push(top15[j].impacto);
+        var isSelected = (top15[j].nombre.toLowerCase() === breweryName.toLowerCase());
+        colors.push(isSelected ? '#f7c32f' : 'rgba(30, 58, 74, 0.8)');
       }
-      if(match && lbs.indexOf(match.n) === -1) {
-        lbs[limit-1] = match.n; vls[limit-1] = match.pts; cls[limit-1] = '#f7c32f';
-        document.getElementById('tapPosition').style.display = 'block';
-        document.getElementById('tapPosition').innerText = "Viendo tu posición (#" + (list.indexOf(match)+1) + ") - Tap para ver tu posición completa";
+      // Si la cervecería buscada no está en top 15, reemplazar el último elemento
+      if(foundIndex === -1 && breweryName) {
+        var dummyStats = { nombre: breweryName, impacto: selectedStats.totalMedallas + selectedStats.oro*2 };
+        if(labels.length === 15) labels[14] = dummyStats.nombre;
+        else labels.push(dummyStats.nombre);
+        if(data.length === 15) data[14] = dummyStats.impacto;
+        else data.push(dummyStats.impacto);
+        if(colors.length === 15) colors[14] = '#f7c32f';
+        else colors.push('#f7c32f');
+        document.getElementById('tipRank').style.display = 'block';
       } else {
-        document.getElementById('tapPosition').style.display = match ? 'block' : 'none';
-        if(match) document.getElementById('tapPosition').innerText = "Tap para ver tu posición completa";
+        document.getElementById('tipRank').style.display = 'none';
       }
-      cRank.data.labels = lbs; cRank.data.datasets[0].data = vls; cRank.data.datasets[0].backgroundColor = cls; cRank.update();
-      var timeLine = [0,0,0,0,0,0,0,0,0,0];
-      if(match) { var acc = 0; for(var k=0; k<10; k++){ acc += match.ms[k]; timeLine[k] = acc * 30; } }
-      cMomentum.data.datasets[1].data = timeLine; cMomentum.update();
-      var actual = match ? Math.min(match.pts / 10, 50) : 35;
-      var potential = match ? Math.min(match.pts / 4, 95) : 78;
-      document.getElementById('gaugeLevel').style.height = actual + "%"; document.getElementById('gaugeLimit').style.height = potential + "%";
-      document.getElementById('lblAct').innerText = Math.round(actual) + "%"; document.getElementById('lblPro').innerText = Math.round(potential) + "%";
+      chartRank.data.labels = labels;
+      chartRank.data.datasets[0].data = data;
+      chartRank.data.datasets[0].backgroundColor = colors;
+      chartRank.update();
+      
+      // Termómetro
+      var maxMedallas = 1;
+      for(var m=0; m<allStats.length; m++) if(allStats[m].total > maxMedallas) maxMedallas = allStats[m].total;
+      var currentPercent = maxMedallas > 0 ? Math.min(95, (selectedStats.totalMedallas / maxMedallas) * 100) : 35;
+      var potentialPercent = Math.min(98, currentPercent + 40);
+      document.getElementById('gF').style.height = currentPercent + "%";
+      document.getElementById('gP').style.height = potentialPercent + "%";
+      document.getElementById('v1').innerText = Math.round(currentPercent) + "%";
+      document.getElementById('v2').innerText = Math.round(potentialPercent) + "%";
+      
+      // Timeline
+      var timelineData = selectedStats.timeline;
+      chartTime.data.datasets[1].data = timelineData;
+      chartTime.update();
+      
+      // Actualizar mensaje
+      if(breweryName) document.getElementById('brewMsg').innerHTML = "✅ Mostrando datos de: " + breweryName;
+      else document.getElementById('brewMsg').innerHTML = "";
+      
+      // Guardar selección para overlay
+      window.currentSelectedBrewery = breweryName;
+      window.currentBreweryStats = selectedStats;
     }
-
-    function initProductionControl() {
-      var r = document.getElementById('rl'), k = document.getElementById('knob'), b = document.getElementById('bar');
-      function updatePos(idx) { currentTramo = idx; var p = (idx/4)*100; b.style.width = p+"%"; k.style.left = p+"%"; runMath(); }
-      var move = function(e) { if(e.cancelable) e.preventDefault(); var rect = r.getBoundingClientRect(); var x = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX); var pct = (x - rect.left) / rect.width; pct = Math.max(0, Math.min(1, pct)); updatePos(Math.round(pct * 4)); };
-      r.onmousedown = function(e){ move(e); window.onmousemove=move; window.onmouseup=function(){window.onmousemove=null;}; };
-      r.ontouchstart = function(e){ move(e); r.ontouchmove=move; r.ontouchend=function(){r.ontouchmove=null;}; };
-      updatePos(3);
+    
+    function openMedalOverlay(name) {
+      var stats = getBreweryStats(name);
+      document.getElementById('modalBrand').innerHTML = name.toUpperCase();
+      document.getElementById('mG').innerHTML = stats.oro;
+      document.getElementById('mS').innerHTML = stats.plata;
+      document.getElementById('mB').innerHTML = stats.bronce;
+      document.getElementById('modalBox').style.display = 'flex';
     }
-
-    function pickPlan(id) {
-      currentPlan = id;
-      var grp = ['explorer', 'podium', 'champion'];
-      for(var i=0; i<3; i++) document.getElementById('p-'+grp[i]).className = 'plan-card' + (grp[i]===id ? ' active' : '');
-      runMath();
+    
+    function syncFin() {
+      var m = multipliers[tramoIdx];
+      var tot = basePrices[planId] * m;
+      document.getElementById('v_TotalDisp').innerHTML = "INVERSIÓN: $" + tot.toLocaleString() + " CLP / MES";
+      
+      var metr = baseMetrics[tramoIdx];
+      document.getElementById('m_inv').innerHTML = "$" + (metr.inv * m).toLocaleString() + " CLP";
+      document.getElementById('m_val').innerHTML = "$" + (metr.val * m).toLocaleString() + " CLP";
+      document.getElementById('m_imp').innerHTML = metr.imp + "%";
     }
-
-    function runMath() {
-      var mults = [1, 1.4, 2.2, 3.8, 6.5]; var m = mults[currentTramo];
-      var fVal = basePrices[currentPlan] * m;
-      document.getElementById('totalDisp').innerText = "INVERSIÓN: $" + Math.round(fVal).toLocaleString() + " CLP / MES";
-      var metr = baseMetrics[currentTramo];
-      document.getElementById('m_inv').innerText = "$" + Math.round(metr.inv * m).toLocaleString() + " CLP";
-      document.getElementById('m_val').innerText = "$" + Math.round(metr.val * m).toLocaleString() + " CLP";
-      document.getElementById('m_imp').innerText = Math.round(metr.imp) + "%";
+    
+    function initSlider() {
+      var rl = document.getElementById('sRail'), th = document.getElementById('sThumb'), fl = document.getElementById('sFill');
+      function updateS(idx) {
+        tramoIdx = idx;
+        var percent = (idx / 4) * 100;
+        fl.style.width = percent + "%";
+        th.style.left = percent + "%";
+        syncFin();
+      }
+      var hV = function(e) {
+        if(e.cancelable) e.preventDefault();
+        var rect = rl.getBoundingClientRect();
+        var x = (e.touches ? e.touches[0].clientX : e.clientX);
+        var p = (x - rect.left) / rect.width;
+        p = Math.max(0, Math.min(1, p));
+        updateS(Math.round(p * 4));
+      };
+      rl.onmousedown = function(e){ hV(e); window.onmousemove = hV; window.onmouseup = function(){ window.onmousemove = null; }; };
+      rl.ontouchstart = function(e){ hV(e); rl.ontouchmove = hV; rl.ontouchend = function(){ rl.ontouchmove = null; }; };
+      updateS(3);
     }
-
-    function openModal(name) {
-      var st = getStats(); var o = st[name] || { n: name, g: 0, s: 0, b:0 };
-      document.getElementById('ovlBrand').innerText = o.n.toUpperCase();
-      document.getElementById('ovlG').innerText = o.g; document.getElementById('ovlS').innerText = o.s; document.getElementById('ovlB').innerText = o.b;
-      document.getElementById('ovlBox').style.display = 'flex';
+    
+    function initApp() {
+      initCharts();
+      initSlider();
+      syncFin();
+      // Seleccionar primera cervecería por defecto (Kross) si existe
+      var firstBrew = "Kross";
+      updateAll(firstBrew);
+      document.getElementById('iptSearch').value = firstBrew;
+      window.currentSelectedBrewery = firstBrew;
     }
-
-    document.getElementById('btnUpdate').onclick = function() {
-      var val = document.getElementById('iptBrewery').value.trim();
-      if(val) { currentBrewery = val; document.getElementById('searchFeedback').innerText = "Cervecería vinculada: " + val; refreshUI(); }
+    
+    // Eventos
+    document.getElementById('btnSearch').onclick = function() {
+      var v = document.getElementById('iptSearch').value.trim();
+      if(v === "") return;
+      // Verificar si existe en allData (o en dummy)
+      var exists = false;
+      for(var i=0; i<allData.length; i++) {
+        if(allData[i].cerveceria && allData[i].cerveceria.toLowerCase() === v.toLowerCase()) { exists = true; break; }
+      }
+      if(!exists) {
+        document.getElementById('brewMsg').innerHTML = "⚠️ Cervecería no encontrada en la base de datos. Se muestran datos de ejemplo.";
+        // Crear estadísticas dummy para esa búsqueda
+        var dummyStats = { totalMedallas: 5, oro:1, plata:2, bronce:2, timeline:[0,1,2,3,4,5,6,7,8,9] };
+        window.currentBreweryStats = dummyStats;
+        updateAll(v);
+      } else {
+        document.getElementById('brewMsg').innerHTML = "✅ Cargando datos de: " + v;
+        updateAll(v);
+      }
     };
-    document.getElementById('tapPosition').onclick = function() { openModal(currentBrewery); };
-
-    loadData();
+    
+    document.getElementById('tipRank').onclick = function() {
+      if(window.currentSelectedBrewery) openMedalOverlay(window.currentSelectedBrewery);
+    };
+    
+    // Selección de planes
+    document.getElementById('p-e').onclick = function() { setActivePlan('explorer'); };
+    document.getElementById('p-p').onclick = function() { setActivePlan('podium'); };
+    document.getElementById('p-c').onclick = function() { setActivePlan('champion'); };
+    
+    function setActivePlan(plan) {
+      planId = plan;
+      var btns = ['p-e', 'p-p', 'p-c'];
+      for(var i=0; i<btns.length; i++) {
+        var btn = document.getElementById(btns[i]);
+        if(btns[i] === 'p-e' && plan === 'explorer') btn.classList.add('active');
+        else if(btns[i] === 'p-p' && plan === 'podium') btn.classList.add('active');
+        else if(btns[i] === 'p-c' && plan === 'champion') btn.classList.add('active');
+        else btn.classList.remove('active');
+      }
+      syncFin();
+    }
+    
+    // Iniciar
+    cargarCSV();
   </script>
 </body>
 </html>
