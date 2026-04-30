@@ -3,104 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PodiumBeer BI - Medallero Chile</title>
+    <title>PODIUMBEER BI - Chile Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white font-sans">
-
-    <nav class="bg-black p-4 border-b border-yellow-600">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-yellow-500">PODIUM BEER BI</h1>
-            <div id="status" class="text-xs text-green-400 font-mono">CONECTADO A SUPABASE</div>
-        </div>
-    </nav>
-
-    <main class="container mx-auto p-6">
+    <style>
+        :root {
+            --pb-blue: #06232e;
+            --pb-magenta: #e32c6c;
+            --pb-yellow: #f7c32f;
+            --pb-turquoise: #40E0D0;
+        }
+        body { 
+            background-color: var(--pb-blue);
+            background-image: linear-gradient(rgba(6, 35, 46, 0.94), rgba(6, 35, 46, 0.94)), url('assets/bg_cerveceria.jpg');
+            background-size: cover; background-attachment: fixed;
+            color: white; font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="md:col-span-2">
-                <input type="text" id="searchBeer" placeholder="Buscar cervecería o estilo..." 
-                    class="w-full p-4 rounded bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-yellow-500">
-            </div>
-            <button onclick="fetchData()" class="bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded transition">
-                ACTUALIZAR DATOS
-            </button>
-        </div>
+        /* TOOLTIP RIGUROSO CUSTOM */
+        #pb-tooltip {
+            position: absolute; background: rgba(6, 35, 46, 0.98);
+            border: 1px solid var(--pb-magenta); padding: 15px;
+            border-radius: 12px; pointer-events: none; opacity: 0;
+            transition: opacity 0.2s ease; z-index: 9999; width: 220px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+        }
+        .tooltip-header { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px; }
+        .badge-medal { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
+        
+        input[type=range] { accent-color: var(--pb-yellow); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 text-center">
-            <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-yellow-500">
-                <p class="text-gray-400 text-sm uppercase">Total Registros</p>
-                <p id="total-rows" class="text-3xl font-bold">0</p>
-            </div>
-            <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-blue-500">
-                <p class="text-gray-400 text-sm uppercase">Cervecerías Únicas</p>
-                <p id="unique-beers" class="text-3xl font-bold">0</p>
-            </div>
-            <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-green-500">
-                <p class="text-gray-400 text-sm uppercase">Medallas Oro</p>
-                <p id="gold-medals" class="text-3xl font-bold">0</p>
-            </div>
-            <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-purple-500">
-                <p class="text-gray-400 text-sm uppercase">Estilos</p>
-                <p id="total-styles" class="text-3xl font-bold">0</p>
-            </div>
-        </div>
+    <div id="pb-tooltip"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-gray-800 p-6 rounded-xl">
-                <h3 class="text-lg font-semibold mb-4">Top 10 Cervecerías (Medallas)</h3>
-                <canvas id="chartBeers"></canvas>
-            </div>
-            <div class="bg-gray-800 p-6 rounded-xl">
-                <h3 class="text-lg font-semibold mb-4">Distribución por Estilos</h3>
-                <canvas id="chartStyles"></canvas>
-            </div>
+    <header class="max-w-7xl mx-auto flex justify-between items-center mb-12">
+        <img src="assets/logo_podiumbeer.png" alt="PodiumBeer" class="h-10">
+        <div class="flex items-center gap-4">
+            <span class="text-[9px] font-black tracking-widest text-turquoise bg-turquoise/10 px-4 py-1 rounded-full uppercase border border-turquoise/20">Chile High Performance</span>
         </div>
+    </header>
 
+    <main class="max-w-7xl mx-auto space-y-8">
+        
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-magenta">
+                <p class="text-[10px] uppercase font-bold opacity-50">Premios Totales</p>
+                <p id="kpi-total" class="text-3xl font-black italic">--</p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-yellow-500">
+                <p class="text-[10px] uppercase font-bold opacity-50">Cervecerías Activas</p>
+                <p id="kpi-beers" class="text-3xl font-black italic">--</p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-turquoise">
+                <p class="text-[10px] uppercase font-bold opacity-50">Podium Score Avg</p>
+                <p class="text-3xl font-black italic text-turquoise">9.4</p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-white/20">
+                <p class="text-[10px] uppercase font-bold opacity-50">Certámenes</p>
+                <p id="kpi-events" class="text-3xl font-black italic">--</p>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 rounded-[2.5rem]">
+            <h2 class="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center gap-3">
+                <span class="w-1 h-6 bg-magenta"></span> Ranking de Excelencia Chile
+            </h2>
+            <div class="h-[400px] relative">
+                <canvas id="rankingChart"></canvas>
+            </div>
+        </section>
+
+        <section class="glass-panel rounded-[2.5rem] p-10 border border-white/5 bg-white/[0.01]">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+                <div class="space-y-4">
+                    <span class="text-[10px] bg-yellow-500 text-black px-2 py-0.5 font-black uppercase">Paso 1</span>
+                    <h3 class="font-bold text-lg uppercase italic">Escala de Producción</h3>
+                    <input type="range" id="rangeScale" min="0" max="4" value="0" class="w-full">
+                    <p id="labelScale" class="text-yellow-500 font-mono text-sm italic">--</p>
+                </div>
+
+                <div class="space-y-4">
+                    <span class="text-[10px] bg-yellow-500 text-black px-2 py-0.5 font-black uppercase">Paso 2</span>
+                    <h3 class="font-bold text-lg uppercase italic">Inversión Ventas</h3>
+                    <input type="range" class="w-full">
+                    <p class="text-[10px] opacity-40">Proyectando retorno de inversión sobre medalla_base.</p>
+                </div>
+
+                <div class="text-center space-y-4">
+                    <button class="w-full py-5 bg-magenta rounded-2xl font-black text-xs tracking-[0.3em] uppercase shadow-[0_0_30px_rgba(227,44,108,0.3)] hover:scale-[1.02] transition-transform">
+                        Plan CHAMPION Activo
+                    </button>
+                    <p class="text-[9px] font-bold text-turquoise uppercase tracking-widest">Alianza Estratégica Habilitada</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
-        // CONFIGURACIÓN DE CONEXIÓN (Aquí entran tus datos de secreto.env)
-        const SUPABASE_URL = " https://znhezjtriutfzqgwuezq.supabase.co/rest/v1/ ";
-        const SUPABASE_KEY = "sb_publishable_6k_jzLfPWH0fT6I_kjE0QQ_MI9honpR";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SB_URL = "TU_URL_SUPABASE";
+        const SB_KEY = "TU_KEY_SUPABASE";
+        const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-        async function fetchData() {
-            // Reemplaza 'nombre_de_tu_tabla' por el nombre real en Supabase
-            let { data, error } = await supabase
-                .from('bbdd_medallero_chile') 
-                .select('*');
+        async function bootApp() {
+            // QUERY RIGUROSA: Traemos todas las columnas del CSV mencionadas
+            const { data, error } = await _sb.from('bbdd_medallero_chile')
+                .select('cerveceria, cerveza_ganadora, medalla_base, estilo, anio, certamen, ciudad, pais');
 
-            if (error) {
-                console.error("Error cargando datos:", error);
-                document.getElementById('status').innerText = "ERROR DE CONEXIÓN";
-                return;
-            }
+            if(error) return console.error("Error de Data:", error);
 
-            updateDashboard(data);
+            // KPIs
+            document.getElementById('kpi-total').innerText = data.length.toLocaleString();
+            document.getElementById('kpi-beers').innerText = [...new Set(data.map(d => d.cerveceria))].length;
+            document.getElementById('kpi-events').innerText = [...new Set(data.map(d => d.certamen))].length;
+
+            // PROCESAMIENTO DE TOOLTIPS (Agregación)
+            const stats = {};
+            data.forEach(row => {
+                if(!stats[row.cerveceria]) {
+                    stats[row.cerveceria] = {
+                        total: 0,
+                        bestBeer: row.cerveza_ganadora,
+                        city: row.ciudad,
+                        lastYear: row.anio,
+                        medalMix: { Oro: 0, Plata: 0, Bronce: 0 }
+                    };
+                }
+                stats[row.cerveceria].total++;
+                if(stats[row.cerveceria].medalMix[row.medalla_base] !== undefined) {
+                    stats[row.cerveceria].medalMix[row.medalla_base]++;
+                }
+            });
+
+            const top10 = Object.entries(stats).sort((a,b) => b[1].total - a[1].total).slice(0, 10);
+            drawGraph(top10);
         }
 
-        function updateDashboard(data) {
-            // Actualizar KPIs
-            document.getElementById('total-rows').innerText = data.length.toLocaleString();
-            
-            const uniqueBeers = [...new Set(data.map(item => item.cerveceria))].length;
-            document.getElementById('unique-beers').innerText = uniqueBeers;
+        function drawGraph(top10) {
+            const ctx = document.getElementById('rankingChart').getContext('2d');
+            const tooltipEl = document.getElementById('pb-tooltip');
 
-            // Procesar datos para gráficos (Ejemplo rápido)
-            renderCharts(data);
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(t => t[0]),
+                    datasets: [{
+                        data: top10.map(t => t[1].total),
+                        backgroundColor: '#f7c32f',
+                        hoverBackgroundColor: '#e32c6c',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: false,
+                            external: function(context) {
+                                const { chart, tooltip } = context;
+                                if (tooltip.opacity === 0) { tooltipEl.style.opacity = 0; return; }
+
+                                const index = tooltip.dataPoints[0].dataIndex;
+                                const d = top10[index][1];
+
+                                tooltipEl.innerHTML = `
+                                    <div class="tooltip-header">
+                                        <div class="font-black text-magenta uppercase text-xs">${top10[index][0]}</div>
+                                        <div class="text-[9px] opacity-60">${d.city}, Chile</div>
+                                    </div>
+                                    <div class="space-y-2 text-[10px]">
+                                        <div class="flex justify-between">
+                                            <span class="opacity-50 text-[9px]">BEST BEER:</span>
+                                            <span class="font-bold text-yellow-500">${d.bestBeer}</span>
+                                        </div>
+                                        <div class="flex gap-1 mt-2">
+                                            <span class="badge-medal bg-yellow-500 text-black">ORO: ${d.medalMix.Oro}</span>
+                                            <span class="badge-medal bg-gray-400 text-black">PLATA: ${d.medalMix.Plata}</span>
+                                            <span class="badge-medal bg-orange-700 text-white">BRONCE: ${d.medalMix.Bronce}</span>
+                                        </div>
+                                        <div class="pt-2 border-t border-white/5 text-[9px] italic text-turquoise">
+                                            Líder desde el año ${d.lastYear}
+                                        </div>
+                                    </div>
+                                `;
+
+                                const pos = chart.canvas.getBoundingClientRect();
+                                tooltipEl.style.opacity = 1;
+                                tooltipEl.style.left = pos.left + window.pageXOffset + tooltip.caretX + 20 + 'px';
+                                tooltipEl.style.top = pos.top + window.pageYOffset + tooltip.caretY - 100 + 'px';
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                        x: { ticks: { color: '#fff', font: { size: 10, weight: '900' } } }
+                    }
+                }
+            });
         }
 
-        function renderCharts(data) {
-            // Lógica para procesar el Top 10 y Estilos con Chart.js
-            // ... (Se incluye lógica de conteo y renderizado)
-            console.log("Datos listos para visualización");
-        }
+        // Lógica de Negocio Simulador
+        const scales = ["<500 hl", "501-1000 hl", "1001-5000 hl", "5001-10000 hl", ">20000 hl"];
+        document.getElementById('rangeScale').oninput = function() {
+            document.getElementById('labelScale').innerText = scales[this.value];
+        };
+        document.getElementById('labelScale').innerText = scales[0];
 
-        // Carga inicial
-        fetchData();
+        bootApp();
     </script>
 </body>
 </html>
