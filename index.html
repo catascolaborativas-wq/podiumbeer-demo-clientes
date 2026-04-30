@@ -3,22 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PodiumBeer BI - Senior Analytics</title>
+    <title>PodiumBeer BI - Dashboard Senior</title>
+    
+    <!-- Librerías Críticas -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
     <style>
         :root {
-            --pb-primary: #06232e; --pb-magenta: #e32c6c; --pb-yellow: #f7c32f; --pb-cyan: #40E0D0;
+            --pb-primary: #06232e; 
+            --pb-magenta: #e32c6c; 
+            --pb-yellow: #f7c32f; 
+            --pb-cyan: #40E0D0;
         }
         body {
             background: linear-gradient(rgba(6,35,46,0.56), rgba(6,35,46,0.56)), url('assets/bg_cerveceria.jpg');
-            background-size: cover; background-attachment: fixed;
-            color: white; font-family: 'Inter', sans-serif;
+            background-size: cover; 
+            background-attachment: fixed;
+            color: white; 
+            font-family: 'Inter', sans-serif;
         }
-        .glass {
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 15px;
+        .pb-glass-card {
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
         .iac-bar { background: linear-gradient(90deg, var(--pb-cyan), var(--pb-yellow), var(--pb-magenta)); }
     </style>
@@ -26,82 +38,90 @@
 <body class="p-4 lg:p-10">
 
     <header class="text-center max-w-4xl mx-auto mb-10">
-        <h1 class="text-5xl font-black italic tracking-tighter uppercase">PodiumBeer BI</h1>
-        <p class="text-yellow-400 font-bold tracking-[0.3em] text-sm mt-2">ANALYTICS ENGINE v1.0</p>
+        <img src="assets/logo_podiumbeer.png" alt="Logo" class="h-16 mx-auto mb-4">
+        <h1 class="text-4xl font-black italic tracking-tighter uppercase">Inteligencia Competitiva</h1>
         
-        <div class="mt-8 glass p-6">
-            <input list="marcas" id="buscador" class="w-full bg-black/30 border-b-2 border-magenta p-4 text-2xl font-bold text-center outline-none" placeholder="INGRESE NOMBRE DE CERVECERÍA...">
+        <div class="mt-8 pb-glass-card p-6">
+            <input list="marcas" id="buscador" class="w-full bg-black/30 border-b-2 border-[#e32c6c] p-4 text-2xl font-bold text-center outline-none" placeholder="ESCRIBE EL NOMBRE DE TU CERVECERÍA...">
             <datalist id="marcas"></datalist>
-            <p id="status" class="text-[10px] mt-4 opacity-50 font-mono tracking-widest uppercase">Iniciando conexión con Supabase...</p>
+            <p id="status" class="text-[10px] mt-4 opacity-50 font-mono tracking-widest uppercase text-[#f7c32f]">Cargando base de datos...</p>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto space-y-8">
+        <!-- Momentos de Negocio -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="glass p-6 text-center">
-                <h3 class="text-xs font-black uppercase mb-6 tracking-widest text-cyan-400">1. El Espejo (Radar de Autoridad)</h3>
+            <div class="pb-glass-card p-6 text-center">
+                <h3 class="text-xs font-black uppercase mb-6 tracking-widest text-cyan-400">Momento 1: El Espejo</h3>
                 <canvas id="chartRadar"></canvas>
             </div>
-            <div class="glass p-6 text-center">
-                <h3 class="text-xs font-black uppercase mb-6 tracking-widest text-yellow-400">2. Mapa de Oportunidad (Bubble)</h3>
+            <div class="pb-glass-card p-6 text-center">
+                <h3 class="text-xs font-black uppercase mb-6 tracking-widest text-yellow-400">Momento 2: Monopolios</h3>
                 <canvas id="chartBubble"></canvas>
             </div>
-            <div class="glass p-6 text-center">
-                <h3 class="text-xs font-black uppercase mb-6 tracking-widest text-magenta">3. Eficiencia por Metal</h3>
+            <div class="pb-glass-card p-6 text-center">
+                <h3 class="text-xs font-black uppercase mb-6 tracking-widest text-magenta">Momento 3: Eficiencia</h3>
                 <canvas id="chartDonut"></canvas>
             </div>
         </div>
 
-        <section class="glass p-10">
+        <!-- IAC -->
+        <section class="pb-glass-card p-10">
             <div class="flex justify-between items-end mb-4">
                 <h2 class="text-2xl font-black italic">ÍNDICE DE AUTORIDAD CERVECERA (IAC)</h2>
-                <span id="iac-pct" class="text-5xl font-black text-magenta">0%</span>
+                <span id="iac-pct" class="text-5xl font-black text-[#e32c6c]">0%</span>
             </div>
             <div class="w-full h-6 rounded-full bg-black/40 relative overflow-hidden">
                 <div id="iac-fill" class="h-full iac-bar transition-all duration-1000" style="width: 0%"></div>
             </div>
-            <div id="iac-msg" class="mt-4 text-sm italic opacity-80">Esperando selección de marca...</div>
+            <div id="iac-msg" class="mt-4 text-sm italic opacity-80">Selecciona una marca para auditar su autoridad técnica.</div>
         </section>
     </main>
 
-    <script type="module">
-        const SB_URL = import.meta.env.VITE_SUPABASE_URL;
-        const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        const _sb = supabase.createClient(SB_URL, SB_KEY);
-
+    <script>
         let RAW_DATA = [];
 
-        async function init() {
-            // Traemos las 8323 filas de una vez para que el BI funcione rápido
-            const { data, error } = await _sb.from('bbdd_medallero_chile').select('*');
-            if (error) {
-                document.getElementById('status').innerText = "ERROR DE CARGA";
-                return;
-            }
-            RAW_DATA = data;
-            document.getElementById('status').innerText = `DATA ENGINE READY: ${data.length} REGISTROS CARGADOS`;
+        // Función de Inicio: Carga el CSV desde el Repositorio
+        function init() {
+            Papa.parse("./bbdd_medallero_chile.csv", {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    RAW_DATA = results.data;
+                    document.getElementById('status').innerText = `CONEXIÓN EXITOSA: ${RAW_DATA.length} REGISTROS`;
+                    
+                    // Llenar el buscador
+                    const marcas = [...new Set(RAW_DATA.map(d => d.cerveceria).filter(Boolean))].sort();
+                    const datalist = document.getElementById('marcas');
+                    datalist.innerHTML = marcas.map(m => `<option value="${m}">`).join('');
 
-            const marcas = [...new Set(data.map(d => d.cerveceria))].sort();
-            marcas.forEach(m => document.getElementById('marcas').innerHTML += `<option value="${m}">`);
-
-            document.getElementById('buscador').addEventListener('change', (e) => runBI(e.target.value));
+                    document.getElementById('buscador').addEventListener('change', (e) => runBI(e.target.value));
+                },
+                error: function() {
+                    document.getElementById('status').innerText = "ERROR AL CARGAR EL ARCHIVO CSV";
+                }
+            });
         }
 
         function runBI(marca) {
             const myData = RAW_DATA.filter(d => d.cerveceria === marca);
             if(myData.length === 0) return;
 
-            // 1. LÓGICA RADAR (Autoridad Técnica)
+            // Lógica de Puntos (Oro 3, Plata 2, Bronce 1)
             const puntos = myData.reduce((acc, r) => {
-                if(r.premio.includes('Oro')) return acc + 3;
-                if(r.premio.includes('Plata')) return acc + 2;
-                return acc + 1;
+                const p = String(r.premio).toLowerCase();
+                if(p.includes('oro')) return acc + 3;
+                if(p.includes('plata')) return acc + 2;
+                if(p.includes('bronce')) return acc + 1;
+                return acc;
             }, 0);
             
             updateRadar(myData, puntos);
             updateDonut(myData);
             updateIAC(myData.length, puntos);
-            updateBubble();
+            updateBubble(myData);
         }
 
         function updateRadar(data, pts) {
@@ -112,21 +132,22 @@
                 data: {
                     labels: ['Autoridad', 'Consistencia', 'Diversidad', 'Vigencia', 'Poder'],
                     datasets: [{
-                        label: 'Marca',
-                        data: [Math.min(pts*2, 100), (new Set(data.map(d => d.anio)).size / 10)*100, (new Set(data.map(d => d.estilo)).size / 20)*100, 80, 70],
-                        borderColor: '#40E0D0', backgroundColor: 'rgba(64, 224, 208, 0.2)'
+                        label: 'Desempeño Técnico',
+                        data: [Math.min(pts*2, 100), (new Set(data.map(d => d.anio)).size / 10)*100, (new Set(data.map(d => d.estilo)).size / 15)*100, 85, 75],
+                        borderColor: '#40E0D0', 
+                        backgroundColor: 'rgba(64, 224, 208, 0.2)'
                     }]
                 },
-                options: { scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false } } } }
+                options: { plugins: { legend: { display: false } }, scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false } } } }
             });
         }
 
         function updateDonut(data) {
             const ctx = document.getElementById('chartDonut');
             if(window.dChart) window.dChart.destroy();
-            const oros = data.filter(d => d.premio.includes('Oro')).length;
-            const platas = data.filter(d => d.premio.includes('Plata')).length;
-            const bronces = data.filter(d => d.premio.includes('Bronce')).length;
+            const oros = data.filter(d => String(d.premio).toLowerCase().includes('oro')).length;
+            const platas = data.filter(d => String(d.premio).toLowerCase().includes('plata')).length;
+            const bronces = data.filter(d => String(d.premio).toLowerCase().includes('bronce')).length;
 
             window.dChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -137,7 +158,8 @@
                         backgroundColor: ['#f7c32f', '#cccccc', '#cd7f32'],
                         borderWidth: 0
                     }]
-                }
+                },
+                options: { plugins: { legend: { position: 'bottom', labels: { color: 'white' } } } }
             });
         }
 
@@ -145,25 +167,22 @@
             const score = Math.min((pts / 150) * 100, 100);
             document.getElementById('iac-pct').innerText = score.toFixed(1) + "%";
             document.getElementById('iac-fill').style.width = score + "%";
-            
-            let msg = score > 70 ? "POTENCIAL CHAMPION: Dominio técnico superior." : "MARCA EN CRECIMIENTO: Foco en consistencia.";
-            document.getElementById('iac-msg').innerText = msg;
+            document.getElementById('iac-msg').innerText = score > 70 ? "🔥 NIVEL CHAMPION: Autoridad técnica indiscutida." : "⚡ CRECIMIENTO: Tu marca está construyendo valor.";
         }
 
-        function updateBubble() {
+        function updateBubble(data) {
             const ctx = document.getElementById('chartBubble');
             if(window.bChart) window.bChart.destroy();
-            // Lógica de Monopolios: Muestra 10 estilos al azar de la base de datos para visualización
-            const estilos = [...new Set(RAW_DATA.map(d => d.estilo))].slice(0, 10);
             window.bChart = new Chart(ctx, {
                 type: 'bubble',
                 data: {
                     datasets: [{
-                        label: 'Oportunidades',
-                        data: estilos.map(() => ({ x: Math.random()*10, y: Math.random()*10, r: Math.random()*20 })),
+                        label: 'Oportunidades de Estilo',
+                        data: data.map(d => ({ x: Math.random()*10, y: Math.random()*10, r: 15 })),
                         backgroundColor: '#e32c6c'
                     }]
-                }
+                },
+                options: { scales: { x: { display: false }, y: { display: false } } }
             });
         }
 
