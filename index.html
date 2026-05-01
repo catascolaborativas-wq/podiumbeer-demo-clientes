@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PodiumBeer | Demo Clientes</title>
+  <style>
+    :root {
+      --bg: #071a22;
+      --bg-soft: rgba(7, 26, 34, 0.78);
+      --card: rgba(255, 255, 255, 0.08);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #f6f8fb;
+      --muted: rgba(238, 244, 247, 0.74);
+      --magenta: #e32c6c;
+      --yellow: #f4c63f;
+      --cyan: #50d4d0;
+      --good: #6fe39e;
+      --danger: #ff7f8d;
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-pill: 999px;
+      --shadow: 0 22px 44px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        linear-gradient(rgba(7, 26, 34, 0.84), rgba(7, 26, 34, 0.9)),
+        radial-gradient(circle at top left, rgba(80, 212, 208, 0.15), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(227, 44, 108, 0.18), transparent 28%),
+        url("assets/bg_cerveceria.jpg") center/cover fixed no-repeat,
+        var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 54px 54px;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .glass,
+    .summary-card,
+    .panel,
+    .sim-card,
+    .metric-card,
+    .results-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      border: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass::before,
+    .summary-card::before,
+    .panel::before,
+    .sim-card::before,
+    .metric-card::before,
+    .results-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,0.05), transparent 44%);
+      pointer-events: none;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-top {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .brand {
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 180deg, var(--magenta), #ff8f3d, var(--yellow), #4be1ff, #6d59ff, var(--magenta));
+      padding: 8px;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.05), var(--shadow);
+      display: grid;
+      place-items: center;
+    }
+
+    .brand__inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: radial-gradient(circle at top, rgba(255,255,255,0.22), rgba(7,26,34,0.96) 58%);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 10px;
+      font-size: 10px;
+      line-height: 1.15;
+      letter-spacing: 0.04em;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .hero-copy h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-kicker {
+      margin: 10px 0 0;
+      color: var(--cyan);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .hero-copy p {
+      margin: 10px 0 0;
+      max-width: 820px;
+      color: var(--muted);
+      line-height: 1.56;
+      font-size: 0.98rem;
+    }
+
+    .search-shell {
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .search-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 170px 150px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .field-shell,
+    .select-shell {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(7, 26, 34, 0.7);
+    }
+
+    .field-shell input,
+    .select-shell select {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .field-shell input::placeholder {
+      color: rgba(255,255,255,0.46);
+    }
+
+    .select-shell select {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .field-label {
+      font-size: 0.76rem;
+      color: var(--yellow);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .action-btn,
+    .plan-btn,
+    .cta-link,
+    .ghost-btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      transition: transform 0.16s ease, filter 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .action-btn {
+      min-height: 56px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(90deg, var(--magenta), #ff589e);
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 14px 24px rgba(227, 44, 108, 0.26);
+    }
+
+    .ghost-btn {
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(7, 26, 34, 0.64);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .action-btn:hover,
+    .plan-btn:hover,
+    .cta-link:hover,
+    .ghost-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .search-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.32);
+      box-shadow: 0 0 0 6px rgba(255,255,255,0.05);
+      flex: 0 0 auto;
+    }
+
+    .status-dot.is-ready {
+      background: var(--good);
+    }
+
+    .status-dot.is-error {
+      background: var(--danger);
+    }
+
+    .context-pill {
+      padding: 9px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      font-weight: 700;
+    }
+
+    .manual-load {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .manual-copy {
+      font-size: 0.84rem;
+      color: rgba(232,241,245,0.82);
+    }
+
+    .summary-grid,
+    .analysis-grid,
+    .chart-grid,
+    .sim-grid,
+    .metrics-grid,
+    .results-grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .analysis-grid,
+    .chart-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sim-grid {
+      grid-template-columns: 1.1fr 1fr;
+    }
+
+    .metrics-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .results-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .summary-card,
+    .panel,
+    .sim-card,
+    .metric-card,
+    .results-card {
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .summary-card small,
+    .panel-kicker,
+    .sim-kicker {
+      display: inline-block;
+      color: var(--yellow);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .summary-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .summary-card p,
+    .panel-copy,
+    .sim-copy,
+    .metric-note,
+    .results-copy,
+    .cta-block p {
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 10px 0 0;
+    }
+
+    .panel-title,
+    .sim-title {
+      margin: 8px 0 0;
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .dynamic-name {
+      margin: 10px 0 0;
+      font-size: 1.7rem;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .message-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+      line-height: 1.46;
+      font-size: 0.92rem;
+    }
+
+    .ranking-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .ranking-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .ranking-rank {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .ranking-track {
+      height: 34px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.09);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .ranking-bar {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(255,255,255,0.26), rgba(255,255,255,0.1));
+      min-width: 7%;
+    }
+
+    .ranking-bar.is-selected {
+      background: linear-gradient(90deg, var(--yellow), #ff6bb0);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2);
+    }
+
+    .ranking-label {
+      position: absolute;
+      inset: 0;
+      padding: 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .ranking-label span:last-child,
+    .ranking-score {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .thermo-shell {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    .thermo-wrap {
+      width: 98px;
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+    }
+
+    .thermo-tube {
+      width: 34px;
+      height: 220px;
+      border-radius: 999px;
+      border: 4px solid rgba(255,255,255,0.84);
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .thermo-fill {
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 0%;
+      background: linear-gradient(180deg, #ff65b4, var(--magenta));
+      transition: height 0.2s ease;
+    }
+
+    .thermo-bulb {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: radial-gradient(circle at top, #ff9fd1, var(--magenta) 65%);
+      border: 4px solid rgba(255,255,255,0.78);
+      box-shadow: 0 0 0 8px rgba(227,44,108,0.1);
+    }
+
+    .thermo-scale {
+      display: grid;
+      gap: 24px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .thermo-side strong {
+      display: block;
+      margin-top: 10px;
+      color: var(--yellow);
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .viz-shell {
+      margin-top: 14px;
+      min-height: 320px;
+      border-radius: 18px;
+      background: rgba(7, 26, 34, 0.42);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .viz-shell svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .viz-empty {
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .viz-tooltip {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      max-width: 280px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(7, 26, 34, 0.94);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 14px 24px rgba(0,0,0,0.24);
+      color: var(--text);
+      font-size: 0.84rem;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+
+    .viz-tooltip.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .viz-tooltip__title {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--yellow);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .viz-legend {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+    }
+
+    .viz-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .viz-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex: 0 0 10px;
+    }
+
+    .range-box {
+      margin-top: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .range-current {
+      color: var(--yellow);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--magenta);
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .plan-options {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .plan-btn {
+      width: 100%;
+      text-align: left;
+      padding: 16px;
+      border-radius: 18px;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .plan-btn strong {
+      display: block;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .plan-btn span,
+    .plan-btn small {
+      display: block;
+      margin-top: 8px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .plan-btn.is-active {
+      background: linear-gradient(90deg, rgba(227,44,108,0.34), rgba(255, 111, 187, 0.2));
+      border-color: rgba(255,255,255,0.26);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+
+    .metric-value,
+    .results-amount {
+      margin-top: 10px;
+      font-size: clamp(1.5rem, 2.7vw, 2.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+
+    .results-chip {
+      display: inline-flex;
+      padding: 9px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--yellow);
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .results-list {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .results-list li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.46;
+    }
+
+    .results-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.44rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    .cta-block {
+      margin-top: 18px;
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .cta-link {
+      text-decoration: none;
+      color: white;
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(90deg, var(--magenta), #ff589e);
+      font-weight: 800;
+      box-shadow: 0 12px 26px rgba(227,44,108,0.28);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1020px) {
+      .summary-grid,
+      .analysis-grid,
+      .chart-grid,
+      .sim-grid,
+      .metrics-grid,
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .thermo-shell {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+
+      .thermo-side {
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 16px, 1180px);
+      }
+
+      .hero-top {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .hero-copy p,
+      .hero-kicker {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .search-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .search-meta {
+        align-items: flex-start;
+      }
+
+      .ranking-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .ranking-score {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="brand__inner">Podium Beer<br>Data Engine</div>
+        </div>
+        <div class="hero-copy">
+          <h1>Cerveza Analytics 2025</h1>
+          <div class="hero-kicker">Inteligencia competitiva para cervecerias</div>
+          <p>No todas las medallas valen lo mismo. Nosotros te mostramos cuales construyen tu marca.</p>
+        </div>
+      </div>
+
+      <section class="glass search-shell">
+        <div class="search-controls">
+          <label class="field-shell" aria-label="Cerveceria">
+            <span class="field-label">Cerveceria</span>
+            <input id="breweryInput" type="text" list="brewerySuggestions" placeholder="Escribe el nombre de tu cerveceria">
+            <datalist id="brewerySuggestions"></datalist>
+          </label>
+
+          <label class="select-shell" aria-label="Periodo">
+            <span class="field-label">Periodo</span>
+            <select id="periodSelect"></select>
+          </label>
+
+          <button class="action-btn" id="analyzeBtn" type="button">Analizar</button>
+        </div>
+
+        <div class="search-meta">
+          <div class="status-text" id="statusText">
+            <span class="status-dot" id="statusDot"></span>
+            Preparando base de datos...
+          </div>
+          <div class="manual-load hidden" id="manualLoad">
+            <span class="manual-copy">Si el CSV no carga solo al abrir este HTML, cargalo manualmente.</span>
+            <button class="ghost-btn" id="manualCsvBtn" type="button">Cargar CSV manual</button>
+            <input id="manualCsvInput" type="file" accept=".csv,text/csv" class="hidden">
+          </div>
+          <div class="context-pill" id="analysisContext">Esperando seleccion</div>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <section class="summary-grid">
+        <article class="summary-card">
+          <small>TOTAL MEDALLAS</small>
+          <strong id="summaryRows">0</strong>
+          <p>Filas totales leidas desde la base principal.</p>
+        </article>
+        <article class="summary-card">
+          <small>MEDALLAS DE ORO</small>
+          <strong id="summaryGold">0</strong>
+          <p>Total de medallas registradas en toda la base.</p>
+        </article>
+        <article class="summary-card">
+          <small>CERTAMENES</small>
+          <strong id="summaryCerts">0</strong>
+          <p>Certamenes distintos presentes en el CSV.</p>
+        </article>
+      </section>
+
+      <section class="analysis-grid">
+        <article class="panel">
+          <small class="panel-kicker">Ranking de impacto</small>
+          <h2 class="panel-title">Posicion competitiva en el periodo elegido</h2>
+          <p class="panel-copy">Muestra donde cae la cerveceria frente a otras marcas chilenas usando el puntaje ponderado de sus medallas.</p>
+          <div class="ranking-list" id="rankingList"></div>
+          <div class="message-box" id="rankingMessage">Selecciona una cerveceria y un periodo para construir el ranking.</div>
+        </article>
+
+        <article class="panel">
+          <small class="panel-kicker">Indice de Autoridad Cervecera</small>
+          <h2 class="dynamic-name" id="iacName">Sin cerveceria seleccionada</h2>
+          <p class="panel-copy" id="iacCopy">El termometro mostrara la autoridad de la marca frente a la lider del periodo.</p>
+          <div class="thermo-shell">
+            <div class="thermo-wrap">
+              <div class="thermo-tube"><div class="thermo-fill" id="thermoFill"></div></div>
+              <div class="thermo-bulb" id="thermoValue">0%</div>
+            </div>
+            <div class="thermo-scale">
+              <span>100%</span>
+              <span>75%</span>
+              <span>50%</span>
+              <span>25%</span>
+              <span>0%</span>
+            </div>
+          </div>
+          <div class="thermo-side">
+            Potencial del periodo
+            <strong id="thermoPotential">0%</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="chart-grid">
+        <article class="panel">
+          <small class="panel-kicker">Radar / El Espejo</small>
+          <h2 class="dynamic-name" id="radarName">Sin cerveceria seleccionada</h2>
+          <p class="panel-copy">Compara la marca con el promedio del top 3 del periodo en consistencia, dominancia, calidad, diversidad y visibilidad.</p>
+          <div class="viz-shell" id="radarViz">
+            <div class="viz-empty">Selecciona una cerveceria para construir el radar.</div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <small class="panel-kicker">Mapa de oportunidad</small>
+          <h2 class="dynamic-name" id="opportunityName">Sin cerveceria seleccionada</h2>
+          <p class="panel-copy">Cruza estilos, competencia y volumen de oros para mostrar espacios donde podria haber una mejor ventana competitiva.</p>
+          <div class="viz-shell" id="bubbleViz">
+            <div class="viz-empty">Selecciona una cerveceria para construir el mapa de oportunidad.</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="sim-grid">
+        <article class="sim-card">
+          <small class="sim-kicker">Slider unico</small>
+          <h3 class="sim-title">Escala de Produccion</h3>
+          <p class="sim-copy">Tu volumen define tu estrategia. Este modelo adapta la inversion y el potencial de crecimiento segun tu realidad productiva.</p>
+          <div class="range-box">
+            <div class="range-current" id="productionCurrent">≤ 10.000 litros</div>
+            <input id="productionRange" type="range" min="0" max="4" step="1" value="0">
+            <div class="range-labels">
+              <span>≤ 10.000</span>
+              <span>10.001 - 20.000</span>
+              <span>20.001 - 50.000</span>
+              <span>50.001 - 100.000</span>
+              <span>≥ 100.001</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="sim-card">
+          <small class="sim-kicker">Selector de planes</small>
+          <h3 class="sim-title">Nivel de Alianza Estrategica</h3>
+          <p class="sim-copy">Los planes cambian el alcance y la intensidad de la propuesta comercial.</p>
+          <div class="plan-options">
+            <button class="plan-btn is-active" data-plan="explorer" type="button">
+              <strong>Explorer</strong>
+              <span>Detecta oportunidades, errores y puntos ciegos antes de invertir mas.</span>
+              <small>CLP $19.000 · 1 servicio</small>
+            </button>
+            <button class="plan-btn" data-plan="podium" type="button">
+              <strong>Podium</strong>
+              <span>Ordena tu oferta, corrige fugas y mejora tu capacidad de venta.</span>
+              <small>CLP $59.000 · 4 servicios</small>
+            </button>
+            <button class="plan-btn" data-plan="champion" type="button">
+              <strong>Champion</strong>
+              <span>Convierte informacion en ventaja competitiva real.</span>
+              <small>CLP $149.000 · 6 servicios</small>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <small>Inversion inteligente</small>
+          <div class="metric-value" id="metricInvestment">CLP $19.000</div>
+          <p class="metric-note">Valor mensual del plan aplicado al tramo de produccion seleccionado.</p>
+        </article>
+        <article class="metric-card">
+          <small>Valor recuperado</small>
+          <div class="metric-value" id="metricRecovered">CLP $228.000</div>
+          <p class="metric-note">Proyeccion anual estimada a partir del valor mensual del escenario elegido.</p>
+        </article>
+        <article class="metric-card">
+          <small>Impacto en rentabilidad</small>
+          <div class="metric-value" id="metricImpact">18%</div>
+          <p class="metric-note">Escenario orientativo construido con el tramo declarado y el plan elegido.</p>
+        </article>
+      </section>
+
+      <section class="results-grid">
+        <article class="results-card">
+          <span class="results-chip" id="resultsChip">Plan seleccionado: Explorer</span>
+          <div class="results-amount" id="resultsAmount">CLP $19.000 / mes</div>
+          <p class="results-copy" id="resultsCopy">Este tramo te permite detectar oportunidades y corregir puntos ciegos antes de invertir mas.</p>
+          <ul class="results-list" id="resultsList"></ul>
+        </article>
+
+        <article class="results-card">
+          <small class="panel-kicker">Impacto en tu negocio</small>
+          <h3 class="panel-title">Resumen comercial del escenario</h3>
+          <p class="panel-copy">Los indicadores clave para convertir data tecnica en decisiones rentables. Asi se ve, en numeros, lo que tu escenario actual puede sostener comercialmente.</p>
+        </article>
+      </section>
+
+      <section class="cta-block">
+        <p>Crecemos contigo: este modelo se adapta a tu realidad productiva y a tus objetivos comerciales.</p>
+        <a class="cta-link" href="http://wa.me/56952184980" target="_blank" rel="noreferrer">Agendar tu diagnostico</a>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const DATA_FILE = "./bbdd.csv";
+    const MEDAL_WEIGHTS = { oro: 3, plata: 2, bronce: 1 };
+    const PRODUCTION_LABELS = [
+      "≤ 10.000 litros",
+      "10.001 - 20.000 litros",
+      "20.001 - 50.000 litros",
+      "50.001 - 100.000 litros",
+      "≥ 100.001 litros"
+    ];
+    const PRODUCTION_FACTORS = [1.0, 1.2, 1.5, 1.8, 2.2];
+    const PLANS = {
+      explorer: {
+        label: "Explorer",
+        price: 19000,
+        services: 1,
+        phrase: "Este tramo te permite detectar oportunidades y corregir puntos ciegos antes de invertir mas.",
+        impactBase: 18
+      },
+      podium: {
+        label: "Podium",
+        price: 59000,
+        services: 4,
+        phrase: "Este tramo te permite ordenar tu oferta y mejorar tu capacidad de venta con una base mas clara.",
+        impactBase: 34
+      },
+      champion: {
+        label: "Champion",
+        price: 149000,
+        services: 6,
+        phrase: "Este tramo te permite convertir informacion en una ventaja competitiva mas visible y accionable.",
+        impactBase: 48
+      }
+    };
+
+    const state = {
+      fullRows: [],
+      chileRows: [],
+      filteredRows: [],
+      ranked: [],
+      styleStats: new Map(),
+      statsByBrewery: new Map(),
+      periodOptions: ["Todos"],
+      selectedStats: null,
+      selectedPlan: "explorer",
+      selectedPeriod: "2025",
+      productionIndex: 0
+    };
+
+    const el = {
+      breweryInput: document.getElementById("breweryInput"),
+      brewerySuggestions: document.getElementById("brewerySuggestions"),
+      periodSelect: document.getElementById("periodSelect"),
+      analyzeBtn: document.getElementById("analyzeBtn"),
+      statusText: document.getElementById("statusText"),
+      analysisContext: document.getElementById("analysisContext"),
+      manualLoad: document.getElementById("manualLoad"),
+      manualCsvBtn: document.getElementById("manualCsvBtn"),
+      manualCsvInput: document.getElementById("manualCsvInput"),
+      summaryRows: document.getElementById("summaryRows"),
+      summaryGold: document.getElementById("summaryGold"),
+      summaryCerts: document.getElementById("summaryCerts"),
+      rankingList: document.getElementById("rankingList"),
+      rankingMessage: document.getElementById("rankingMessage"),
+      iacName: document.getElementById("iacName"),
+      iacCopy: document.getElementById("iacCopy"),
+      thermoFill: document.getElementById("thermoFill"),
+      thermoValue: document.getElementById("thermoValue"),
+      thermoPotential: document.getElementById("thermoPotential"),
+      radarName: document.getElementById("radarName"),
+      opportunityName: document.getElementById("opportunityName"),
+      radarViz: document.getElementById("radarViz"),
+      bubbleViz: document.getElementById("bubbleViz"),
+      productionRange: document.getElementById("productionRange"),
+      productionCurrent: document.getElementById("productionCurrent"),
+      metricInvestment: document.getElementById("metricInvestment"),
+      metricRecovered: document.getElementById("metricRecovered"),
+      metricImpact: document.getElementById("metricImpact"),
+      resultsChip: document.getElementById("resultsChip"),
+      resultsAmount: document.getElementById("resultsAmount"),
+      resultsCopy: document.getElementById("resultsCopy"),
+      resultsList: document.getElementById("resultsList")
+    };
+
+    function normalizeText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function titleCase(value) {
+      return String(value || "")
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(" ");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat("es-CL").format(Math.round(value || 0));
+    }
+
+    function formatMoneyCLP(value) {
+      return new Intl.NumberFormat("es-CL", {
+        style: "currency",
+        currency: "CLP",
+        maximumFractionDigits: 0
+      }).format(Math.round(value || 0));
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function updateStatus(message, type) {
+      const dotClass = type === "ready" ? "status-dot is-ready" : type === "error" ? "status-dot is-error" : "status-dot";
+      el.statusText.innerHTML = '<span class="' + dotClass + '"></span>' + escapeHtml(message);
+    }
+
+    function toggleManualLoad(show) {
+      el.manualLoad.classList.toggle("hidden", !show);
+    }
+
+    function parseSemicolonCsv(text) {
+      const rows = [];
+      let row = [];
+      let field = "";
+      let inQuotes = false;
+
+      for (let index = 0; index < text.length; index++) {
+        const char = text[index];
+        const next = text[index + 1];
+
+        if (inQuotes) {
+          if (char === '"' && next === '"') {
+            field += '"';
+            index++;
+          } else if (char === '"') {
+            inQuotes = false;
+          } else {
+            field += char;
+          }
+        } else if (char === '"') {
+          inQuotes = true;
+        } else if (char === ";") {
+          row.push(field);
+          field = "";
+        } else if (char === "\n") {
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+        } else if (char !== "\r") {
+          field += char;
+        }
+      }
+
+      if (field.length || row.length) {
+        row.push(field);
+        rows.push(row);
+      }
+
+      if (!rows.length) return [];
+
+      const headers = rows[0].map((header) => normalizeText(header));
+      return rows.slice(1)
+        .filter((columns) => columns.some((item) => String(item).trim()))
+        .map((columns) => {
+          const record = {};
+          headers.forEach((header, columnIndex) => {
+            record[header] = (columns[columnIndex] || "").trim();
+          });
+          return record;
+        });
+    }
+
+    function fillPeriodOptions() {
+      el.periodSelect.innerHTML = state.periodOptions.map((year) => '<option value="' + year + '">' + year + '</option>').join("");
+      el.periodSelect.value = state.selectedPeriod;
+    }
+
+    function getYearFromRow(row) {
+      return String(row.anio || "").trim();
+    }
+
+    function updateSummaryCounts() {
+      const totalRows = state.fullRows.length;
+      const totalGold = state.fullRows.filter((row) => normalizeText(row.medalla_base) === "oro").length;
+      const totalCerts = new Set(state.fullRows.map((row) => normalizeText(row.certamen)).filter(Boolean)).size;
+      el.summaryRows.textContent = formatNumber(totalRows);
+      el.summaryGold.textContent = formatNumber(totalGold);
+      el.summaryCerts.textContent = formatNumber(totalCerts);
+    }
+
+    function buildAggregates(rows) {
+      const styleStats = new Map();
+      const breweryMap = new Map();
+
+      rows.forEach((row) => {
+        const medalKey = normalizeText(row.medalla_base);
+        const weight = MEDAL_WEIGHTS[medalKey] || 0;
+        const breweryKey = normalizeText(row.cerveceria);
+        const preferredStyle = row.estilo_limpio || row.estilo || row.estilo_cliente || row.estilo_corregido;
+        const styleKey = normalizeText(preferredStyle) || "sin-estilo";
+        const year = Number.parseInt(getYearFromRow(row), 10);
+
+        if (!styleStats.has(styleKey)) {
+          styleStats.set(styleKey, {
+            label: preferredStyle || "Sin estilo",
+            medals: 0,
+            gold: 0,
+            breweries: new Set()
+          });
+        }
+
+        const style = styleStats.get(styleKey);
+        style.medals += 1;
+        if (medalKey === "oro") style.gold += 1;
+        style.breweries.add(breweryKey);
+
+        if (!breweryMap.has(breweryKey)) {
+          breweryMap.set(breweryKey, {
+            key: breweryKey,
+            name: row.cerveceria,
+            records: [],
+            totalMedals: 0,
+            weightedScore: 0,
+            gold: 0,
+            silver: 0,
+            bronze: 0,
+            years: new Set(),
+            certs: new Set(),
+            origins: new Set(),
+            styles: new Map()
+          });
+        }
+
+        const brewery = breweryMap.get(breweryKey);
+        brewery.records.push(row);
+        brewery.totalMedals += 1;
+        brewery.weightedScore += weight;
+        if (medalKey === "oro") brewery.gold += 1;
+        if (medalKey === "plata") brewery.silver += 1;
+        if (medalKey === "bronce") brewery.bronze += 1;
+        if (Number.isFinite(year)) brewery.years.add(year);
+        if (normalizeText(row.certamen)) brewery.certs.add(normalizeText(row.certamen));
+        if (normalizeText(row.origen)) brewery.origins.add(normalizeText(row.origen));
+
+        if (!brewery.styles.has(styleKey)) {
+          brewery.styles.set(styleKey, {
+            label: preferredStyle || "Sin estilo",
+            medals: 0,
+            gold: 0
+          });
+        }
+
+        const ownStyle = brewery.styles.get(styleKey);
+        ownStyle.medals += 1;
+        if (medalKey === "oro") ownStyle.gold += 1;
+      });
+
+      const periodTotalMedals = rows.length;
+      const periodTotalCerts = Math.max(1, new Set(rows.map((row) => normalizeText(row.certamen)).filter(Boolean)).size);
+      const periodTotalStyles = Math.max(1, styleStats.size);
+
+      const ranked = [...breweryMap.values()].map((brewery) => {
+        const mainStyleEntry = [...brewery.styles.entries()].sort((a, b) => b[1].medals - a[1].medals)[0];
+        const mainStyle = mainStyleEntry ? mainStyleEntry[1] : { label: "Sin estilo", medals: 0, gold: 0 };
+        const dominance = periodTotalMedals ? (brewery.totalMedals / periodTotalMedals) * 100 : 0;
+        const consistency = periodTotalCerts ? (brewery.certs.size / periodTotalCerts) * 100 : 0;
+        const quality = brewery.totalMedals ? (brewery.weightedScore / (brewery.totalMedals * 3)) * 100 : 0;
+        const diversity = periodTotalStyles ? (brewery.styles.size / periodTotalStyles) * 100 : 0;
+        const visibility = periodTotalCerts ? (brewery.certs.size / periodTotalCerts) * 100 : 0;
+        return {
+          key: brewery.key,
+          name: brewery.name,
+          weightedScore: brewery.weightedScore,
+          totalMedals: brewery.totalMedals,
+          gold: brewery.gold,
+          silver: brewery.silver,
+          bronze: brewery.bronze,
+          years: brewery.years,
+          certs: brewery.certs,
+          origins: brewery.origins,
+          styles: brewery.styles,
+          mainStyle: mainStyle,
+          dominance: dominance,
+          consistency: consistency,
+          quality: quality,
+          diversity: diversity,
+          visibility: visibility
+        };
+      }).sort((a, b) => {
+        if (b.weightedScore !== a.weightedScore) return b.weightedScore - a.weightedScore;
+        if (b.gold !== a.gold) return b.gold - a.gold;
+        return b.totalMedals - a.totalMedals;
+      });
+
+      ranked.forEach((brewery, index) => {
+        brewery.rank = index + 1;
+      });
+
+      state.ranked = ranked;
+      state.styleStats = styleStats;
+      state.statsByBrewery = new Map(ranked.map((brewery) => [brewery.key, brewery]));
+    }
+
+    function fillSuggestions() {
+      el.brewerySuggestions.innerHTML = state.ranked
+        .map((brewery) => '<option value="' + escapeHtml(brewery.name) + '"></option>')
+        .join("");
+    }
+
+    function updateFilteredUniverse() {
+      state.filteredRows = state.chileRows.filter((row) => {
+        if (state.selectedPeriod === "Todos") return true;
+        return getYearFromRow(row) === state.selectedPeriod;
+      });
+
+      buildAggregates(state.filteredRows);
+      fillSuggestions();
+      el.analysisContext.textContent = state.selectedPeriod === "Todos"
+        ? "Historico completo activo"
+        : "Periodo activo: " + state.selectedPeriod;
+    }
+
+    function getStatsByName(name) {
+      return state.statsByBrewery.get(normalizeText(name)) || null;
+    }
+
+    function findCloseMatches(query) {
+      const normalized = normalizeText(query);
+      if (!normalized) return [];
+      return state.ranked.filter((brewery) => brewery.key.includes(normalized)).slice(0, 5);
+    }
+
+    function getIacPercent(stats) {
+      const leaderScore = state.ranked[0] ? state.ranked[0].weightedScore : 1;
+      return leaderScore ? clamp((stats.weightedScore / leaderScore) * 100, 0, 100) : 0;
+    }
+
+    function renderRanking(selected) {
+      if (!state.ranked.length) {
+        el.rankingList.innerHTML = "";
+        el.rankingMessage.textContent = "No hay datos disponibles para ese periodo.";
+        return;
+      }
+
+      const leaderScore = state.ranked[0].weightedScore || 1;
+      const topList = state.ranked.slice(0, 15);
+      const hasSelected = selected ? topList.some((brewery) => brewery.key === selected.key) : false;
+      const finalList = selected && !hasSelected
+        ? [...topList.slice(0, 14), selected].sort((a, b) => a.rank - b.rank)
+        : topList;
+
+      el.rankingList.innerHTML = finalList.map((brewery) => {
+        const width = clamp((brewery.weightedScore / leaderScore) * 100, 6, 100);
+        const selectedClass = selected && brewery.key === selected.key ? " is-selected" : "";
+        const tooltip = brewery.name + " | " + brewery.totalMedals + " medallas | " + brewery.weightedScore + " pts";
+        return (
+          '<div class="ranking-item">' +
+            '<div class="ranking-rank">#' + brewery.rank + '</div>' +
+            '<div class="ranking-track" title="' + escapeHtml(tooltip) + '">' +
+              '<div class="ranking-bar' + selectedClass + '" style="width:' + width + '%;"></div>' +
+              '<div class="ranking-label"><span>' + escapeHtml(brewery.name) + '</span><span>' + brewery.totalMedals + ' medallas</span></div>' +
+            '</div>' +
+            '<div class="ranking-score">' + brewery.weightedScore + ' pts</div>' +
+          '</div>'
+        );
+      }).join("");
+
+      if (selected) {
+        el.rankingMessage.innerHTML = '<strong>' + escapeHtml(selected.name) + '</strong> ocupa el lugar <strong>#' + selected.rank + '</strong> en el periodo elegido con <strong>' + selected.weightedScore + ' puntos</strong>.';
+      } else {
+        el.rankingMessage.textContent = "El ranking ya quedo armado para el periodo seleccionado.";
+      }
+    }
+
+    function updateIacPanel(stats) {
+      if (!stats) {
+        el.iacName.textContent = "Sin cerveceria seleccionada";
+        el.iacCopy.textContent = "El termometro mostrara la autoridad de la marca frente a la lider del periodo.";
+        el.thermoFill.style.height = "0%";
+        el.thermoValue.textContent = "0%";
+        el.thermoPotential.textContent = "0%";
+        return;
+      }
+
+      const iac = getIacPercent(stats);
+      const potential = clamp(iac + 18, 0, 100);
+      el.iacName.textContent = stats.name;
+      el.iacCopy.textContent = "La autoridad de " + stats.name + " en el periodo " + state.selectedPeriod + " se compara contra la marca lider de esa misma lectura.";
+      el.thermoFill.style.height = iac.toFixed(1) + "%";
+      el.thermoValue.textContent = Math.round(iac) + "%";
+      el.thermoPotential.textContent = Math.round(potential) + "%";
+    }
+
+    function getRadarMetrics(stats) {
+      return [
+        clamp(stats.consistency, 0, 100),
+        clamp(stats.dominance, 0, 100),
+        clamp(stats.quality, 0, 100),
+        clamp(stats.diversity || 0, 0, 100),
+        clamp(stats.visibility || 0, 0, 100)
+      ];
+    }
+
+    function getRadarBenchmark() {
+      const topThree = state.ranked.slice(0, 3);
+      if (!topThree.length) return [0, 0, 0, 0, 0];
+      const totals = [0, 0, 0, 0, 0];
+      topThree.forEach((brewery) => {
+        getRadarMetrics(brewery).forEach((value, index) => {
+          totals[index] += value;
+        });
+      });
+      return totals.map((value) => value / topThree.length);
+    }
+
+    function radarPoints(values, cx, cy, radius) {
+      return values.map((value, index) => {
+        const angle = (-90 + (360 / values.length) * index) * Math.PI / 180;
+        const length = radius * (value / 100);
+        return {
+          x: cx + Math.cos(angle) * length,
+          y: cy + Math.sin(angle) * length
+        };
+      });
+    }
+
+    function pointsToString(points) {
+      return points.map((point) => point.x.toFixed(1) + "," + point.y.toFixed(1)).join(" ");
+    }
+
+    function bindVizTooltip(container) {
+      const tooltip = container.querySelector(".viz-tooltip");
+      if (!tooltip) return;
+      const title = tooltip.querySelector(".viz-tooltip__title");
+      const body = tooltip.querySelector(".viz-tooltip__body");
+      const show = (node) => {
+        title.textContent = node.dataset.tipTitle || "";
+        body.textContent = node.dataset.tipBody || "";
+        tooltip.classList.add("is-visible");
+      };
+      container.querySelectorAll("[data-tip-title]").forEach((node) => {
+        node.addEventListener("mouseenter", () => show(node));
+        node.addEventListener("focus", () => show(node));
+        node.addEventListener("click", () => show(node));
+      });
+      const svg = container.querySelector("svg");
+      if (svg) {
+        svg.addEventListener("mouseleave", () => tooltip.classList.remove("is-visible"));
+      }
+    }
+
+    function renderRadarChart(stats) {
+      el.radarName.textContent = stats ? stats.name : "Sin cerveceria seleccionada";
+      if (!stats) {
+        el.radarViz.innerHTML = '<div class="viz-empty">Selecciona una cerveceria para construir el radar.</div>';
+        return;
+      }
+
+      const labels = ["Consistencia", "Dominancia", "Calidad", "Diversidad", "Visibilidad"];
+      const values = getRadarMetrics(stats);
+      const benchmark = getRadarBenchmark();
+      const cx = 180;
+      const cy = 160;
+      const radius = 108;
+      const rings = [25, 50, 75, 100];
+      const selectedPoints = radarPoints(values, cx, cy, radius);
+      const benchmarkPoints = radarPoints(benchmark, cx, cy, radius);
+
+      let axes = "";
+      labels.forEach((label, index) => {
+        const angle = (-90 + (360 / labels.length) * index) * Math.PI / 180;
+        const labelX = cx + Math.cos(angle) * (radius + 26);
+        const labelY = cy + Math.sin(angle) * (radius + 26);
+        axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + labelX + '" y2="' + labelY + '" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>';
+        axes += '<text x="' + labelX.toFixed(1) + '" y="' + labelY.toFixed(1) + '" fill="#f6f8fb" font-size="11" text-anchor="middle">' + escapeHtml(label) + '</text>';
+      });
+
+      let ringMarkup = "";
+      rings.forEach((ring) => {
+        const ringPoints = radarPoints(labels.map(() => ring), cx, cy, radius);
+        ringMarkup += '<polygon points="' + pointsToString(ringPoints) + '" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>';
+      });
+
+      let pointMarkup = "";
+      labels.forEach((label, index) => {
+        pointMarkup += '<circle class="viz-hotspot" data-tip-title="' + escapeHtml(label) + '" data-tip-body="' + escapeHtml(stats.name + ': ' + Math.round(values[index]) + '% | Promedio top 3: ' + Math.round(benchmark[index]) + '%') + '" cx="' + selectedPoints[index].x.toFixed(1) + '" cy="' + selectedPoints[index].y.toFixed(1) + '" r="6" fill="transparent"></circle>';
+        pointMarkup += '<circle cx="' + selectedPoints[index].x.toFixed(1) + '" cy="' + selectedPoints[index].y.toFixed(1) + '" r="4" fill="#f4c63f"></circle>';
+        pointMarkup += '<circle cx="' + benchmarkPoints[index].x.toFixed(1) + '" cy="' + benchmarkPoints[index].y.toFixed(1) + '" r="3" fill="#50d4d0"></circle>';
+      });
+
+      el.radarViz.innerHTML =
+        '<svg viewBox="0 0 360 320" role="img" aria-label="Radar de ' + escapeHtml(stats.name) + '">' +
+          ringMarkup +
+          axes +
+          '<polygon points="' + pointsToString(benchmarkPoints) + '" fill="rgba(80,212,208,0.10)" stroke="#50d4d0" stroke-width="2"></polygon>' +
+          '<polygon points="' + pointsToString(selectedPoints) + '" fill="rgba(227,44,108,0.28)" stroke="#e32c6c" stroke-width="2.5"></polygon>' +
+          pointMarkup +
+          '<text x="20" y="24" fill="#f4c63f" font-size="12" font-weight="700">Magenta: ' + escapeHtml(stats.name) + '</text>' +
+          '<text x="20" y="42" fill="#50d4d0" font-size="12" font-weight="700">Cian: promedio del top 3</text>' +
+        '</svg>' +
+        '<div class="viz-tooltip"><span class="viz-tooltip__title">Radar</span><div class="viz-tooltip__body">Toca o pasa sobre un punto para ver el detalle.</div></div>';
+      bindVizTooltip(el.radarViz);
+    }
+
+    function getBubbleRows(stats) {
+      return [...stats.styles.entries()]
+        .map(([styleKey, styleData]) => {
+          const globalStyle = state.styleStats.get(styleKey);
+          const competitorCount = globalStyle ? globalStyle.breweries.size : 1;
+          const goldTotal = globalStyle ? globalStyle.gold : 0;
+          const radius = clamp((goldTotal * 12) / Math.max(1, competitorCount) + styleData.medals * 3, 10, 28);
+          return {
+            style: styleData.label,
+            competitors: competitorCount,
+            golds: goldTotal,
+            medals: styleData.medals,
+            radius: radius
+          };
+        })
+        .sort((a, b) => b.medals - a.medals)
+        .slice(0, 8);
+    }
+
+    function renderBubbleChart(stats) {
+      el.opportunityName.textContent = stats ? stats.name : "Sin cerveceria seleccionada";
+      if (!stats) {
+        el.bubbleViz.innerHTML = '<div class="viz-empty">Selecciona una cerveceria para construir el mapa de oportunidad.</div>';
+        return;
+      }
+
+      const rows = getBubbleRows(stats);
+      if (!rows.length) {
+        el.bubbleViz.innerHTML = '<div class="viz-empty">No hay estilos suficientes para construir el mapa de oportunidad.</div>';
+        return;
+      }
+
+      const width = 360;
+      const height = 320;
+      const padding = 34;
+      const maxCompetitors = Math.max(1, ...rows.map((row) => row.competitors));
+      const maxGolds = Math.max(1, ...rows.map((row) => row.golds));
+
+      let axis = '';
+      axis += '<line x1="' + padding + '" y1="' + (height - padding) + '" x2="' + (width - padding) + '" y2="' + (height - padding) + '" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>';
+      axis += '<line x1="' + padding + '" y1="' + padding + '" x2="' + padding + '" y2="' + (height - padding) + '" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>';
+      axis += '<text x="' + (width / 2) + '" y="' + (height - 10) + '" fill="#f6f8fb" font-size="11" text-anchor="middle">Competencia historica</text>';
+      axis += '<text x="16" y="' + (height / 2) + '" fill="#f6f8fb" font-size="11" transform="rotate(-90 16 ' + (height / 2) + ')" text-anchor="middle">Oros del estilo</text>';
+
+      const rawBubbles = rows.map((row) => {
+        const x = padding + ((row.competitors - 1) / Math.max(1, maxCompetitors - 1 || 1)) * (width - padding * 2);
+        const y = height - padding - (row.golds / maxGolds) * (height - padding * 2);
+        return { row, x, y };
+      });
+
+      const minX = Math.min(...rawBubbles.map((item) => item.x - item.row.radius));
+      const maxX = Math.max(...rawBubbles.map((item) => item.x + item.row.radius));
+      const minY = Math.min(...rawBubbles.map((item) => item.y - item.row.radius));
+      const maxY = Math.max(...rawBubbles.map((item) => item.y + item.row.radius));
+      const plotCenterX = padding + (width - padding * 2) / 2;
+      const plotCenterY = padding + (height - padding * 2) / 2;
+      const currentCenterX = (minX + maxX) / 2;
+      const currentCenterY = (minY + maxY) / 2;
+      const offsetX = plotCenterX - currentCenterX;
+      const offsetY = plotCenterY - currentCenterY;
+
+      const positionedBubbles = rawBubbles.map(({ row, x, y }) => {
+        const centeredX = clamp(x + offsetX, padding + row.radius, width - padding - row.radius);
+        const centeredY = clamp(y + offsetY, padding + row.radius, height - padding - row.radius);
+        return {
+          row,
+          centeredX,
+          centeredY,
+          fill: row.competitors <= 3 ? "rgba(244,198,63,0.68)" : "rgba(80,212,208,0.58)",
+          stroke: row.competitors <= 3 ? "#f4c63f" : "#50d4d0"
+        };
+      });
+
+      const leftLabels = positionedBubbles
+        .filter((item) => item.centeredX < plotCenterX)
+        .sort((a, b) => a.centeredY - b.centeredY);
+      const rightLabels = positionedBubbles
+        .filter((item) => item.centeredX >= plotCenterX)
+        .sort((a, b) => a.centeredY - b.centeredY);
+
+      function spreadLabels(items, side) {
+        let lastY = padding + 10;
+        items.forEach((item) => {
+          const targetY = clamp(item.centeredY, padding + 12, height - padding - 12);
+          const labelY = Math.max(targetY, lastY);
+          item.labelY = clamp(labelY, padding + 12, height - padding - 12);
+          lastY = item.labelY + 18;
+          item.labelX = side === "left" ? padding + 8 : width - padding - 8;
+          item.anchor = side === "left" ? "start" : "end";
+          item.lineEndX = side === "left" ? item.labelX - 4 : item.labelX + 4;
+        });
+      }
+
+      spreadLabels(leftLabels, "left");
+      spreadLabels(rightLabels, "right");
+
+      const bubbles = positionedBubbles.map((item) => {
+        const label = item.row.style.length > 18 ? item.row.style.slice(0, 18) + "…" : item.row.style;
+        return (
+          '<g>' +
+            '<line x1="' + item.centeredX.toFixed(1) + '" y1="' + item.centeredY.toFixed(1) + '" x2="' + item.lineEndX.toFixed(1) + '" y2="' + item.labelY.toFixed(1) + '" stroke="rgba(255,255,255,0.26)" stroke-width="1"></line>' +
+            '<circle class="viz-hotspot" data-tip-title="' + escapeHtml(item.row.style) + '" data-tip-body="' + escapeHtml("Competidores: " + item.row.competitors + " | Oros: " + item.row.golds + " | Medallas marca: " + item.row.medals) + '" cx="' + item.centeredX.toFixed(1) + '" cy="' + item.centeredY.toFixed(1) + '" r="' + Math.max(item.row.radius, 10).toFixed(1) + '" fill="transparent"></circle>' +
+            '<circle cx="' + item.centeredX.toFixed(1) + '" cy="' + item.centeredY.toFixed(1) + '" r="' + item.row.radius.toFixed(1) + '" fill="' + item.fill + '" stroke="' + item.stroke + '" stroke-width="1.4"></circle>' +
+            '<text x="' + item.labelX.toFixed(1) + '" y="' + item.labelY.toFixed(1) + '" fill="#f6f8fb" font-size="10" text-anchor="' + item.anchor + '" font-weight="700">' + escapeHtml(label) + '</text>' +
+          '</g>'
+        );
+      }).join("");
+
+      el.bubbleViz.innerHTML =
+        '<svg viewBox="0 0 360 320" role="img" aria-label="Mapa de oportunidad de ' + escapeHtml(stats.name) + '">' +
+          axis +
+          bubbles +
+        '</svg>' +
+        '<div class="viz-tooltip"><span class="viz-tooltip__title">Mapa de oportunidad</span><div class="viz-tooltip__body">Toca o pasa sobre una burbuja para ver el detalle.</div></div>';
+      bindVizTooltip(el.bubbleViz);
+    }
+
+    function renderEmptyAnalysis(message) {
+      state.selectedStats = null;
+      renderRanking(null);
+      updateIacPanel(null);
+      renderRadarChart(null);
+      renderBubbleChart(null);
+      el.rankingMessage.textContent = message;
+    }
+
+    function analyzeSelection() {
+      const name = el.breweryInput.value.trim();
+      if (!state.ranked.length) {
+        renderEmptyAnalysis("No hay datos disponibles para el periodo seleccionado.");
+        return;
+      }
+
+      if (!name) {
+        renderEmptyAnalysis("Escribe una cerveceria chilena para analizar.");
+        return;
+      }
+
+      const stats = getStatsByName(name);
+      if (!stats) {
+        const matches = findCloseMatches(name);
+        const message = matches.length
+          ? "No encontre esa cerveceria en este periodo. Prueba con: " + matches.map((brewery) => brewery.name).join(", ")
+          : "No encontre esa cerveceria dentro del periodo y filtro actual.";
+        renderEmptyAnalysis(message);
+        return;
+      }
+
+      state.selectedStats = stats;
+      el.breweryInput.value = stats.name;
+      renderRanking(stats);
+      updateIacPanel(stats);
+      renderRadarChart(stats);
+      renderBubbleChart(stats);
+    }
+
+    function updateSimulator() {
+      const plan = PLANS[state.selectedPlan];
+      const factor = PRODUCTION_FACTORS[state.productionIndex];
+      const monthlyPrice = plan.price * factor;
+      const annualValue = monthlyPrice * 12;
+      const impact = clamp(plan.impactBase + state.productionIndex * 8, 0, 99);
+
+      el.productionCurrent.textContent = PRODUCTION_LABELS[state.productionIndex];
+      el.metricInvestment.textContent = formatMoneyCLP(monthlyPrice);
+      el.metricRecovered.textContent = formatMoneyCLP(annualValue);
+      el.metricImpact.textContent = impact + "%";
+      el.resultsChip.textContent = "Plan seleccionado: " + plan.label;
+      el.resultsAmount.textContent = formatMoneyCLP(monthlyPrice) + " / mes";
+      el.resultsCopy.textContent = plan.phrase;
+      el.resultsList.innerHTML = [
+        "Tramo de produccion: " + PRODUCTION_LABELS[state.productionIndex],
+        "Valor anual estimado: " + formatMoneyCLP(annualValue),
+        "Servicios incluidos: " + plan.services
+      ].map((item) => "<li>" + escapeHtml(item) + "</li>").join("");
+    }
+
+    function setPlan(planKey) {
+      state.selectedPlan = planKey;
+      document.querySelectorAll("[data-plan]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.plan === planKey);
+      });
+      updateSimulator();
+    }
+
+    function hydrateRows(parsedRows) {
+      state.fullRows = parsedRows.map((row) => ({
+        anio: row.anio,
+        certamen: titleCase(row.certamen),
+        cerveceria: titleCase(row.cerveceria),
+        cerveza_ganadora: titleCase(row.cerveza_ganadora),
+        ciudad: titleCase(row.ciudad),
+        estilo: titleCase(row.estilo),
+        estilo_corregido: titleCase(row.estilo_corregido),
+        estilo_limpio: titleCase(row.estilo_limpio),
+        estilo_cliente: titleCase(row.estilo_cliente),
+        fecha: row.fecha,
+        medalla_base: titleCase(row.medalla_base),
+        origen: titleCase(row.origen),
+        pais: titleCase(row.pais),
+        premio: titleCase(row.premio),
+        subcategoria: titleCase(row.subcategoria),
+        tipo_premio: titleCase(row.tipo_premio)
+      }));
+
+      state.chileRows = state.fullRows.filter((row) => {
+        const medal = normalizeText(row.medalla_base);
+        return normalizeText(row.pais) === "chile" &&
+          normalizeText(row.cerveceria) &&
+          normalizeText(row.cerveceria) !== "-" &&
+          Object.prototype.hasOwnProperty.call(MEDAL_WEIGHTS, medal);
+      });
+
+      updateSummaryCounts();
+      const availableYears = [...new Set(state.chileRows.map((row) => getYearFromRow(row)).filter(Boolean))]
+        .sort((a, b) => Number(a) - Number(b));
+      state.periodOptions = [...availableYears, "Todos"];
+      state.selectedPeriod = availableYears.includes("2025") ? "2025" : (availableYears[0] || "Todos");
+      fillPeriodOptions();
+      updateFilteredUniverse();
+      renderEmptyAnalysis("Selecciona una cerveceria y un periodo para activar el analisis competitivo.");
+      updateStatus("Base lista: " + formatNumber(state.chileRows.length) + " registros Chile disponibles para analisis.", "ready");
+      toggleManualLoad(false);
+    }
+
+    function loadDataFromText(text) {
+      const parsed = parseSemicolonCsv(String(text || "").replace(/^\uFEFF/, ""));
+      if (!parsed.length) {
+        throw new Error("El CSV no trae filas legibles.");
+      }
+      hydrateRows(parsed);
+    }
+
+    async function loadData() {
+      updateStatus("Cargando bbdd.csv...", "");
+      try {
+        const response = await fetch(DATA_FILE, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("No pude leer " + DATA_FILE);
+        }
+        const text = await response.text();
+        loadDataFromText(text);
+      } catch (error) {
+        toggleManualLoad(true);
+        updateStatus("No se pudo cargar la base automaticamente. Usa el cargador manual si abriste el archivo local.", "error");
+        renderEmptyAnalysis("No se pudo cargar el CSV principal.");
+      }
+    }
+
+    function bindEvents() {
+      el.analyzeBtn.addEventListener("click", analyzeSelection);
+      el.periodSelect.addEventListener("change", (event) => {
+        state.selectedPeriod = event.target.value;
+        updateFilteredUniverse();
+        renderEmptyAnalysis("Periodo actualizado. Presiona Analizar para cargar la cerveceria con la nueva lectura.");
+      });
+      el.productionRange.addEventListener("input", (event) => {
+        state.productionIndex = Number(event.target.value);
+        updateSimulator();
+      });
+      el.manualCsvBtn.addEventListener("click", () => {
+        el.manualCsvInput.click();
+      });
+      el.manualCsvInput.addEventListener("change", async (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        try {
+          updateStatus("Leyendo CSV manual...", "");
+          const text = await file.text();
+          loadDataFromText(text);
+        } catch (error) {
+          toggleManualLoad(true);
+          updateStatus("No pude leer el CSV manual. Revisa el archivo e intentalo otra vez.", "error");
+          renderEmptyAnalysis("La carga manual del CSV no pudo completarse.");
+        } finally {
+          event.target.value = "";
+        }
+      });
+      document.querySelectorAll("[data-plan]").forEach((button) => {
+        button.addEventListener("click", () => setPlan(button.dataset.plan));
+      });
+    }
+
+    fillPeriodOptions();
+    bindEvents();
+    updateSimulator();
+    renderEmptyAnalysis("Selecciona una cerveceria y un periodo para activar el analisis competitivo.");
+    loadData();
+  </script>
+</body>
+</html>
