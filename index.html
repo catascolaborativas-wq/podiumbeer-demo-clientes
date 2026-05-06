@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PodiumBeer - Demo Clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <header class="bg-black text-white p-4 shadow-lg flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <img src="assets/chile.png" alt="Logo" class="h-10">
+            <h1 class="text-xl font-bold tracking-widest">PODIUMBEER</h1>
+        </div>
+        <div id="status" class="text-xs bg-red-500 px-2 py-1 rounded">Conectando a Supabase...</div>
+    </header>
+
+    <main class="p-6">
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-4 rounded shadow">
+                <label class="block text-sm font-bold mb-2">Filtrar por Estilo:</label>
+                <select id="filter-style" class="w-full border p-2 rounded"></select>
+            </div>
+            </section>
+
+        <div id="app" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-md h-80 flex items-center justify-center border-2 border-dashed">
+                <p class="text-gray-400">Cargando Medallero...</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        // NOTA: Estas llaves las sacaremos de tu Supabase en el siguiente paso
+        const supabaseUrl = 'TU_URL_DE_SUPABASE'
+        const supabaseKey = 'TU_LLAVE_ANON_DE_SUPABASE'
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        async function cargarDatos() {
+            const { data, error } = await supabase
+                .from('medallero') // nombre de tu tabla
+                .select('*')
+                .limit(10)
+
+            if (error) {
+                document.getElementById('status').innerText = "Error de Conexión";
+                console.error(error);
+            } else {
+                document.getElementById('status').className = "text-xs bg-green-500 px-2 py-1 rounded";
+                document.getElementById('status').innerText = "ONLINE - " + data.length + " Filas";
+            }
+        }
+
+        cargarDatos();
+    </script>
+</body>
+</html>
